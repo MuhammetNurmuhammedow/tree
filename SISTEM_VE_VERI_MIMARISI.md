@@ -196,3 +196,4 @@ docker compose up -d
 - 🌐 **Web Arayüzü:** [http://localhost:5173](http://localhost:5173)
 - 🔌 **Backend REST API:** [http://localhost:8080/api/v1](http://localhost:8080/api/v1)
 - 🐘 **PostgreSQL Veritabanı:** `localhost:5432` *(Veritabanı: `familytree`, Kullanıcı: `familytree`)*
+

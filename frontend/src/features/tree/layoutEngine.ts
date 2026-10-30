@@ -6,15 +6,16 @@ const elk = new ELK();
 
 /**
  * Runs ELK hierarchical layout on the React Flow graph.
- * Returns nodes with updated x/y positions.
+ * If customPositions are supplied (e.g. from localStorage), user-dragged positions take precedence.
  */
 export async function applyELKLayout(
-  graph: TreeGraph
+  graph: TreeGraph,
+  customPositions?: Record<string, { x: number; y: number }>
 ): Promise<{ nodes: Node<TreeNodeData>[]; edges: Edge[] }> {
   const elkNodes: ElkNode['children'] = graph.nodes.map((n) => ({
     id: n.id,
-    width: 220,
-    height: 100,
+    width: 236,
+    height: 110,
   }));
 
   const elkEdges = graph.edges.map((e) => ({
@@ -28,8 +29,8 @@ export async function applyELKLayout(
     layoutOptions: {
       'elk.algorithm': 'layered',
       'elk.direction': 'DOWN',
-      'elk.layered.spacing.nodeNodeBetweenLayers': '90',
-      'elk.spacing.nodeNode': '50',
+      'elk.layered.spacing.nodeNodeBetweenLayers': '95',
+      'elk.spacing.nodeNode': '60',
       'elk.layered.nodePlacement.strategy': 'BRANDES_KOEPF',
     },
     children: elkNodes,
@@ -39,6 +40,17 @@ export async function applyELKLayout(
   const layouted = await elk.layout(elkGraph);
 
   const nodes: Node<TreeNodeData>[] = graph.nodes.map((n) => {
+    // If user previously dragged this node and saved its position, preserve it
+    const saved = customPositions?.[n.id];
+    if (saved && typeof saved.x === 'number' && typeof saved.y === 'number') {
+      return {
+        id: n.id,
+        type: 'personNode',
+        position: { x: saved.x, y: saved.y },
+        data: n.data,
+      };
+    }
+
     const layoutNode = layouted.children?.find((c) => c.id === n.id);
     return {
       id: n.id,

@@ -1,11 +1,13 @@
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Handle, Position } from '@xyflow/react';
 import type { NodeProps, Node } from '@xyflow/react';
 import type { TreeNodeData } from '@/types/tree';
 import type { Person } from '@/types/person';
 import { useTreeEvents } from './TreeEventsContext';
+import { UserIcon, HeartIcon, BabyIcon, EyeIcon, CalendarIcon, MapPinIcon } from '@/components/common/Icons';
 
-// ── Helper ────────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function getInitials(p: Person): string {
   const f = p.first_name ? p.first_name[0] : '?';
@@ -13,22 +15,12 @@ function getInitials(p: Person): string {
   return (f + l).toUpperCase();
 }
 
-function getAvatarColor(gender: Person['gender']): string {
-  const map: Record<string, string> = {
-    male:    '#2563eb',
-    female:  '#db2777',
-    other:   '#7c3aed',
-    unknown: '#6b7280',
-  };
-  return map[gender] ?? '#6b7280';
-}
-
 function formatYears(person: Person): string {
   const born = person.birth_date ? person.birth_date.slice(0, 4) : '?';
   if (!person.is_living && person.death_date) {
     return `${born} – ${person.death_date.slice(0, 4)}`;
   }
-  return person.is_living ? `d. ${born}` : `d. ${born} – †`;
+  return person.is_living ? `d. ${born}` : `d. ${born} – vefat`;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -36,6 +28,7 @@ function formatYears(person: Person): string {
 type CustomPersonNode = Node<TreeNodeData, 'personNode'>;
 
 const PersonNode: React.FC<NodeProps<CustomPersonNode>> = ({ data }) => {
+  const { t } = useTranslation();
   const { person } = data;
   const { onAddParent, onAddSpouse, onAddChild, onViewProfile, isReadOnly } = useTreeEvents();
 
@@ -46,16 +39,29 @@ const PersonNode: React.FC<NodeProps<CustomPersonNode>> = ({ data }) => {
 
   const nodeClass = [
     'person-node',
-    isDead ? 'dead' : gender,
+    isDead ? 'node-dead' : `node-${gender}`,
   ].join(' ');
 
   return (
     <div className={nodeClass} onClick={() => onViewProfile?.(person.id)}>
-      {/* React Flow handles */}
-      <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
-      <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
+      {/* React Flow handles for connectors */}
+      <Handle type="target" position={Position.Top} className="custom-flow-handle" />
+      <Handle type="source" position={Position.Bottom} className="custom-flow-handle" />
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      {/* Header Badge */}
+      <div className="person-node__topbar">
+        <span className={`gender-tag gender-${gender}`}>
+          {gender === 'male' ? t('personModal.genderMale') : gender === 'female' ? t('personModal.genderFemale') : t('personModal.genderOther')}
+        </span>
+        {isDead ? (
+          <span className="status-tag status-dead">{t('node.deceased')}</span>
+        ) : (
+          <span className="status-tag status-living">{t('node.living')}</span>
+        )}
+      </div>
+
+      {/* Main Content */}
+      <div className="person-node__body">
         {/* Avatar */}
         {person.avatar_url ? (
           <img
@@ -64,37 +70,93 @@ const PersonNode: React.FC<NodeProps<CustomPersonNode>> = ({ data }) => {
             className="person-node__avatar"
           />
         ) : (
-          <div
-            className="person-node__avatar-placeholder"
-            style={{ background: getAvatarColor(gender) }}
-          >
+          <div className={`person-node__avatar-placeholder avatar-${gender}`}>
             {getInitials(person)}
           </div>
         )}
 
-        {/* Info */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div className="person-node__name" title={`${person.first_name} ${person.last_name}`}>
-            {person.first_name} {person.last_name}
-            {person.maiden_name && (
-              <span style={{ fontWeight: 400, opacity: 0.65 }}> ({person.maiden_name})</span>
-            )}
+        {/* Identity & Dates */}
+        <div className="person-node__meta">
+          <h4 className="person-node__fullname" title={`${person.first_name} ${person.last_name}`}>
+            {person.first_name} <strong>{person.last_name}</strong>
+          </h4>
+
+          {person.maiden_name && (
+            <div className="person-node__maiden">
+              Kızlık: <em>{person.maiden_name}</em>
+            </div>
+          )}
+
+          <div className="person-node__row">
+            <CalendarIcon size={12} className="meta-icon" />
+            <span>{formatYears(person)}</span>
           </div>
-          <div className="person-node__years">{formatYears(person)}</div>
+
+          {person.birth_place && (
+            <div className="person-node__row">
+              <MapPinIcon size={12} className="meta-icon" />
+              <span className="truncate">{person.birth_place}</span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Hover micro-menu */}
-      <div className="person-node__menu">
+      {/* Tactical Hover Menu */}
+      <div className="person-node__actions">
         {!isReadOnly && (
           <>
-            <button type="button" onClick={(e) => { e.stopPropagation(); onAddParent?.(person.id); }}>+ Ebeveyn</button>
-            <button type="button" onClick={(e) => { e.stopPropagation(); onAddSpouse?.(person.id); }}>+ Eş</button>
-            <button type="button" onClick={(e) => { e.stopPropagation(); onAddChild?.(person.id); }}>+ Çocuk</button>
+            <button
+              type="button"
+              className="action-btn"
+              title={t('node.addParent')}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddParent?.(person.id);
+              }}
+            >
+              <UserIcon size={13} />
+              <span>{t('node.addParent')}</span>
+            </button>
+
+            <button
+              type="button"
+              className="action-btn"
+              title={t('node.addSpouse')}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddSpouse?.(person.id);
+              }}
+            >
+              <HeartIcon size={13} />
+              <span>{t('node.addSpouse')}</span>
+            </button>
+
+            <button
+              type="button"
+              className="action-btn"
+              title={t('node.addChild')}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddChild?.(person.id);
+              }}
+            >
+              <BabyIcon size={13} />
+              <span>{t('node.addChild')}</span>
+            </button>
           </>
         )}
-        <button type="button" onClick={(e) => { e.stopPropagation(); onViewProfile?.(person.id); }}>
-          {isReadOnly ? '👁️ Detaylar' : 'Profil'}
+
+        <button
+          type="button"
+          className="action-btn action-view"
+          title={t('node.viewProfile')}
+          onClick={(e) => {
+            e.stopPropagation();
+            onViewProfile?.(person.id);
+          }}
+        >
+          <EyeIcon size={13} />
+          <span>{t('node.viewProfile')}</span>
         </button>
       </div>
     </div>

@@ -1,0 +1,189 @@
+const ru = {
+  translation: {
+    // App Header
+    app: {
+      title: 'Семейное Древо',
+      subtitle: 'Генеалогический Реестр',
+    },
+    // Language selector
+    language: {
+      label: 'Язык',
+      tk: 'Туркменский',
+      en: 'Английский',
+      ru: 'Русский',
+    },
+    // Tree selector / header
+    tree: {
+      select: 'Выберите дерево',
+      newTree: 'Новое Семейное Древо',
+      myTree: 'Моё Дерево',
+      loading: 'Загрузка…',
+      empty: 'Деревья не найдены',
+      owner: 'Владелец',
+      readOnly: 'Только просмотр',
+      editable: 'Моё Древо (Редактируемое)',
+      members: 'членов',
+      backToMyTree: 'Перейти к Моему Древу',
+    },
+    // Search
+    search: {
+      placeholder: 'Поиск человека во всех деревьях… (имя, фамилия)',
+      noResults: 'Результаты не найдены',
+      searching: 'Поиск…',
+      foundCount: 'Найденные Лица',
+    },
+    // Toolbar buttons
+    toolbar: {
+      addPerson: 'Добавить Человека',
+      addRelation: 'Добавить Связь',
+      resetLayout: 'Авто-Расположение',
+      theme: 'Тема',
+      export: 'Экспорт',
+      exportPng: 'Скачать как PNG',
+      exportPdf: 'Скачать как PDF',
+      exporting: 'Экспорт…',
+      sampleData: 'Демо Данные',
+    },
+    // Canvas themes
+    themes: {
+      slate: 'Тёмный Сланец',
+      blueprint: 'Синий Чертёж',
+      parchment: 'Старинный Пергамент',
+      obsidian: 'Тёмный Обсидиан',
+    },
+    // Canvas hints
+    canvas: {
+      dragHint: 'Перетаскивайте узлы в любое место; позиции сохраняются навсегда.',
+      loading: 'Загрузка семейного дерева и расчёт компоновки…',
+      empty: 'Это дерево пустое',
+      emptyHint: 'Нажмите "Добавить Человека", чтобы добавить первого члена семьи.',
+      error: 'Произошла ошибка при загрузке семейного дерева',
+    },
+    // Person Node
+    node: {
+      born: 'р.',
+      died: 'у.',
+      living: 'Живой',
+      deceased: 'Покойный',
+      addParent: 'Добавить Родителя',
+      addSpouse: 'Добавить Супруга',
+      addChild: 'Добавить Ребёнка',
+      viewProfile: 'Просмотр Профиля',
+    },
+    // Person Modal (add person)
+    personModal: {
+      title: 'Добавить Нового Члена Семьи',
+      subtitle: 'Зарегистрируйте нового члена в вашем семейном дереве',
+      firstName: 'Имя',
+      lastName: 'Фамилия',
+      maidenName: 'Девичья Фамилия (Опционально)',
+      gender: 'Пол',
+      genderMale: 'Мужской',
+      genderFemale: 'Женский',
+      genderOther: 'Другой',
+      genderUnknown: 'Неизвестно',
+      birthDate: 'Дата Рождения',
+      birthPlace: 'Место Рождения',
+      isLiving: 'Этот член семьи живёт',
+      deathDate: 'Дата Смерти',
+      deathPlace: 'Место Смерти',
+      biography: 'Биография / Воспоминания',
+      biographyPlaceholder: 'Воспоминания, профессия или важные детали жизни этого человека…',
+      cancel: 'Отмена',
+      submit: 'Добавить в Семью',
+      submitting: 'Сохранение…',
+      errorRequired: 'Имя и Фамилия обязательны',
+      errorGeneral: 'Произошла ошибка при добавлении человека',
+      placeholderFirst: 'Напр: Иван',
+      placeholderLast: 'Напр: Иванов',
+      placeholderMaiden: 'Предыдущая фамилия если есть',
+      placeholderBirthPlace: 'Город или Страна',
+      placeholderDeathPlace: 'Город смерти',
+      placeholderBio: 'Воспоминания, профессия или важные детали жизни…',
+    },
+    // Relationship Modal & Kinship
+    relationModal: {
+      title: 'Создать Семейную Связь',
+      subtitle: 'Установить связь родителя, брака (супруга) или ребёнка между двумя членами семьи',
+      bondCategory: 'Категория Связи',
+      bondType: 'Тип Родства / Брака',
+      customTitleLabel: 'Отображаемое Название Родства (Изменяемое)',
+      customTitlePlaceholder: 'Напр: Муж, Жена, Супруг, Свекровь, Тёща, Невестка, Зять…',
+      
+      // Marriage
+      spouseGeneral: 'Супруг(а) / Брак',
+      spouseHusband: 'Муж',
+      spouseWife: 'Жена',
+      formerSpouse: 'Бывший супруг(а) (Развод)',
+      fiance: 'Жених / Невеста',
+      
+      // In-laws
+      inLawFather: 'Свёкор / Тесть',
+      inLawMother: 'Свекровь / Тёща',
+      inLawSon: 'Зять',
+      inLawDaughter: 'Невестка / Сноха',
+      inLawBrother: 'Деверь / Шурин / Зять',
+      inLawSister: 'Золовка / Свояченица',
+
+      // Direct
+      parentFather: 'Отец',
+      parentMother: 'Мать',
+      parentGeneral: 'Родитель',
+      childSon: 'Сын',
+      childDaughter: 'Дочь',
+      childGeneral: 'Ребёнок',
+      adoptiveParent: 'Приёмный Родитель',
+      adoptiveChild: 'Приёмный Ребёнок',
+      customOption: 'Своё Название Родства (Вручную)',
+
+      targetPerson: 'Член Семьи для Связи',
+      noPersons: 'В этом дереве не найдено других членов. Сначала добавьте нового человека.',
+      marriageDate: 'Дата Бракосочетания (Опционально)',
+      cancel: 'Отмена',
+      submit: 'Завершить Связь',
+      submitting: 'Сохранение…',
+      errorSelect: 'Пожалуйста, выберите члена семьи',
+      errorGeneral: 'Произошла ошибка при добавлении связи',
+      personLabel: '{{name}} ({{gender}}) {{birth}}',
+      male: 'Муж.',
+      female: 'Жен.',
+    },
+    // Create Tree Modal
+    createTreeModal: {
+      title: 'Создать Новое Семейное Древо',
+      subtitle: 'Начните независимый генеалогический реестр для вашей семьи',
+      treeName: 'Название Дерева',
+      description: 'Описание (Опционально)',
+      placeholderName: 'Напр: Семейное Древо Ивановых',
+      placeholderDesc: 'Напр: Ветвь отцовской линии из Москвы…',
+      cancel: 'Отмена',
+      submit: 'Начать Дерево',
+      submitting: 'Создание…',
+      errorRequired: 'Название дерева обязательно',
+      errorGeneral: 'Не удалось создать дерево',
+    },
+    // Person Detail Modal (profile)
+    detailModal: {
+      born: 'Рождение',
+      died: 'Смерть',
+      biography: 'Биография',
+      noBiography: 'Биография не введена.',
+      close: 'Закрыть',
+      edit: 'Редактировать',
+      addRelative: 'Добавить Родственника',
+      addParent: 'Добавить Родителя',
+      addSpouse: 'Добавить Супруга',
+      addChild: 'Добавить Ребёнка',
+    },
+    // Toast messages
+    toast: {
+      pngSuccess: 'Семейное древо скачано как PNG',
+      pdfSuccess: 'Семейное древо скачано как PDF',
+      pngError: 'Произошла ошибка при создании PNG',
+      pdfError: 'Произошла ошибка при создании PDF',
+      treeLoaded: 'Дерево загружено',
+    },
+  },
+} as const;
+
+export default ru;

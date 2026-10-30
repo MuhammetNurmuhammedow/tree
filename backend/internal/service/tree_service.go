@@ -114,20 +114,28 @@ func buildEdge(rel *domain.Relationship) *TreeEdge {
 			Type:   "bloodEdge",
 		}
 	case domain.RelSpouse:
+		label := "evli"
+		if rel.Notes != nil && *rel.Notes != "" {
+			label = *rel.Notes
+		}
 		return &TreeEdge{
 			ID:     "e-" + rel.ID.String(),
 			Source: src,
 			Target: tgt,
 			Type:   "spouseEdge",
-			Label:  "evli",
+			Label:  label,
 		}
 	case domain.RelFormerSpouse:
+		label := "eski eş"
+		if rel.Notes != nil && *rel.Notes != "" {
+			label = *rel.Notes
+		}
 		return &TreeEdge{
 			ID:     "e-" + rel.ID.String(),
 			Source: src,
 			Target: tgt,
 			Type:   "spouseEdge",
-			Label:  "eski eş",
+			Label:  label,
 		}
 	default:
 		return nil

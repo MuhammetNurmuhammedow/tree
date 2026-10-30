@@ -1,182 +1,371 @@
-/* ── React Flow Tree Canvas Styles ──────────────────────────────────────────── */
+/* ── Theme Definitions ──────────────────────────────────────────────────────── */
+
+.canvas-theme-slate {
+  --canvas-bg: #0f172a;
+  --canvas-grid: #1e293b;
+  --card-bg: #1e293b;
+  --card-border: #334155;
+  --card-text: #f8fafc;
+  --card-subtext: #94a3b8;
+  --card-accent: #3b82f6;
+  --edge-color: #64748b;
+  --spouse-color: #f59e0b;
+}
+
+.canvas-theme-blueprint {
+  --canvas-bg: #091a2f;
+  --canvas-grid: #173860;
+  --card-bg: #0d2544;
+  --card-border: #1e4d7e;
+  --card-text: #e0f2fe;
+  --card-subtext: #7dd3fc;
+  --card-accent: #38bdf8;
+  --edge-color: #38bdf8;
+  --spouse-color: #fbbf24;
+}
+
+.canvas-theme-parchment {
+  --canvas-bg: #1c1815;
+  --canvas-grid: #2e2620;
+  --card-bg: #26201b;
+  --card-border: #4a3e33;
+  --card-text: #fef3c7;
+  --card-subtext: #d5c3ab;
+  --card-accent: #d97706;
+  --edge-color: #8c7865;
+  --spouse-color: #f59e0b;
+}
+
+.canvas-theme-obsidian {
+  --canvas-bg: #09090b;
+  --canvas-grid: #18181b;
+  --card-bg: #121215;
+  --card-border: #27272a;
+  --card-text: #fafafa;
+  --card-subtext: #a1a1aa;
+  --card-accent: #e4e4e7;
+  --edge-color: #52525b;
+  --spouse-color: #eab308;
+}
+
+/* ── React Flow Canvas General ───────────────────────────────────────────────── */
+
+.tree-canvas-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--canvas-bg);
+  transition: background-color 0.25s ease;
+}
 
 .react-flow__background {
-  background-color: var(--bg-primary) !important;
+  background-color: var(--canvas-bg) !important;
 }
 
 .react-flow__minimap {
-  background-color: rgba(16, 20, 30, 0.85) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: 12px !important;
+  background-color: var(--card-bg) !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: 8px !important;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45) !important;
 }
 
 .react-flow__controls {
-  border: 1px solid var(--border-color) !important;
-  border-radius: 12px !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: 8px !important;
   overflow: hidden;
-  background: rgba(16, 20, 30, 0.85) !important;
-  backdrop-filter: blur(var(--glass-blur));
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+  background: var(--card-bg) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45) !important;
 }
 
 .react-flow__controls-button {
   background: transparent !important;
-  border: none !important;
-  color: var(--text-secondary) !important;
-  transition: color 0.15s, background-color 0.15s;
+  border-bottom: 1px solid var(--card-border) !important;
+  color: var(--card-subtext) !important;
+  fill: var(--card-subtext) !important;
+  transition: all 0.15s ease;
 }
 
 .react-flow__controls-button:hover {
-  color: var(--text-primary) !important;
-  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--card-text) !important;
+  fill: var(--card-text) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
 }
 
-/* ── Premium Person Node Card ────────────────────────────────────────────────── */
+/* ── Handcrafted Editorial Person Node Card ──────────────────────────────────── */
+
 .person-node {
-  background: linear-gradient(135deg, rgba(20, 26, 40, 0.85) 0%, rgba(12, 16, 26, 0.90) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 18px;
-  padding: 12px 14px;
-  width: 220px;
-  cursor: pointer;
-  transition: box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 10px;
+  width: 236px;
+  cursor: grab;
   position: relative;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-}
-
-/* Invisible bridge so moving cursor down to hover-menu never loses hover */
-.person-node::after {
-  content: '';
-  position: absolute;
-  bottom: -45px;
-  left: 0;
-  width: 100%;
-  height: 45px;
-  pointer-events: all;
+  padding: 10px 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: transform 0.12s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  user-select: none;
 }
 
 .person-node:hover {
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(59, 130, 246, 0.15);
-  border-color: rgba(255, 255, 255, 0.28);
-  background: linear-gradient(135deg, rgba(28, 36, 56, 0.92) 0%, rgba(16, 22, 36, 0.95) 100%);
+  border-color: var(--card-accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--card-accent);
 }
 
-.person-node.male {
-  border-left: 4px solid var(--node-male);
+.person-node:active {
+  cursor: grabbing;
 }
 
-.person-node.female {
-  border-left: 4px solid var(--node-female);
+/* Gender-specific solid indicators */
+.person-node.node-male {
+  border-top: 4px solid #3b82f6;
 }
 
-.person-node.other {
-  border-left: 4px solid var(--node-other);
+.person-node.node-female {
+  border-top: 4px solid #ec4899;
 }
 
-.person-node.dead {
-  border-left: 4px solid var(--node-dead);
-  opacity: 0.82;
+.person-node.node-other {
+  border-top: 4px solid #8b5cf6;
+}
+
+.person-node.node-dead {
+  border-top: 4px solid #64748b;
+  opacity: 0.85;
+  filter: contrast(0.95);
+}
+
+/* Flow handle points */
+.custom-flow-handle {
+  width: 8px !important;
+  height: 8px !important;
+  background: var(--card-border) !important;
+  border: 2px solid var(--card-bg) !important;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+
+.person-node:hover .custom-flow-handle {
+  opacity: 1;
+  background: var(--card-accent) !important;
+}
+
+/* Card Topbar */
+.person-node__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed var(--card-border);
+  padding-bottom: 5px;
+}
+
+.gender-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.gender-male {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.gender-female {
+  background: rgba(236, 72, 153, 0.15);
+  color: #f472b6;
+  border: 1px solid rgba(236, 72, 153, 0.3);
+}
+
+.gender-other {
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.status-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.status-living {
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.status-dead {
+  background: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+/* Card Body */
+.person-node__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 .person-node__avatar {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
   object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--card-border);
+  flex-shrink: 0;
 }
 
 .person-node__avatar-placeholder {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+  border: 1px solid var(--card-border);
 }
 
-.person-node__name {
-  font-size: 13px;
+.avatar-male {
+  background: #1e3a8a;
+  color: #93c5fd;
+}
+
+.avatar-female {
+  background: #831843;
+  color: #fbcfe8;
+}
+
+.avatar-other {
+  background: #4c1d95;
+  color: #ddd6fe;
+}
+
+.person-node__meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.person-node__fullname {
+  font-size: 13.5px;
   font-weight: 600;
-  color: var(--text-primary);
-  line-height: 1.3;
-  margin-top: 2px;
+  color: var(--card-text);
+  line-height: 1.25;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   letter-spacing: -0.01em;
+}
+
+.person-node__fullname strong {
+  font-weight: 700;
+}
+
+.person-node__maiden {
+  font-size: 11px;
+  color: var(--card-subtext);
+  margin-top: 1px;
+}
+
+.person-node__row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--card-subtext);
+  margin-top: 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.person-node__years {
-  font-size: 11px;
-  color: var(--text-secondary);
-  margin-top: 2px;
-  font-variant-numeric: tabular-nums;
+.meta-icon {
+  flex-shrink: 0;
+  opacity: 0.7;
 }
 
-/* Hover micro-menu */
-.person-node__menu {
+/* Hover Actions Menu */
+.person-node::after {
+  content: '';
   position: absolute;
-  bottom: -38px;
+  bottom: -40px;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  pointer-events: all;
+}
+
+.person-node__actions {
+  position: absolute;
+  bottom: -36px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   gap: 4px;
-  background: rgba(18, 24, 38, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 10px;
-  padding: 4px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  padding: 3px 4px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 30;
-  white-space: nowrap;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 40;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(12px);
+  white-space: nowrap;
 }
 
-.person-node:hover .person-node__menu {
+.person-node:hover .person-node__actions {
   opacity: 1;
   pointer-events: all;
 }
 
-.person-node__menu button {
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 11px;
+  font-weight: 600;
   padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-secondary);
+  border-radius: 4px;
+  border: 1px solid var(--card-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--card-subtext);
   cursor: pointer;
-  transition: all 0.15s ease;
-  font-weight: 500;
+  transition: all 0.12s ease;
 }
 
-.person-node__menu button:hover {
-  background: var(--accent-blue);
-  color: white;
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+.action-btn:hover {
+  background: var(--card-accent);
+  color: #ffffff;
+  border-color: var(--card-accent);
 }
 
-/* ── Edges ───────────────────────────────────────────────────────────────────── */
+.action-view:hover {
+  background: #334155;
+  color: #ffffff;
+}
+
+/* ── Edge Styling ────────────────────────────────────────────────────────────── */
+
 .react-flow__edge.blood-edge path {
-  stroke: rgba(148, 163, 184, 0.65);
-  stroke-width: 2.2;
+  stroke: var(--edge-color) !important;
+  stroke-width: 2.2 !important;
 }
 
 .react-flow__edge.spouse-edge path {
-  stroke: var(--accent-gold);
-  stroke-width: 2;
-  stroke-dasharray: 6, 4;
+  stroke: var(--spouse-color) !important;
+  stroke-width: 2 !important;
+  stroke-dasharray: 6 3 !important;
 }

@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Person } from '@/types/person';
 import { personService } from '@/services/personService';
+import {
+  CloseIcon,
+  MapPinIcon,
+  EyeIcon,
+  RefreshIcon,
+  CalendarIcon,
+  UserIcon,
+} from '@/components/common/Icons';
 
 interface PersonDetailModalProps {
   personId: string | null;
+  treeId?: string;
   onClose: () => void;
-  onDeleted: () => void;
+  onDeleted?: () => void;
+  onUpdated?: () => void;
+  onAddRelative?: (type: 'parent' | 'child' | 'spouse') => void;
   isReadOnly?: boolean;
 }
 
@@ -13,8 +25,10 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
   personId,
   onClose,
   onDeleted,
+  onUpdated,
   isReadOnly = false,
 }) => {
+  const { t } = useTranslation();
   const [person, setPerson] = useState<Person | null>(null);
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -39,7 +53,8 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
       try {
         setDeleting(true);
         await personService.delete(person.id);
-        onDeleted();
+        onDeleted?.();
+        onUpdated?.();
         onClose();
       } catch (err) {
         alert(err instanceof Error ? err.message : 'Silinemedi');
@@ -65,80 +80,83 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9999,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      backgroundColor: 'rgba(4, 7, 13, 0.82)', backdropFilter: 'blur(16px)',
+      backgroundColor: 'rgba(2, 6, 23, 0.85)', backdropFilter: 'blur(8px)',
     }}>
       <div style={{
-        background: 'linear-gradient(145deg, #121724 0%, #0c101a 100%)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        borderRadius: 20,
-        padding: '28px 32px',
+        background: '#0f172a',
+        border: '1px solid #334155',
+        borderRadius: 10,
+        padding: '24px 28px',
         width: '100%',
-        maxWidth: 500,
-        boxShadow: '0 25px 60px rgba(0, 0, 0, 0.75)',
+        maxWidth: 480,
+        boxShadow: '0 25px 60px rgba(0, 0, 0, 0.85)',
         color: '#f1f5f9',
         maxHeight: '90vh',
         overflowY: 'auto',
       }}>
         {loading || !person ? (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
-            <span>⏳ Bilgiler yükleniyor…</span>
+          <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }} className="flex items-center justify-center gap-2">
+            <RefreshIcon size={16} className="animate-spin text-slate-400" />
+            <span>Kişi bilgileri alınıyor...</span>
           </div>
         ) : (
           <div>
-            {/* Read-only banner if viewing someone else's tree */}
+            {/* Read-only banner */}
             {isReadOnly && (
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
                 padding: '8px 12px',
-                background: 'rgba(59, 130, 246, 0.12)',
-                border: '1px solid rgba(59, 130, 246, 0.3)',
-                borderRadius: 10,
+                background: '#0d2544',
+                border: '1px solid #1e4d7e',
+                borderRadius: 6,
                 marginBottom: 16,
                 fontSize: 12,
-                color: '#60a5fa',
+                color: '#7dd3fc',
               }}>
-                <span>👁️</span> Bu profil başka bir kullanıcının ağacında yer aldığı için salt okunurdur.
+                <EyeIcon size={14} />
+                <span>Bu profil başka bir kullanıcının ağacında yer aldığı için salt okunurdur.</span>
               </div>
             )}
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 <div style={{
-                  width: 58, height: 58, borderRadius: '50%',
-                  background: person.gender === 'female' ? '#ec4899' : '#3b82f6',
+                  width: 52, height: 52, borderRadius: 6,
+                  background: person.gender === 'female' ? '#831843' : '#1e3a8a',
+                  color: person.gender === 'female' ? '#fbcfe8' : '#93c5fd',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 22, fontWeight: 700, color: 'white',
-                  border: '2px solid rgba(255, 255, 255, 0.25)',
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
+                  fontSize: 20, fontWeight: 700,
+                  border: '1px solid #334155',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
                 }}>
                   {(person.first_name[0] + (person.last_name[0] || '')).toUpperCase()}
                 </div>
                 <div>
-                  <h2 style={{ fontSize: 21, fontWeight: 700, lineHeight: 1.2, margin: 0 }}>
+                  <h2 style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.2, margin: 0, color: '#f8fafc' }}>
                     {person.first_name} {person.last_name}
                   </h2>
                   {person.maiden_name && (
-                    <span style={{ fontSize: 13, color: '#94a3b8' }}>
+                    <span style={{ fontSize: 12, color: '#94a3b8' }}>
                       (Kızlık Soyadı: {person.maiden_name})
                     </span>
                   )}
-                  <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                  <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
                     <span style={{
-                      fontSize: 11, padding: '3px 10px', borderRadius: 20,
-                      background: person.is_living ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                      color: person.is_living ? '#34d399' : '#f87171',
-                      border: person.is_living ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
+                      fontSize: 10.5, padding: '2px 8px', borderRadius: 4,
+                      background: person.is_living ? 'rgba(34, 197, 94, 0.15)' : 'rgba(100, 116, 139, 0.2)',
+                      color: person.is_living ? '#4ade80' : '#94a3b8',
+                      border: person.is_living ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(100, 116, 139, 0.3)',
                       fontWeight: 600,
                     }}>
-                      {person.is_living ? '🟢 Hayatta' : '⚪ Vefat Etmiş'}
+                      {person.is_living ? t('node.living') : t('node.deceased')}
                     </span>
                     {calculateAge(person) !== null && (
                       <span style={{
-                        fontSize: 11, padding: '3px 10px', borderRadius: 20,
-                        background: 'rgba(255, 255, 255, 0.08)', color: '#94a3b8',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        fontSize: 10.5, padding: '2px 8px', borderRadius: 4,
+                        background: 'rgba(255, 255, 255, 0.06)', color: '#94a3b8',
+                        border: '1px solid #334155',
                       }}>
                         {calculateAge(person)} Yaşında {person.is_living ? '' : ' (vefat)'}
                       </span>
@@ -151,83 +169,105 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                 type="button"
                 onClick={onClose}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.06)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: 8,
-                  width: 32,
-                  height: 32,
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid #334155',
+                  borderRadius: 6,
+                  width: 30,
+                  height: 30,
                   color: '#94a3b8',
-                  fontSize: 16,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                ✕
+                <CloseIcon size={14} />
               </button>
             </div>
 
-            <hr style={{ border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.1)', margin: '16px 0' }} />
+            <hr style={{ border: 'none', borderTop: '1px solid #1e293b', margin: '14px 0' }} />
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, fontSize: 13, marginBottom: 18 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, fontSize: 13, marginBottom: 16 }}>
               <div style={{
-                padding: '12px 14px', background: 'rgba(255, 255, 255, 0.03)',
-                borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.08)',
+                padding: '10px 12px', background: '#1e293b',
+                borderRadius: 6, border: '1px solid #334155',
               }}>
-                <span style={{ color: '#94a3b8', display: 'block', fontSize: 11, marginBottom: 2 }}>Doğum</span>
-                <strong style={{ fontSize: 14 }}>{person.birth_date ? new Date(person.birth_date).toLocaleDateString('tr-TR') : 'Bilinmiyor'}</strong>
-                {person.birth_place && <span style={{ display: 'block', color: '#94a3b8', fontSize: 12, marginTop: 2 }}>📍 {person.birth_place}</span>}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#94a3b8', fontSize: 11, marginBottom: 2 }}>
+                  <CalendarIcon size={12} />
+                  <span>{t('detailModal.born')}</span>
+                </div>
+                <strong style={{ fontSize: 13.5, color: '#f8fafc' }}>
+                  {person.birth_date ? new Date(person.birth_date).toLocaleDateString('tr-TR') : 'Bilinmiyor'}
+                </strong>
+                {person.birth_place && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#94a3b8', fontSize: 11.5, marginTop: 4 }}>
+                    <MapPinIcon size={11} />
+                    <span>{person.birth_place}</span>
+                  </div>
+                )}
               </div>
 
               {!person.is_living ? (
                 <div style={{
-                  padding: '12px 14px', background: 'rgba(255, 255, 255, 0.03)',
-                  borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.08)',
+                  padding: '10px 12px', background: '#1e293b',
+                  borderRadius: 6, border: '1px solid #334155',
                 }}>
-                  <span style={{ color: '#94a3b8', display: 'block', fontSize: 11, marginBottom: 2 }}>Vefat</span>
-                  <strong style={{ fontSize: 14 }}>{person.death_date ? new Date(person.death_date).toLocaleDateString('tr-TR') : 'Bilinmiyor'}</strong>
-                  {person.death_place && <span style={{ display: 'block', color: '#94a3b8', fontSize: 12, marginTop: 2 }}>📍 {person.death_place}</span>}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#94a3b8', fontSize: 11, marginBottom: 2 }}>
+                    <CalendarIcon size={12} />
+                    <span>{t('detailModal.died')}</span>
+                  </div>
+                  <strong style={{ fontSize: 13.5, color: '#f8fafc' }}>
+                    {person.death_date ? new Date(person.death_date).toLocaleDateString() : '—'}
+                  </strong>
+                  {person.death_place && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#94a3b8', fontSize: 11.5, marginTop: 4 }}>
+                      <MapPinIcon size={11} />
+                      <span>{person.death_place}</span>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div style={{
-                  padding: '12px 14px', background: 'rgba(255, 255, 255, 0.03)',
-                  borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.08)',
+                  padding: '10px 12px', background: '#1e293b',
+                  borderRadius: 6, border: '1px solid #334155',
                 }}>
-                  <span style={{ color: '#94a3b8', display: 'block', fontSize: 11, marginBottom: 2 }}>Cinsiyet</span>
-                  <strong style={{ fontSize: 14 }}>
-                    {person.gender === 'female' ? 'Kadın' : person.gender === 'male' ? 'Erkek' : 'Diğer'}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#94a3b8', fontSize: 11, marginBottom: 2 }}>
+                    <UserIcon size={12} />
+                    <span>{t('personModal.gender')}</span>
+                  </div>
+                  <strong style={{ fontSize: 13.5, color: '#f8fafc' }}>
+                    {person.gender === 'female' ? t('personModal.genderFemale') : person.gender === 'male' ? t('personModal.genderMale') : t('personModal.genderOther')}
                   </strong>
                 </div>
               )}
             </div>
 
             {person.biography && (
-              <div style={{ marginBottom: 20 }}>
-                <span style={{ color: '#94a3b8', display: 'block', fontSize: 11, marginBottom: 6 }}>Biyografi & Anılar</span>
+              <div style={{ marginBottom: 16 }}>
+                <span style={{ color: '#94a3b8', display: 'block', fontSize: 11, marginBottom: 5 }}>{t('detailModal.biography')}</span>
                 <p style={{
-                  fontSize: 13, lineHeight: 1.6, background: 'rgba(255, 255, 255, 0.03)',
-                  padding: 14, borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.08)',
-                  margin: 0,
+                  fontSize: 12.5, lineHeight: 1.5, background: '#1e293b',
+                  padding: 12, borderRadius: 6, border: '1px solid #334155',
+                  margin: 0, color: '#e2e8f0',
                 }}>
                   {person.biography}
                 </p>
               </div>
             )}
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 24 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 20 }}>
               {!isReadOnly ? (
                 <button
                   type="button"
                   onClick={handleDelete}
                   disabled={deleting}
                   style={{
-                    padding: '9px 18px', borderRadius: 10, border: '1px solid rgba(239, 68, 68, 0.4)',
+                    padding: '8px 14px', borderRadius: 6, border: '1px solid rgba(239, 68, 68, 0.4)',
                     background: 'rgba(239, 68, 68, 0.1)', color: '#f87171', cursor: 'pointer',
-                    fontSize: 13, fontWeight: 600, transition: 'all 0.15s',
+                    fontSize: 12, fontWeight: 600, transition: 'all 0.15s',
                   }}
                 >
-                  {deleting ? 'Siliniyor…' : '🗑️ Ağaçtan Sil'}
+                  {deleting ? '…' : 'Ağaçtan Sil'}
                 </button>
               ) : <div />}
 
@@ -235,12 +275,12 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                 type="button"
                 onClick={onClose}
                 style={{
-                  padding: '9px 24px', borderRadius: 10, border: '1px solid rgba(255, 255, 255, 0.12)',
-                  background: 'rgba(255, 255, 255, 0.08)', color: '#f1f5f9', cursor: 'pointer',
-                  fontSize: 13, fontWeight: 500,
+                  padding: '8px 20px', borderRadius: 6, border: '1px solid #334155',
+                  background: '#1e293b', color: '#f1f5f9', cursor: 'pointer',
+                  fontSize: 12, fontWeight: 500,
                 }}
               >
-                Kapat
+                {t('detailModal.close')}
               </button>
             </div>
           </div>

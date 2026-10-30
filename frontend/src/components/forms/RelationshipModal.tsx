@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Person } from '@/types/person';
 import { personService } from '@/services/personService';
 import { relationshipService, type CreateRelationshipPayload } from '@/services/relationshipService';
+import { RingIcon, CloseIcon, ShieldIcon, UserIcon, HeartIcon, BabyIcon } from '@/components/common/Icons';
 
 interface RelationshipModalProps {
   isOpen: boolean;
@@ -20,36 +22,62 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
   defaultType = 'spouse',
   treeId = 'my-tree',
 }) => {
+  const { t } = useTranslation();
   const [persons, setPersons] = useState<Person[]>([]);
   const [selectedTargetId, setSelectedTargetId] = useState('');
+  const [baseCategory, setBaseCategory] = useState<'spouse' | 'parent' | 'child'>(defaultType);
   const [relType, setRelType] = useState<CreateRelationshipPayload['relationship_type']>(defaultType);
+  const [customLabel, setCustomLabel] = useState('');
   const [marriageDate, setMarriageDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Load persons in the tree
   useEffect(() => {
     if (isOpen) {
       personService.getAll().then((data) => {
-        // Only show persons in the current tree
-        const filtered = data.filter((p) => p.id !== sourcePersonId && ((p as unknown as { tree_id?: string }).tree_id === treeId || !(p as unknown as { tree_id?: string }).tree_id));
+        const filtered = data.filter((p) => p.id !== sourcePersonId &&
+          ((p as unknown as { tree_id?: string }).tree_id === treeId || !(p as unknown as { tree_id?: string }).tree_id));
         setPersons(filtered);
-        if (filtered.length > 0) {
-          setSelectedTargetId(filtered[0].id);
-        }
+        if (filtered.length > 0) setSelectedTargetId(filtered[0].id);
       }).catch(console.error);
 
       if (defaultType) {
+        setBaseCategory(defaultType);
         setRelType(defaultType);
+        if (defaultType === 'spouse') setCustomLabel(t('relationModal.spouseGeneral'));
+        else if (defaultType === 'parent') setCustomLabel(t('relationModal.parentGeneral'));
+        else if (defaultType === 'child') setCustomLabel(t('relationModal.childGeneral'));
       }
     }
-  }, [isOpen, sourcePersonId, defaultType, treeId]);
+  }, [isOpen, sourcePersonId, defaultType, treeId, t]);
+
+  // When base category changes, set default underlying type and suggested label
+  const handleCategoryChange = (cat: 'spouse' | 'parent' | 'child') => {
+    setBaseCategory(cat);
+    if (cat === 'spouse') {
+      setRelType('spouse');
+      setCustomLabel(t('relationModal.spouseGeneral'));
+    } else if (cat === 'parent') {
+      setRelType('parent');
+      setCustomLabel(t('relationModal.parentGeneral'));
+    } else if (cat === 'child') {
+      setRelType('child');
+      setCustomLabel(t('relationModal.childGeneral'));
+    }
+  };
+
+  const handlePresetSelect = (type: CreateRelationshipPayload['relationship_type'], labelText: string) => {
+    setRelType(type);
+    setCustomLabel(labelText);
+  };
 
   if (!isOpen || !sourcePersonId) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedTargetId) {
-      setError('Lütfen bir aile üyesi seçin');
+      setError(t('relationModal.errorSelect'));
       return;
     }
 
@@ -60,25 +88,18 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
         person_id: sourcePersonId,
         related_person_id: selectedTargetId,
         relationship_type: relType,
-        marriage_date: marriageDate ? new Date(marriageDate).toISOString() : undefined,
+        marriage_date: (relType === 'spouse' || relType === 'former_spouse') && marriageDate
+          ? new Date(marriageDate).toISOString()
+          : undefined,
+        notes: customLabel.trim() || undefined,
       });
 
       onSuccess();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'İlişki eklenirken hata oluştu');
+      setError(err instanceof Error ? err.message : t('relationModal.errorGeneral'));
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getTypeName = (t: string) => {
-    switch (t) {
-      case 'parent': return 'Ebeveyni Yap (Anne / Baba)';
-      case 'child': return 'Çocuğu Yap (Evlat)';
-      case 'spouse': return 'Eş / Partner (Evlilik Bağı)';
-      case 'former_spouse': return 'Eski Eş (Boşanmış)';
-      default: return t;
     }
   };
 
@@ -86,152 +107,247 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9999,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      backgroundColor: 'rgba(4, 7, 13, 0.82)', backdropFilter: 'blur(16px)',
+      backgroundColor: 'rgba(2, 6, 23, 0.85)', backdropFilter: 'blur(12px)',
     }}>
       <div style={{
-        background: 'linear-gradient(145deg, #121724 0%, #0c101a 100%)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        borderRadius: 20,
-        padding: '28px 32px',
+        background: '#0f172a',
+        border: '1px solid #334155',
+        borderRadius: 14,
+        padding: '24px 28px',
         width: '100%',
-        maxWidth: 480,
-        boxShadow: '0 25px 60px rgba(0, 0, 0, 0.75), 0 0 30px rgba(234, 179, 8, 0.1)',
+        maxWidth: 500,
+        boxShadow: '0 25px 60px rgba(0, 0, 0, 0.85)',
         color: '#f1f5f9',
       }}>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div>
-            <h2 style={{ fontSize: 19, fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span>🔗</span> Aile Bağı Oluştur
+            <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ color: '#eab308', display: 'flex' }}><RingIcon size={20} /></span>
+              {t('relationModal.title')}
             </h2>
             <p style={{ margin: '4px 0 0', fontSize: 12, color: '#94a3b8' }}>
-              İki aile üyesi arasında ebeveyn, eş veya çocuk bağı kurun
+              {t('relationModal.subtitle')}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            style={{
-              background: 'rgba(255, 255, 255, 0.06)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: 8,
-              width: 32,
-              height: 32,
-              color: '#94a3b8',
-              fontSize: 16,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            ✕
+          <button type="button" onClick={onClose} style={closeButtonStyle}>
+            <CloseIcon size={16} />
           </button>
         </div>
 
         {error && (
-          <div style={{
-            background: 'rgba(239, 68, 68, 0.15)',
-            border: '1px solid rgba(239, 68, 68, 0.35)',
-            color: '#f87171',
-            padding: '10px 14px',
-            borderRadius: 10,
-            marginBottom: 16,
-            fontSize: 13,
-          }}>
-            {error}
+          <div style={errorBoxStyle}>
+            <ShieldIcon size={16} /> {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Category Tabs */}
           <div>
-            <label style={labelStyle}>Bağ Türü</label>
-            <select
-              value={relType}
-              onChange={(e) => setRelType(e.target.value as CreateRelationshipPayload['relationship_type'])}
-              style={darkInputStyle}
-            >
-              <option value="spouse">{getTypeName('spouse')}</option>
-              <option value="parent">{getTypeName('parent')}</option>
-              <option value="child">{getTypeName('child')}</option>
-              <option value="former_spouse">{getTypeName('former_spouse')}</option>
-            </select>
+            <label style={labelStyle}>{t('relationModal.bondCategory')}</label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
+              <button
+                type="button"
+                onClick={() => handleCategoryChange('spouse')}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  padding: '8px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                  border: baseCategory === 'spouse' ? '1px solid #eab308' : '1px solid #334155',
+                  background: baseCategory === 'spouse' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                  color: baseCategory === 'spouse' ? '#facc15' : '#94a3b8',
+                  transition: 'all 0.15s',
+                }}
+              >
+                <HeartIcon size={13} />
+                <span>Nika / Ýanýoldaş</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleCategoryChange('parent')}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  padding: '8px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                  border: baseCategory === 'parent' ? '1px solid #38bdf8' : '1px solid #334155',
+                  background: baseCategory === 'parent' ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                  color: baseCategory === 'parent' ? '#38bdf8' : '#94a3b8',
+                  transition: 'all 0.15s',
+                }}
+              >
+                <UserIcon size={13} />
+                <span>Ene-Ata</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleCategoryChange('child')}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  padding: '8px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                  border: baseCategory === 'child' ? '1px solid #4ade80' : '1px solid #334155',
+                  background: baseCategory === 'child' ? 'rgba(74, 222, 128, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                  color: baseCategory === 'child' ? '#4ade80' : '#94a3b8',
+                  transition: 'all 0.15s',
+                }}
+              >
+                <BabyIcon size={13} />
+                <span>Çaga</span>
+              </button>
+            </div>
           </div>
 
+          {/* Quick Presets based on Category */}
           <div>
-            <label style={labelStyle}>Bağlanacak Aile Üyesi</label>
+            <label style={labelStyle}>{t('relationModal.bondType')}</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {baseCategory === 'spouse' && (
+                <>
+                  <button type="button" onClick={() => handlePresetSelect('spouse', t('relationModal.spouseGeneral'))} style={presetChipStyle(customLabel === t('relationModal.spouseGeneral'))}>
+                    {t('relationModal.spouseGeneral')}
+                  </button>
+                  <button type="button" onClick={() => handlePresetSelect('spouse', t('relationModal.spouseHusband'))} style={presetChipStyle(customLabel === t('relationModal.spouseHusband'))}>
+                    {t('relationModal.spouseHusband')}
+                  </button>
+                  <button type="button" onClick={() => handlePresetSelect('spouse', t('relationModal.spouseWife'))} style={presetChipStyle(customLabel === t('relationModal.spouseWife'))}>
+                    {t('relationModal.spouseWife')}
+                  </button>
+                  <button type="button" onClick={() => handlePresetSelect('former_spouse', t('relationModal.formerSpouse'))} style={presetChipStyle(customLabel === t('relationModal.formerSpouse'))}>
+                    {t('relationModal.formerSpouse')}
+                  </button>
+                  <button type="button" onClick={() => handlePresetSelect('spouse', t('relationModal.fiance'))} style={presetChipStyle(customLabel === t('relationModal.fiance'))}>
+                    {t('relationModal.fiance')}
+                  </button>
+                  <button type="button" onClick={() => handlePresetSelect('spouse', t('relationModal.inLawFather'))} style={presetChipStyle(customLabel === t('relationModal.inLawFather'))}>
+                    {t('relationModal.inLawFather')}
+                  </button>
+                  <button type="button" onClick={() => handlePresetSelect('spouse', t('relationModal.inLawMother'))} style={presetChipStyle(customLabel === t('relationModal.inLawMother'))}>
+                    {t('relationModal.inLawMother')}
+                  </button>
+                  <button type="button" onClick={() => handlePresetSelect('spouse', t('relationModal.inLawSon'))} style={presetChipStyle(customLabel === t('relationModal.inLawSon'))}>
+                    {t('relationModal.inLawSon')}
+                  </button>
+                  <button type="button" onClick={() => handlePresetSelect('spouse', t('relationModal.inLawDaughter'))} style={presetChipStyle(customLabel === t('relationModal.inLawDaughter'))}>
+                    {t('relationModal.inLawDaughter')}
+                  </button>
+                </>
+              )}
+
+              {baseCategory === 'parent' && (
+                <>
+                  <button type="button" onClick={() => handlePresetSelect('parent', t('relationModal.parentFather'))} style={presetChipStyle(customLabel === t('relationModal.parentFather'))}>
+                    {t('relationModal.parentFather')}
+                  </button>
+                  <button type="button" onClick={() => handlePresetSelect('parent', t('relationModal.parentMother'))} style={presetChipStyle(customLabel === t('relationModal.parentMother'))}>
+                    {t('relationModal.parentMother')}
+                  </button>
+                  <button type="button" onClick={() => handlePresetSelect('adoptive_parent', t('relationModal.adoptiveParent'))} style={presetChipStyle(customLabel === t('relationModal.adoptiveParent'))}>
+                    {t('relationModal.adoptiveParent')}
+                  </button>
+                </>
+              )}
+
+              {baseCategory === 'child' && (
+                <>
+                  <button type="button" onClick={() => handlePresetSelect('child', t('relationModal.childSon'))} style={presetChipStyle(customLabel === t('relationModal.childSon'))}>
+                    {t('relationModal.childSon')}
+                  </button>
+                  <button type="button" onClick={() => handlePresetSelect('child', t('relationModal.childDaughter'))} style={presetChipStyle(customLabel === t('relationModal.childDaughter'))}>
+                    {t('relationModal.childDaughter')}
+                  </button>
+                  <button type="button" onClick={() => handlePresetSelect('adoptive_child', t('relationModal.adoptiveChild'))} style={presetChipStyle(customLabel === t('relationModal.adoptiveChild'))}>
+                    {t('relationModal.adoptiveChild')}
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Editable Custom Kinship Label Input */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <label style={labelStyle}>{t('relationModal.customTitleLabel')} *</label>
+              <span style={{ fontSize: 11, color: '#38bdf8' }}>Üstüne ýazyp üýtgedip bilersiňiz</span>
+            </div>
+            <input
+              type="text"
+              required
+              value={customLabel}
+              onChange={(e) => setCustomLabel(e.target.value)}
+              placeholder={t('relationModal.customTitlePlaceholder')}
+              style={{
+                ...inputStyle,
+                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(56, 189, 248, 0.05)',
+                fontWeight: 600,
+              }}
+            />
+          </div>
+
+          {/* Target Person Selector */}
+          <div>
+            <label style={labelStyle}>{t('relationModal.targetPerson')}</label>
             {persons.length === 0 ? (
               <div style={{
                 padding: '12px',
                 background: 'rgba(255, 255, 255, 0.03)',
-                borderRadius: 10,
-                border: '1px dashed rgba(255, 255, 255, 0.15)',
+                borderRadius: 8,
+                border: '1px dashed #334155',
                 fontSize: 13,
                 color: '#94a3b8',
               }}>
-                Ağaçta bağlanacak başka bir üye bulunamadı. Önce yeni bir kişi ekleyin.
+                {t('relationModal.noPersons')}
               </div>
             ) : (
               <select
                 value={selectedTargetId}
                 onChange={(e) => setSelectedTargetId(e.target.value)}
-                style={darkInputStyle}
+                style={inputStyle}
               >
                 {persons.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.first_name} {p.last_name} {p.gender === 'female' ? '(Kadın)' : '(Erkek)'} {p.birth_date ? `• d. ${p.birth_date.slice(0, 4)}` : ''}
+                    {p.first_name} {p.last_name} ({p.gender === 'female' ? t('relationModal.female') : t('relationModal.male')})
+                    {p.birth_date ? ` • ${t('node.born')} ${p.birth_date.slice(0, 4)}` : ''}
                   </option>
                 ))}
               </select>
             )}
           </div>
 
-          {(relType === 'spouse' || relType === 'former_spouse') && (
+          {/* Marriage Date (Only if spouse/marriage) */}
+          {baseCategory === 'spouse' && (
             <div>
-              <label style={labelStyle}>Evlilik Tarihi (Opsiyonel)</label>
+              <label style={labelStyle}>{t('relationModal.marriageDate')}</label>
               <input
                 type="date"
                 value={marriageDate}
                 onChange={(e) => setMarriageDate(e.target.value)}
-                style={darkInputStyle}
+                style={inputStyle}
               />
             </div>
           )}
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 14 }}>
-            <button
-              type="button"
-              onClick={onClose}
-              style={{
-                padding: '9px 18px',
-                borderRadius: 10,
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                background: 'transparent',
-                color: '#94a3b8',
-                cursor: 'pointer',
-                fontSize: 13,
-                fontWeight: 500,
-              }}
-            >
-              İptal
+          {/* Buttons */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 12 }}>
+            <button type="button" onClick={onClose} style={cancelButtonStyle}>
+              {t('relationModal.cancel')}
             </button>
             <button
               type="submit"
               disabled={loading || persons.length === 0}
               style={{
                 padding: '9px 24px',
-                borderRadius: 10,
+                borderRadius: 8,
                 border: 'none',
-                background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)',
+                background: '#eab308',
                 color: '#0b0f19',
                 fontWeight: 700,
                 cursor: 'pointer',
                 fontSize: 13,
-                boxShadow: '0 4px 14px rgba(234, 179, 8, 0.35)',
+                boxShadow: '0 4px 14px rgba(234, 179, 8, 0.3)',
                 opacity: persons.length === 0 ? 0.5 : 1,
               }}
             >
-              {loading ? 'Kaydediliyor…' : 'Bağı Tamamla'}
+              {loading ? t('relationModal.submitting') : t('relationModal.submit')}
             </button>
           </div>
         </form>
@@ -248,14 +364,63 @@ const labelStyle: React.CSSProperties = {
   marginBottom: 6,
 };
 
-const darkInputStyle: React.CSSProperties = {
+const inputStyle: React.CSSProperties = {
   width: '100%',
-  padding: '10px 14px',
-  borderRadius: 10,
-  border: '1px solid rgba(255, 255, 255, 0.12)',
-  backgroundColor: 'rgba(255, 255, 255, 0.04)',
+  padding: '9px 12px',
+  borderRadius: 8,
+  border: '1px solid #334155',
+  backgroundColor: '#1e293b',
   color: '#f1f5f9',
   fontSize: 13,
   outline: 'none',
   colorScheme: 'dark',
 };
+
+const closeButtonStyle: React.CSSProperties = {
+  background: 'rgba(255, 255, 255, 0.06)',
+  border: '1px solid #334155',
+  borderRadius: 6,
+  width: 30,
+  height: 30,
+  color: '#94a3b8',
+  cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
+const errorBoxStyle: React.CSSProperties = {
+  background: 'rgba(239, 68, 68, 0.15)',
+  border: '1px solid rgba(239, 68, 68, 0.35)',
+  color: '#f87171',
+  padding: '10px 14px',
+  borderRadius: 8,
+  marginBottom: 16,
+  fontSize: 13,
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+};
+
+const cancelButtonStyle: React.CSSProperties = {
+  padding: '9px 18px',
+  borderRadius: 8,
+  border: '1px solid #334155',
+  background: 'transparent',
+  color: '#94a3b8',
+  cursor: 'pointer',
+  fontSize: 13,
+  fontWeight: 500,
+};
+
+const presetChipStyle = (isSelected: boolean): React.CSSProperties => ({
+  padding: '5px 10px',
+  borderRadius: 6,
+  border: isSelected ? '1px solid #eab308' : '1px solid #334155',
+  background: isSelected ? 'rgba(234, 179, 8, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+  color: isSelected ? '#facc15' : '#cbd5e1',
+  fontSize: 11.5,
+  fontWeight: isSelected ? 600 : 400,
+  cursor: 'pointer',
+  transition: 'all 0.15s',
+});

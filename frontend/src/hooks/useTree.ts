@@ -10,6 +10,7 @@ interface UseTreeReturn {
   isLoading: boolean;
   error: string | null;
   reload: () => void;
+  resetLayout: () => void;
 }
 
 export function useTree(treeId = 'my-tree', reloadTrigger = 0): UseTreeReturn {
@@ -18,7 +19,19 @@ export function useTree(treeId = 'my-tree', reloadTrigger = 0): UseTreeReturn {
   const [isLoading, setLoading] = useState(true);
   const [error, setError]       = useState<string | null>(null);
 
-  const load = useCallback(async () => {
+  const getSavedPositions = useCallback((): Record<string, { x: number; y: number }> => {
+    try {
+      const raw = localStorage.getItem(`familytree_positions_${treeId}`);
+      if (raw) {
+        return JSON.parse(raw);
+      }
+    } catch {
+      // Ignore parse error
+    }
+    return {};
+  }, [treeId]);
+
+  const load = useCallback(async (ignoreSavedPositions = false) => {
     try {
       setLoading(true);
       setError(null);
@@ -30,7 +43,8 @@ export function useTree(treeId = 'my-tree', reloadTrigger = 0): UseTreeReturn {
         return;
       }
 
-      const { nodes: layoutedNodes, edges: layoutedEdges } = await applyELKLayout(graph);
+      const savedPositions = ignoreSavedPositions ? {} : getSavedPositions();
+      const { nodes: layoutedNodes, edges: layoutedEdges } = await applyELKLayout(graph, savedPositions);
       setNodes(layoutedNodes);
       setEdges(layoutedEdges);
     } catch (err) {
@@ -38,11 +52,20 @@ export function useTree(treeId = 'my-tree', reloadTrigger = 0): UseTreeReturn {
     } finally {
       setLoading(false);
     }
-  }, [treeId]);
+  }, [treeId, getSavedPositions]);
+
+  const resetLayout = useCallback(() => {
+    try {
+      localStorage.removeItem(`familytree_positions_${treeId}`);
+    } catch {
+      // ignore
+    }
+    load(true);
+  }, [treeId, load]);
 
   useEffect(() => {
     load();
   }, [load, reloadTrigger]);
 
-  return { nodes, edges, isLoading, error, reload: load };
+  return { nodes, edges, isLoading, error, reload: () => load(false), resetLayout };
 }

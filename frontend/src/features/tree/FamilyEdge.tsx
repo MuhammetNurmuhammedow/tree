@@ -50,12 +50,16 @@ export const SpouseEdge: React.FC<EdgeProps> = ({
             style={{
               position: 'absolute',
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
-              fontSize: 10,
-              color: 'var(--accent-gold)',
-              background: 'var(--bg-secondary)',
-              padding: '1px 5px',
-              borderRadius: 4,
+              fontSize: 10.5,
+              fontWeight: 600,
+              color: '#facc15',
+              background: '#0f172a',
+              border: '1px solid rgba(234, 179, 8, 0.4)',
+              padding: '2px 7px',
+              borderRadius: 6,
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.6)',
               pointerEvents: 'none',
+              whiteSpace: 'nowrap',
             }}
           >
             {label}
