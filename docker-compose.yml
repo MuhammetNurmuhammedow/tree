@@ -13,11 +13,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-familytree}"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
       retries: 5
 
   backend:
+    image: familytree_api:latest
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -45,9 +46,7 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - ./frontend/dist:/app/dist
 
 volumes:
   postgres_data:
-
