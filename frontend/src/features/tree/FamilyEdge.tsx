@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { BaseEdge, EdgeLabelRenderer, getSmoothStepPath } from '@xyflow/react';
 import type { EdgeProps } from '@xyflow/react';
 
@@ -27,11 +28,48 @@ export const SpouseEdge: React.FC<EdgeProps> = ({
   id, sourceX, sourceY, targetX, targetY,
   sourcePosition, targetPosition, label,
 }) => {
+  const { t } = useTranslation();
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX, sourceY, sourcePosition,
     targetX, targetY, targetPosition,
     borderRadius: 0,
   });
+
+  // Dynamically translate standard marriage/spouse labels according to active language
+  const getDisplayLabel = (rawLabel: unknown): string => {
+    if (!rawLabel || typeof rawLabel !== 'string') return '';
+    const norm = rawLabel.trim().toLowerCase();
+    if (
+      norm === 'evli' ||
+      norm === 'married' ||
+      norm === 'в браке' ||
+      norm === 'nika' ||
+      norm === 'spouse' ||
+      norm === 'nika (ýanýoldaş)' ||
+      norm === 'married (spouse)' ||
+      norm === 'в браке (супруги)'
+    ) {
+      return t('edges.married');
+    }
+    if (
+      norm === 'eski eş' ||
+      norm === 'former spouse' ||
+      norm === 'divorced' ||
+      norm === 'в разводе' ||
+      norm === 'развод' ||
+      norm === 'aýrylyşan' ||
+      norm === 'öňki nika' ||
+      norm === 'former_spouse' ||
+      norm === 'öňki nika (aýrylyşan)' ||
+      norm === 'divorced (ex-spouse)' ||
+      norm === 'в разводе (бывший брак)'
+    ) {
+      return t('edges.formerSpouse');
+    }
+    return rawLabel;
+  };
+
+  const displayLabel = getDisplayLabel(label);
 
   return (
     <>
@@ -44,7 +82,7 @@ export const SpouseEdge: React.FC<EdgeProps> = ({
           strokeDasharray: '6 3',
         }}
       />
-      {label && (
+      {displayLabel && (
         <EdgeLabelRenderer>
           <div
             style={{
@@ -62,7 +100,7 @@ export const SpouseEdge: React.FC<EdgeProps> = ({
               whiteSpace: 'nowrap',
             }}
           >
-            {label}
+            {displayLabel}
           </div>
         </EdgeLabelRenderer>
       )}

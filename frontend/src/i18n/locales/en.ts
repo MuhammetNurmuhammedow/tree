@@ -70,6 +70,11 @@ const en = {
       addChild: 'Add Child',
       viewProfile: 'View Profile',
     },
+    // Edge labels (connections)
+    edges: {
+      married: 'Married (Spouse)',
+      formerSpouse: 'Divorced (Ex-Spouse)',
+    },
     // Person Modal (add person)
     personModal: {
       title: 'Add New Family Member',

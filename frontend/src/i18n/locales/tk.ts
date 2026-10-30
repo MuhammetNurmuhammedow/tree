@@ -70,6 +70,11 @@ const tk = {
       addChild: 'Çaga Goş',
       viewProfile: 'Profili Gör',
     },
+    // Edge labels (connections)
+    edges: {
+      married: 'Nika (Ýanýoldaş)',
+      formerSpouse: 'Öňki Nika (Aýrylyşan)',
+    },
     // Person Modal (add person)
     personModal: {
       title: 'Täze Maşgala Agzasyny Goş',

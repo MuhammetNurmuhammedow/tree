@@ -70,6 +70,11 @@ const ru = {
       addChild: 'Добавить Ребёнка',
       viewProfile: 'Просмотр Профиля',
     },
+    // Edge labels (connections)
+    edges: {
+      married: 'В браке (Супруги)',
+      formerSpouse: 'В разводе (Бывший брак)',
+    },
     // Person Modal (add person)
     personModal: {
       title: 'Добавить Нового Члена Семьи',
