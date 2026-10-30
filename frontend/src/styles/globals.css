@@ -1,0 +1,96 @@
+/* ── Global CSS Variables & Base Styles ─────────────────────────────────────── */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+
+  /* Premium Dark Theme */
+  --bg-primary:     #080a0f;
+  --bg-secondary:   #10141e;
+  --bg-card:        rgba(16, 20, 30, 0.75);
+  --bg-card-hover:  rgba(26, 32, 48, 0.90);
+  --border-color:   rgba(255, 255, 255, 0.12);
+  --border-focus:   rgba(79, 142, 247, 0.6);
+  --text-primary:   #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted:     #64748b;
+
+  /* Accent Colors */
+  --accent-blue:    #3b82f6;
+  --accent-blue-glow: rgba(59, 130, 246, 0.35);
+  --accent-gold:    #eab308;
+  --accent-rose:    #f43f5e;
+  --accent-emerald: #10b981;
+
+  /* Node colors by gender */
+  --node-male:    #3b82f6;
+  --node-female:  #ec4899;
+  --node-other:   #8b5cf6;
+  --node-unknown: #64748b;
+  --node-dead:    #475569;
+
+  /* Glassmorphism */
+  --glass-bg:      rgba(15, 20, 32, 0.70);
+  --glass-border:  rgba(255, 255, 255, 0.14);
+  --glass-blur:    16px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color-scheme: dark;
+}
+
+/* ── Form Controls Default Dark Styling (Fixing white background issues) ──── */
+input, select, textarea {
+  color-scheme: dark;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color);
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent-blue) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Fix browser native select dropdown option styling */
+select option {
+  background-color: #121622 !important;
+  color: #f1f5f9 !important;
+  padding: 8px 12px;
+}
+
+select option:hover, select option:checked {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+/* Date picker calendar styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.85);
+  cursor: pointer;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }

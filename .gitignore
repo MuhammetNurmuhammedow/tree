@@ -1,0 +1,14 @@
+# Environment & Logs
+.env
+*.env.local
+*.log
+pg.log
+
+# Backend
+backend/bin/
+backend/uploads/
+backend/*.env
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
