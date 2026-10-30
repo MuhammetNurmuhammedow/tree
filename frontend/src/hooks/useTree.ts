@@ -24,7 +24,7 @@ export function useTree(treeId = 'my-tree', reloadTrigger = 0): UseTreeReturn {
       setError(null);
       const graph = await treeService.getFullTree(treeId);
 
-      if (!graph.nodes || graph.nodes.length === 0) {
+      if (!graph || !Array.isArray(graph.nodes) || graph.nodes.length === 0) {
         setNodes([]);
         setEdges([]);
         return;

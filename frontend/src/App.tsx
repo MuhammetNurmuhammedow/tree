@@ -38,7 +38,9 @@ const App: React.FC = () => {
   const loadTrees = useCallback(async () => {
     try {
       const data = await treeService.getAllTrees();
-      setTrees(data);
+      if (Array.isArray(data)) {
+        setTrees(data);
+      }
     } catch (err) {
       console.error('Ağaç listesi alınamadı:', err);
     }
@@ -49,7 +51,7 @@ const App: React.FC = () => {
   }, [loadTrees, reloadTrigger]);
 
   // Current tree info
-  const currentTree = trees.find((t) => t.id === currentTreeId) || {
+  const currentTree = (Array.isArray(trees) ? trees.find((t) => t.id === currentTreeId) : undefined) || {
     id: currentTreeId,
     name: 'Kaya Ailesi Soy Ağacı',
     is_owner: true,
@@ -72,8 +74,10 @@ const App: React.FC = () => {
       try {
         setIsSearching(true);
         const results = await treeService.searchAll(searchQuery);
-        setSearchResults(results);
-        setShowSearchDropdown(true);
+        if (Array.isArray(results)) {
+          setSearchResults(results);
+          setShowSearchDropdown(true);
+        }
       } catch (err) {
         console.error('Arama hatası:', err);
       } finally {
