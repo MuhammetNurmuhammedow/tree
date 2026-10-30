@@ -110,10 +110,11 @@ func main() {
 		return c.Status(fiber.StatusCreated).JSON(newTree)
 	})
 
-	// Global Search across all trees
+	// Search across all trees or filtered by treeId
 	api.Get("/search", func(c *fiber.Ctx) error {
 		q := c.Query("q")
-		results := treeMetaSvc.SearchAll(q)
+		treeID := c.Query("treeId")
+		results := treeMetaSvc.Search(q, treeID)
 		return c.JSON(results)
 	})
 

@@ -19,6 +19,8 @@ import {
   EditIcon,
   ArrowLeftIcon,
   EyeIcon,
+  CloseIcon,
+  UserIcon,
 } from '@/components/common/Icons';
 
 const App: React.FC = () => {
@@ -28,11 +30,13 @@ const App: React.FC = () => {
   const [currentTreeId, setCurrentTreeId] = useState<string>('my-tree');
   const [isCreateTreeOpen, setIsCreateTreeOpen] = useState(false);
 
-  // Search state
+  // Search state & scope
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchScope, setSearchScope] = useState<'current' | 'all'>('current');
   const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const [highlightPersonId, setHighlightPersonId] = useState<string | null>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
   // Modal states
@@ -75,7 +79,7 @@ const App: React.FC = () => {
 
   const isReadOnly = !currentTree.is_owner;
 
-  // Search debouncing
+  // Search debouncing with tree scope
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
@@ -86,7 +90,8 @@ const App: React.FC = () => {
     const timer = setTimeout(async () => {
       try {
         setIsSearching(true);
-        const results = await treeService.searchAll(searchQuery);
+        const filterTreeId = searchScope === 'current' ? currentTreeId : undefined;
+        const results = await treeService.searchAll(searchQuery, filterTreeId);
         if (Array.isArray(results)) {
           setSearchResults(results);
           setShowSearchDropdown(true);
@@ -96,10 +101,10 @@ const App: React.FC = () => {
       } finally {
         setIsSearching(false);
       }
-    }, 220);
+    }, 200);
 
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, searchScope, currentTreeId]);
 
   // Click outside search container to close dropdown
   useEffect(() => {
@@ -112,13 +117,19 @@ const App: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSelectSearchResult = (item: SearchResultItem) => {
+  const handleSelectSearchResult = (item: SearchResultItem, openProfileModal = false) => {
     setShowSearchDropdown(false);
-    setSearchQuery('');
     if (item.tree_id !== currentTreeId) {
       setCurrentTreeId(item.tree_id);
     }
-    setProfilePersonId(item.person_id);
+    setHighlightPersonId(item.person_id);
+    if (openProfileModal) {
+      setProfilePersonId(item.person_id);
+    }
+    // Auto-clear highlight after 6 seconds
+    setTimeout(() => {
+      setHighlightPersonId((prev) => (prev === item.person_id ? null : prev));
+    }, 6000);
   };
 
   const handleTreeUpdated = () => {
@@ -246,31 +257,99 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Global Search Bar */}
-        <div ref={searchContainerRef} style={{ position: 'relative', flex: 1, maxWidth: 360 }}>
+        {/* Enhanced Search Bar with Scope Switch */}
+        <div ref={searchContainerRef} style={{ position: 'relative', flex: 1, maxWidth: 440 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+            <div style={{
+              display: 'inline-flex',
+              padding: 2,
+              borderRadius: 6,
+              background: '#090d16',
+              border: '1px solid #1e293b',
+              fontSize: 11,
+            }}>
+              <button
+                type="button"
+                onClick={() => setSearchScope('current')}
+                style={{
+                  padding: '2px 8px',
+                  borderRadius: 4,
+                  border: 'none',
+                  background: searchScope === 'current' ? '#2563eb' : 'transparent',
+                  color: searchScope === 'current' ? '#ffffff' : '#94a3b8',
+                  fontWeight: searchScope === 'current' ? 600 : 400,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                🌳 {tl('search.scopeCurrent')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setSearchScope('all')}
+                style={{
+                  padding: '2px 8px',
+                  borderRadius: 4,
+                  border: 'none',
+                  background: searchScope === 'all' ? '#2563eb' : 'transparent',
+                  color: searchScope === 'all' ? '#ffffff' : '#94a3b8',
+                  fontWeight: searchScope === 'all' ? 600 : 400,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                🌐 {tl('search.scopeAll')}
+              </button>
+            </div>
+          </div>
+
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
             <span style={{ position: 'absolute', left: 11, color: '#64748b', pointerEvents: 'none' }}>
               <SearchIcon size={14} />
             </span>
             <input
               type="text"
-              placeholder={tl('search.placeholder')}
+              placeholder={searchScope === 'current' ? tl('search.placeholderCurrent') : tl('search.placeholderAll')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => { if (searchResults.length > 0) setShowSearchDropdown(true); }}
               style={{
                 width: '100%',
-                padding: '6px 14px 6px 32px',
+                padding: '6px 30px 6px 32px',
                 borderRadius: 6,
                 border: '1px solid #334155',
                 background: '#111827',
                 color: '#f8fafc',
                 fontSize: 12,
                 outline: 'none',
+                transition: 'border-color 0.15s',
               }}
             />
+            {searchQuery && !isSearching && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('');
+                  setSearchResults([]);
+                  setShowSearchDropdown(false);
+                }}
+                style={{
+                  position: 'absolute',
+                  right: 8,
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#94a3b8',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: 2,
+                }}
+              >
+                <CloseIcon size={12} />
+              </button>
+            )}
             {isSearching && (
-              <span style={{ position: 'absolute', right: 12, fontSize: 11, color: '#94a3b8' }}>…</span>
+              <span style={{ position: 'absolute', right: 12, fontSize: 11, color: '#38bdf8' }}>…</span>
             )}
           </div>
 
@@ -278,64 +357,131 @@ const App: React.FC = () => {
           {showSearchDropdown && searchResults.length > 0 && (
             <div style={{
               position: 'absolute',
-              top: 38,
+              top: 'calc(100% + 6px)',
               left: 0,
               right: 0,
               background: '#0f172a',
               border: '1px solid #334155',
               borderRadius: 8,
-              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.8)',
-              maxHeight: 320,
+              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.85)',
+              maxHeight: 340,
               overflowY: 'auto',
               zIndex: 100,
               padding: 4,
             }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', padding: '6px 10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                {tl('search.foundCount')} ({searchResults.length})
+              <div style={{
+                fontSize: 10,
+                fontWeight: 700,
+                color: '#64748b',
+                padding: '6px 10px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}>
+                <span>{tl('search.foundCount')}</span>
+                <span>{searchResults.length}</span>
               </div>
               {searchResults.map((item) => (
                 <div
                   key={item.person_id}
-                  onClick={() => handleSelectSearchResult(item)}
                   style={{
                     padding: '8px 10px',
                     borderRadius: 6,
-                    cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     transition: 'background 0.15s',
+                    marginBottom: 2,
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = '#1e293b'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div
+                    onClick={() => handleSelectSearchResult(item, false)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', flex: 1 }}
+                  >
                     <div style={{
-                      width: 28, height: 28, borderRadius: 4,
+                      width: 30, height: 30, borderRadius: 5,
                       background: item.gender === 'female' ? '#831843' : '#1e3a8a',
                       color: item.gender === 'female' ? '#fbcfe8' : '#93c5fd',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 11, fontWeight: 700,
+                      fontSize: 11, fontWeight: 700, flexShrink: 0,
                     }}>
                       {item.full_name.charAt(0)}
                     </div>
                     <div>
-                      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#f8fafc' }}>{item.full_name}</div>
+                      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span>{item.full_name}</span>
+                        {item.match_context && (
+                          <span style={{
+                            fontSize: 10,
+                            padding: '1px 5px',
+                            borderRadius: 4,
+                            background: 'rgba(56, 189, 248, 0.15)',
+                            color: '#38bdf8',
+                            fontWeight: 500,
+                          }}>
+                            {item.match_context}
+                          </span>
+                        )}
+                      </div>
                       <div style={{ fontSize: 11, color: '#94a3b8' }}>
                         {item.years} {item.birth_place ? `• ${item.birth_place}` : ''}
                       </div>
                     </div>
                   </div>
 
-                  <span style={{
-                    fontSize: 10, padding: '2px 6px', borderRadius: 4,
-                    background: item.is_my_tree ? 'rgba(16, 185, 129, 0.12)' : 'rgba(59, 130, 246, 0.12)',
-                    color: item.is_my_tree ? '#34d399' : '#60a5fa',
-                    border: item.is_my_tree ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(59, 130, 246, 0.3)',
-                    fontWeight: 600,
-                  }}>
-                    {item.tree_name}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 8 }}>
+                    <span style={{
+                      fontSize: 10, padding: '2px 6px', borderRadius: 4,
+                      background: item.is_my_tree ? 'rgba(16, 185, 129, 0.12)' : 'rgba(59, 130, 246, 0.12)',
+                      color: item.is_my_tree ? '#34d399' : '#60a5fa',
+                      border: item.is_my_tree ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(59, 130, 246, 0.3)',
+                      fontWeight: 600,
+                      whiteSpace: 'nowrap',
+                    }}>
+                      {item.tree_name}
+                    </span>
+
+                    <button
+                      type="button"
+                      title={tl('search.focusOnTree')}
+                      onClick={() => handleSelectSearchResult(item, false)}
+                      style={{
+                        padding: '3px 7px',
+                        borderRadius: 4,
+                        border: '1px solid #334155',
+                        background: '#1e293b',
+                        color: '#38bdf8',
+                        fontSize: 10.5,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      📍 {tl('search.focusOnTree')}
+                    </button>
+
+                    <button
+                      type="button"
+                      title={tl('search.openProfile')}
+                      onClick={() => handleSelectSearchResult(item, true)}
+                      style={{
+                        padding: '3px 7px',
+                        borderRadius: 4,
+                        border: '1px solid #334155',
+                        background: '#1e293b',
+                        color: '#94a3b8',
+                        fontSize: 10.5,
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      <UserIcon size={11} />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -481,6 +627,7 @@ const App: React.FC = () => {
         <TreeCanvas
           treeId={currentTreeId}
           treeName={currentTree.name}
+          highlightPersonId={highlightPersonId}
           onAddParent={handleAddParent}
           onAddSpouse={handleAddSpouse}
           onAddChild={handleAddChild}

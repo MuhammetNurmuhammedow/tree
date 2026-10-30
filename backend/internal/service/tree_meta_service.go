@@ -120,6 +120,10 @@ func (s *TreeMetaService) CreateTree(name, description string) *domain.Tree {
 }
 
 func (s *TreeMetaService) SearchAll(query string) []*domain.SearchResultItem {
+	return s.Search(query, "")
+}
+
+func (s *TreeMetaService) Search(query string, filterTreeID string) []*domain.SearchResultItem {
 	query = strings.ToLower(strings.TrimSpace(query))
 	if query == "" {
 		return nil
@@ -135,13 +139,66 @@ func (s *TreeMetaService) SearchAll(query string) []*domain.SearchResultItem {
 	defer s.mu.RUnlock()
 
 	for _, p := range allPersons {
+		// If filtering to a specific tree, skip others
+		if filterTreeID != "" && p.TreeID != filterTreeID {
+			continue
+		}
+
 		fullName := strings.ToLower(p.FirstName + " " + p.LastName)
 		birthPlace := ""
 		if p.BirthPlace != nil {
 			birthPlace = *p.BirthPlace
 		}
+		deathPlace := ""
+		if p.DeathPlace != nil {
+			deathPlace = *p.DeathPlace
+		}
+		maidenName := ""
+		if p.MaidenName != nil {
+			maidenName = *p.MaidenName
+		}
+		biography := ""
+		if p.Biography != nil {
+			biography = *p.Biography
+		}
 
-		if strings.Contains(fullName, query) || (birthPlace != "" && strings.Contains(strings.ToLower(birthPlace), query)) {
+		matched := false
+		matchContext := ""
+
+		if strings.Contains(fullName, query) {
+			matched = true
+		} else if maidenName != "" && strings.Contains(strings.ToLower(maidenName), query) {
+			matched = true
+			matchContext = "Gyzlyk / Kızlık: " + maidenName
+		} else if birthPlace != "" && strings.Contains(strings.ToLower(birthPlace), query) {
+			matched = true
+			matchContext = "Doglan ýeri: " + birthPlace
+		} else if deathPlace != "" && strings.Contains(strings.ToLower(deathPlace), query) {
+			matched = true
+			matchContext = "Vefat ýeri: " + deathPlace
+		} else if biography != "" && strings.Contains(strings.ToLower(biography), query) {
+			matched = true
+			// Show matching snippet of biography
+			idx := strings.Index(strings.ToLower(biography), query)
+			start := idx - 15
+			if start < 0 {
+				start = 0
+			}
+			end := idx + len(query) + 25
+			if end > len(biography) {
+				end = len(biography)
+			}
+			snippet := biography[start:end]
+			if start > 0 {
+				snippet = "…" + snippet
+			}
+			if end < len(biography) {
+				snippet = snippet + "…"
+			}
+			matchContext = "Ýazgy: " + snippet
+		}
+
+		if matched {
 			treeName := "Kaya Ailesi Soy Ağacı"
 			isMyTree := true
 			if t, ok := s.trees[p.TreeID]; ok {
@@ -159,14 +216,16 @@ func (s *TreeMetaService) SearchAll(query string) []*domain.SearchResultItem {
 			}
 
 			results = append(results, &domain.SearchResultItem{
-				PersonID:   p.ID.String(),
-				FullName:   p.FirstName + " " + p.LastName,
-				TreeID:     p.TreeID,
-				TreeName:   treeName,
-				IsMyTree:   isMyTree,
-				Gender:     string(p.Gender),
-				Years:      years,
-				BirthPlace: birthPlace,
+				PersonID:     p.ID.String(),
+				FullName:     p.FirstName + " " + p.LastName,
+				TreeID:       p.TreeID,
+				TreeName:     treeName,
+				IsMyTree:     isMyTree,
+				Gender:       string(p.Gender),
+				Years:        years,
+				BirthPlace:   birthPlace,
+				MaidenName:   maidenName,
+				MatchContext: matchContext,
 			})
 		}
 	}

@@ -87,6 +87,7 @@ const THEMES: Record<CanvasTheme, ThemeConfig> = {
 interface TreeCanvasProps {
   treeId?: string;
   treeName?: string;
+  highlightPersonId?: string | null;
   onAddParent?: (id: string) => void;
   onAddSpouse?: (id: string) => void;
   onAddChild?: (id: string) => void;
@@ -98,6 +99,7 @@ interface TreeCanvasProps {
 const TreeCanvas: React.FC<TreeCanvasProps> = ({
   treeId = 'my-tree',
   treeName = 'Soy Ağacı',
+  highlightPersonId = null,
   onAddParent,
   onAddSpouse,
   onAddChild,
@@ -110,6 +112,7 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node<TreeNodeData>>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const [rfInstance, setRfInstance] = useState<any>(null);
 
   // Canvas Theme
   const [theme, setTheme] = useState<CanvasTheme>(() => {
@@ -124,6 +127,36 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
   useEffect(() => {
     setNodes(initialNodes);
   }, [initialNodes, setNodes]);
+
+  // Center & Highlight node when search selection or highlightPersonId changes
+  useEffect(() => {
+    if (!highlightPersonId) {
+      setNodes((current) =>
+        current.map((n) =>
+          n.data?.isHighlighted ? { ...n, data: { ...n.data, isHighlighted: false } } : n
+        )
+      );
+      return;
+    }
+
+    setNodes((current) =>
+      current.map((n) => ({
+        ...n,
+        data: {
+          ...n.data,
+          isHighlighted: n.id === highlightPersonId,
+        },
+      }))
+    );
+
+    const targetNode = nodes.find((n) => n.id === highlightPersonId);
+    if (targetNode && rfInstance) {
+      rfInstance.setCenter(targetNode.position.x + 118, targetNode.position.y + 55, {
+        zoom: 1.2,
+        duration: 900,
+      });
+    }
+  }, [highlightPersonId, rfInstance]);
 
   useEffect(() => {
     setEdges(initialEdges);
@@ -420,6 +453,7 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
         <ReactFlow
           nodes={nodes}
           edges={edges}
+          onInit={setRfInstance}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onNodeDragStop={onNodeDragStop}

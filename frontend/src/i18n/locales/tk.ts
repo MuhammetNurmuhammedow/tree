@@ -27,10 +27,15 @@ const tk = {
     },
     // Search
     search: {
-      placeholder: 'Ähli agaçlarda garyndaş ýa-da şahs gözläň…',
+      placeholderCurrent: 'Şu agajyň içindäki şahsy gözläň… (ady, familiýasy, ýeri)',
+      placeholderAll: 'Ähli agaçlarda şahs gözläň…',
+      scopeCurrent: 'Şu agaçda',
+      scopeAll: 'Ähli agaçlarda',
       noResults: 'Netije tapylmady',
       searching: 'Gözlenýär…',
       foundCount: 'Tapylan Şahslar',
+      focusOnTree: 'Agajynda Gör',
+      openProfile: 'Profil',
     },
     // Toolbar buttons
     toolbar: {

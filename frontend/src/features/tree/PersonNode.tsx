@@ -40,7 +40,8 @@ const PersonNode: React.FC<NodeProps<CustomPersonNode>> = ({ data }) => {
   const nodeClass = [
     'person-node',
     isDead ? 'node-dead' : `node-${gender}`,
-  ].join(' ');
+    data.isHighlighted ? 'node-highlighted' : '',
+  ].filter(Boolean).join(' ');
 
   return (
     <div className={nodeClass} onClick={() => onViewProfile?.(person.id)}>

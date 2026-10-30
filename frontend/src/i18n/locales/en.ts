@@ -27,10 +27,15 @@ const en = {
     },
     // Search
     search: {
-      placeholder: 'Search person… (name, surname)',
+      placeholderCurrent: 'Search person within this tree… (name, maiden, place)',
+      placeholderAll: 'Search person across all trees…',
+      scopeCurrent: 'This Tree',
+      scopeAll: 'All Trees',
       noResults: 'No results found',
       searching: 'Searching…',
       foundCount: 'Found Persons',
+      focusOnTree: 'Show on Tree',
+      openProfile: 'Profile',
     },
     // Toolbar buttons
     toolbar: {

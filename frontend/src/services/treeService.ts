@@ -14,6 +14,6 @@ export const treeService = {
   createTree: (name: string, description?: string) =>
     api.post<TreeInfo>('/trees', { name, description }).then((r) => r.data),
 
-  searchAll: (query: string) =>
-    api.get<SearchResultItem[]>('/search', { params: { q: query } }).then((r) => r.data),
+  searchAll: (query: string, treeId?: string) =>
+    api.get<SearchResultItem[]>('/search', { params: { q: query, treeId: treeId || undefined } }).then((r) => r.data),
 };

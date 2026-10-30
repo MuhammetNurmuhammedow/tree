@@ -4,6 +4,7 @@ import type { Person } from './person';
 
 export interface TreeNodeData extends Record<string, unknown> {
   person: Person;
+  isHighlighted?: boolean;
   onAddParent?: (id: string) => void;
   onAddSpouse?: (id: string) => void;
   onAddChild?: (id: string) => void;
@@ -56,4 +57,6 @@ export interface SearchResultItem {
   gender: string;
   years: string;
   birth_place?: string;
+  maiden_name?: string;
+  match_context?: string;
 }

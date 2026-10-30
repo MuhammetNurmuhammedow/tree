@@ -15,13 +15,15 @@ type Tree struct {
 
 // SearchResultItem represents a person match across all trees.
 type SearchResultItem struct {
-	PersonID   string `json:"person_id"`
-	FullName   string `json:"full_name"`
-	TreeID     string `json:"tree_id"`
-	TreeName   string `json:"tree_name"`
-	IsMyTree   bool   `json:"is_my_tree"`
-	Gender     string `json:"gender"`
-	Years      string `json:"years"`
-	BirthPlace string `json:"birth_place,omitempty"`
+	PersonID     string `json:"person_id"`
+	FullName     string `json:"full_name"`
+	TreeID       string `json:"tree_id"`
+	TreeName     string `json:"tree_name"`
+	IsMyTree     bool   `json:"is_my_tree"`
+	Gender       string `json:"gender"`
+	Years        string `json:"years"`
+	BirthPlace   string `json:"birth_place,omitempty"`
+	MaidenName   string `json:"maiden_name,omitempty"`
+	MatchContext string `json:"match_context,omitempty"`
 }
 

@@ -27,10 +27,15 @@ const ru = {
     },
     // Search
     search: {
-      placeholder: 'Поиск человека во всех деревьях… (имя, фамилия)',
+      placeholderCurrent: 'Поиск человека в этом дереве… (имя, девичья, место)',
+      placeholderAll: 'Поиск человека по всем деревьям…',
+      scopeCurrent: 'В этом дереве',
+      scopeAll: 'Во всех деревьях',
       noResults: 'Результаты не найдены',
       searching: 'Поиск…',
       foundCount: 'Найденные Лица',
+      focusOnTree: 'На древе',
+      openProfile: 'Профиль',
     },
     // Toolbar buttons
     toolbar: {
