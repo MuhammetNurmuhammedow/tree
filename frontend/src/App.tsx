@@ -284,7 +284,7 @@ const App: React.FC = () => {
                   whiteSpace: 'nowrap',
                 }}
               >
-                🌳 {tl('search.scopeCurrent')}
+                {tl('search.scopeCurrent')}
               </button>
               <button
                 type="button"
@@ -301,7 +301,7 @@ const App: React.FC = () => {
                   whiteSpace: 'nowrap',
                 }}
               >
-                🌐 {tl('search.scopeAll')}
+                {tl('search.scopeAll')}
               </button>
             </div>
 
@@ -429,7 +429,7 @@ const App: React.FC = () => {
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      📍 {tl('search.focusOnTree')}
+                      {tl('search.focusOnTree')}
                     </button>
 
                     <button
