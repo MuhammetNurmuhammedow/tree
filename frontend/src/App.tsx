@@ -83,10 +83,10 @@ const App: React.FC = () => {
   // Current tree info
   const currentTree = (Array.isArray(trees) ? trees.find((t) => t.id === currentTreeId) : undefined) || {
     id: currentTreeId,
-    name: 'Kaya Ailesi Soy Ağacı',
+    name: 'Berdiýewler Maşgala Agajy',
     is_owner: true,
-    owner_name: 'Ben',
-    member_count: 9,
+    owner_name: 'Merdan Berdiýew',
+    member_count: 14,
     created_at: '',
   };
 

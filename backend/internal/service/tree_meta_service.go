@@ -39,32 +39,42 @@ func NewTreeMetaService(pr domain.PersonRepository, tr *postgres.TreeRepo) *Tree
 	// Default trees fallback
 	s.trees["my-tree"] = &domain.Tree{
 		ID:          "my-tree",
-		Name:        "Kaya Ailesi Soy Ağacı",
-		Description: "Benim kendi aile ağacım (Tam Düzenleme Yetkisi)",
-		OwnerName:   "Ben (Ahmet Kaya)",
+		Name:        "Berdiýewler Maşgala Agajy",
+		Description: "Meniň maşgala nesil agajym (Doly redaktirleme rugsady bar)",
+		OwnerName:   "Merdan Berdiýew",
 		IsOwner:     true,
-		MemberCount: 9,
+		MemberCount: 14,
 		CreatedAt:   time.Now().Add(-30 * 24 * time.Hour),
 	}
 
-	s.trees["tree-demir"] = &domain.Tree{
-		ID:          "tree-demir",
-		Name:        "Demir Ailesi Soy Ağacı",
-		Description: "Zeynep Demir'in anne tarafı sülalesi (Başkasının Ağacı - Sadece İnceleme)",
-		OwnerName:   "Süleyman Demir",
+	s.trees["tree-amanow"] = &domain.Tree{
+		ID:          "tree-amanow",
+		Name:        "Amanowlar Maşgala Agajy",
+		Description: "Mary welaýatynyň taryhy sülalesi (Gözden geçirme)",
+		OwnerName:   "Serdar Amanow",
 		IsOwner:     false,
-		MemberCount: 5,
+		MemberCount: 7,
 		CreatedAt:   time.Now().Add(-60 * 24 * time.Hour),
 	}
 
-	s.trees["tree-yilmaz"] = &domain.Tree{
-		ID:          "tree-yilmaz",
-		Name:        "Yılmaz Ailesi Soy Ağacı",
-		Description: "Fatma Yılmaz'ın ata soy ağacı (Başkasının Ağacı - Sadece İnceleme)",
-		OwnerName:   "Kemal Yılmaz",
+	s.trees["tree-gurbanow"] = &domain.Tree{
+		ID:          "tree-gurbanow",
+		Name:        "Gurbanowlar Maşgala Agajy",
+		Description: "Daşoguz welaýatyndan bolan ata-babalarymyzyň agajy (Gözden geçirme)",
+		OwnerName:   "Röwşen Gurbanow",
 		IsOwner:     false,
-		MemberCount: 3,
+		MemberCount: 6,
 		CreatedAt:   time.Now().Add(-90 * 24 * time.Hour),
+	}
+
+	s.trees["tree-myradow"] = &domain.Tree{
+		ID:          "tree-myradow",
+		Name:        "Myradowlar Maşgala Agajy",
+		Description: "Balkan welaýatynyň Hazar ýakasy nesil agajy (Gözden geçirme)",
+		OwnerName:   "Şöhrat Myradow",
+		IsOwner:     false,
+		MemberCount: 6,
+		CreatedAt:   time.Now().Add(-120 * 24 * time.Hour),
 	}
 
 	return s
@@ -199,7 +209,7 @@ func (s *TreeMetaService) Search(query string, filterTreeID string) []*domain.Se
 		}
 
 		if matched {
-			treeName := "Kaya Ailesi Soy Ağacı"
+			treeName := "Berdiýewler Maşgala Agajy"
 			isMyTree := true
 			if t, ok := s.trees[p.TreeID]; ok {
 				treeName = t.Name

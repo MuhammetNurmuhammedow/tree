@@ -27,61 +27,97 @@ func (s *SeedService) SeedDemoData() error {
 		c.Clear()
 	}
 
-	d1945, _ := time.Parse("2006-01-02", "1945-03-12")
-	d1948, _ := time.Parse("2006-01-02", "1948-07-25")
-	d1950, _ := time.Parse("2006-01-02", "1950-11-04")
-	d1952, _ := time.Parse("2006-01-02", "1952-01-19")
-	d1975, _ := time.Parse("2006-01-02", "1975-06-15")
-	d1978, _ := time.Parse("2006-01-02", "1978-09-20")
-	d1980, _ := time.Parse("2006-01-02", "1980-04-10")
-	d2005, _ := time.Parse("2006-01-02", "2005-08-14")
-	d2009, _ := time.Parse("2006-01-02", "2009-12-03")
-
-	cityIst := "İstanbul"
-	cityAnk := "Ankara"
-	cityIzm := "İzmir"
-	maidenYilmaz := "Yılmaz"
-	maidenDemir := "Demir"
-
-	// ── TREE 1: Kaya Ailesi (Benim Ağacım) ────────────────────────────────────
-	dede1 := &domain.Person{
-		TreeID: "my-tree", FirstName: "Mehmet", LastName: "Kaya", Gender: domain.GenderMale,
-		BirthDate: &d1945, BirthPlace: &cityIst, IsLiving: true,
+	pDate := func(s string) *time.Time {
+		t, err := time.Parse("2006-01-02", s)
+		if err != nil {
+			return nil
+		}
+		return &t
 	}
-	nine1 := &domain.Person{
-		TreeID: "my-tree", FirstName: "Fatma", LastName: "Kaya", MaidenName: &maidenYilmaz, Gender: domain.GenderFemale,
-		BirthDate: &d1948, BirthPlace: &cityIst, IsLiving: true,
-	}
-	dede2 := &domain.Person{
-		TreeID: "my-tree", FirstName: "Ali", LastName: "Öztürk", Gender: domain.GenderMale,
-		BirthDate: &d1950, BirthPlace: &cityAnk, IsLiving: true,
-	}
-	nine2 := &domain.Person{
-		TreeID: "my-tree", FirstName: "Ayşe", LastName: "Öztürk", MaidenName: &maidenDemir, Gender: domain.GenderFemale,
-		BirthDate: &d1952, BirthPlace: &cityAnk, IsLiving: true,
-	}
-	baba := &domain.Person{
-		TreeID: "my-tree", FirstName: "Ahmet", LastName: "Kaya", Gender: domain.GenderMale,
-		BirthDate: &d1975, BirthPlace: &cityIst, IsLiving: true,
-	}
-	anne := &domain.Person{
-		TreeID: "my-tree", FirstName: "Zeynep", LastName: "Kaya", MaidenName: &maidenDemir, Gender: domain.GenderFemale,
-		BirthDate: &d1978, BirthPlace: &cityAnk, IsLiving: true,
-	}
-	amca := &domain.Person{
-		TreeID: "my-tree", FirstName: "Emre", LastName: "Kaya", Gender: domain.GenderMale,
-		BirthDate: &d1980, BirthPlace: &cityIst, IsLiving: true,
-	}
-	cocuk1 := &domain.Person{
-		TreeID: "my-tree", FirstName: "Can", LastName: "Kaya", Gender: domain.GenderMale,
-		BirthDate: &d2005, BirthPlace: &cityIzm, IsLiving: true,
-	}
-	cocuk2 := &domain.Person{
-		TreeID: "my-tree", FirstName: "Elif", LastName: "Kaya", Gender: domain.GenderFemale,
-		BirthDate: &d2009, BirthPlace: &cityIzm, IsLiving: true,
+	pStr := func(s string) *string {
+		return &s
 	}
 
-	family1 := []*domain.Person{dede1, nine1, dede2, nine2, baba, anne, amca, cocuk1, cocuk2}
+	// ── AGAÇ 1: Berdiýewler Maşgala Agajy (my-tree - 14 agza, 4 nesil) ──────────
+	// Garry ata-eneler
+	oraz := &domain.Person{
+		TreeID: "my-tree", FirstName: "Oraz", LastName: "Berdiýew", Gender: domain.GenderMale,
+		BirthDate: pDate("1940-04-12"), BirthPlace: pStr("Aşgabat"), IsLiving: false,
+		Biography: pStr("Ata tarapdan uly garry ata. Beýik Watançylyk urşundan soňky gurluşyklarda zähmet çeken inžener."),
+	}
+	gulsirin := &domain.Person{
+		TreeID: "my-tree", FirstName: "Gülşirin", LastName: "Berdiýewa", MaidenName: pStr("Annaýewa"), Gender: domain.GenderFemale,
+		BirthDate: pDate("1944-08-25"), BirthPlace: pStr("Aşgabat"), IsLiving: true,
+		Biography: pStr("Ata tarapdan garry ene. Mugallym bolup köp ýyl işlän."),
+	}
+	nazar := &domain.Person{
+		TreeID: "my-tree", FirstName: "Nazar", LastName: "Saparow", Gender: domain.GenderMale,
+		BirthDate: pDate("1942-11-03"), BirthPlace: pStr("Mary"), IsLiving: false,
+		Biography: pStr("Ene tarapdan garry ata. Taryhçy alym."),
+	}
+	ogulbagt := &domain.Person{
+		TreeID: "my-tree", FirstName: "Ogulbagt", LastName: "Saparowa", MaidenName: pStr("Meredowa"), Gender: domain.GenderFemale,
+		BirthDate: pDate("1946-02-18"), BirthPlace: pStr("Mary"), IsLiving: true,
+		Biography: pStr("Ene tarapdan garry ene. Halypa el hünärmeni."),
+	}
+
+	// Ene-atalar, Daýylar
+	batyr := &domain.Person{
+		TreeID: "my-tree", FirstName: "Batyr", LastName: "Berdiýew", Gender: domain.GenderMale,
+		BirthDate: pDate("1968-05-15"), BirthPlace: pStr("Aşgabat"), IsLiving: true,
+		Biography: pStr("Kakam. Ykdysatçy, maşgala baştutany."),
+	}
+	maral := &domain.Person{
+		TreeID: "my-tree", FirstName: "Maral", LastName: "Berdiýewa", MaidenName: pStr("Saparowa"), Gender: domain.GenderFemale,
+		BirthDate: pDate("1972-09-20"), BirthPlace: pStr("Mary"), IsLiving: true,
+		Biography: pStr("Ejem. Lukman, maşgala lukmany."),
+	}
+	dowlet := &domain.Person{
+		TreeID: "my-tree", FirstName: "Döwlet", LastName: "Berdiýew", Gender: domain.GenderMale,
+		BirthDate: pDate("1974-03-10"), BirthPlace: pStr("Aşgabat"), IsLiving: true,
+		Biography: pStr("Kakamiň dogany (Daýy/Kakaň inisi). Telekeçi."),
+	}
+	aygul := &domain.Person{
+		TreeID: "my-tree", FirstName: "Aýgül", LastName: "Berdiýewa", MaidenName: pStr("Kulyýewa"), Gender: domain.GenderFemale,
+		BirthDate: pDate("1978-07-14"), BirthPlace: pStr("Ahal, Änew"), IsLiving: true,
+		Biography: pStr("Gelnejem."),
+	}
+
+	// Esasy Şahs, Ýanýoldaşy, Uýasy, Doganoglan
+	merdan := &domain.Person{
+		TreeID: "my-tree", FirstName: "Merdan", LastName: "Berdiýew", Gender: domain.GenderMale,
+		BirthDate: pDate("1995-06-12"), BirthPlace: pStr("Aşgabat"), IsLiving: true,
+		Biography: pStr("Agajyň eýesi (Men). Programma üpjünçiligi inženeri."),
+	}
+	selbi := &domain.Person{
+		TreeID: "my-tree", FirstName: "Selbi", LastName: "Berdiýewa", MaidenName: pStr("Ýusubowa"), Gender: domain.GenderFemale,
+		BirthDate: pDate("1998-10-05"), BirthPlace: pStr("Aşgabat"), IsLiving: true,
+		Biography: pStr("Ýanýoldaşym. Lingwist we terjimeçi."),
+	}
+	jennet := &domain.Person{
+		TreeID: "my-tree", FirstName: "Jennet", LastName: "Berdiýewa", Gender: domain.GenderFemale,
+		BirthDate: pDate("2001-01-22"), BirthPlace: pStr("Aşgabat"), IsLiving: true,
+		Biography: pStr("Uýam. Sungatşynas."),
+	}
+	resul := &domain.Person{
+		TreeID: "my-tree", FirstName: "Resul", LastName: "Berdiýew", Gender: domain.GenderMale,
+		BirthDate: pDate("2003-12-08"), BirthPlace: pStr("Aşgabat"), IsLiving: true,
+		Biography: pStr("Doganoglanym (Döwlet daýymyň ogly). Talyby."),
+	}
+
+	// Çagalar / Agtyklar
+	allanur := &domain.Person{
+		TreeID: "my-tree", FirstName: "Allanur", LastName: "Berdiýew", Gender: domain.GenderMale,
+		BirthDate: pDate("2021-04-18"), BirthPlace: pStr("Aşgabat"), IsLiving: true,
+		Biography: pStr("Oglum."),
+	}
+	aylar := &domain.Person{
+		TreeID: "my-tree", FirstName: "Aýlar", LastName: "Berdiýewa", Gender: domain.GenderFemale,
+		BirthDate: pDate("2023-09-02"), BirthPlace: pStr("Aşgabat"), IsLiving: true,
+		Biography: pStr("Gyzym."),
+	}
+
+	family1 := []*domain.Person{oraz, gulsirin, nazar, ogulbagt, batyr, maral, dowlet, aygul, merdan, selbi, jennet, resul, allanur, aylar}
 	for _, p := range family1 {
 		if err := s.personRepo.Create(p); err != nil {
 			return err
@@ -89,21 +125,42 @@ func (s *SeedService) SeedDemoData() error {
 	}
 
 	rels1 := []*domain.Relationship{
-		{TreeID: "my-tree", PersonID: dede1.ID, RelatedPersonID: nine1.ID, RelationshipType: domain.RelSpouse},
-		{TreeID: "my-tree", PersonID: dede1.ID, RelatedPersonID: baba.ID, RelationshipType: domain.RelParent},
-		{TreeID: "my-tree", PersonID: nine1.ID, RelatedPersonID: baba.ID, RelationshipType: domain.RelParent},
-		{TreeID: "my-tree", PersonID: dede1.ID, RelatedPersonID: amca.ID, RelationshipType: domain.RelParent},
-		{TreeID: "my-tree", PersonID: nine1.ID, RelatedPersonID: amca.ID, RelationshipType: domain.RelParent},
+		// Garry atalar nikalary
+		{TreeID: "my-tree", PersonID: oraz.ID, RelatedPersonID: gulsirin.ID, RelationshipType: domain.RelSpouse, MarriageDate: pDate("1966-06-10")},
+		{TreeID: "my-tree", PersonID: nazar.ID, RelatedPersonID: ogulbagt.ID, RelationshipType: domain.RelSpouse, MarriageDate: pDate("1970-10-15")},
 
-		{TreeID: "my-tree", PersonID: dede2.ID, RelatedPersonID: nine2.ID, RelationshipType: domain.RelSpouse},
-		{TreeID: "my-tree", PersonID: dede2.ID, RelatedPersonID: anne.ID, RelationshipType: domain.RelParent},
-		{TreeID: "my-tree", PersonID: nine2.ID, RelatedPersonID: anne.ID, RelationshipType: domain.RelParent},
+		// Oraz & Gülşirin -> Batyr & Döwlet
+		{TreeID: "my-tree", PersonID: oraz.ID, RelatedPersonID: batyr.ID, RelationshipType: domain.RelParent},
+		{TreeID: "my-tree", PersonID: gulsirin.ID, RelatedPersonID: batyr.ID, RelationshipType: domain.RelParent},
+		{TreeID: "my-tree", PersonID: oraz.ID, RelatedPersonID: dowlet.ID, RelationshipType: domain.RelParent},
+		{TreeID: "my-tree", PersonID: gulsirin.ID, RelatedPersonID: dowlet.ID, RelationshipType: domain.RelParent},
 
-		{TreeID: "my-tree", PersonID: baba.ID, RelatedPersonID: anne.ID, RelationshipType: domain.RelSpouse},
-		{TreeID: "my-tree", PersonID: baba.ID, RelatedPersonID: cocuk1.ID, RelationshipType: domain.RelParent},
-		{TreeID: "my-tree", PersonID: anne.ID, RelatedPersonID: cocuk1.ID, RelationshipType: domain.RelParent},
-		{TreeID: "my-tree", PersonID: baba.ID, RelatedPersonID: cocuk2.ID, RelationshipType: domain.RelParent},
-		{TreeID: "my-tree", PersonID: anne.ID, RelatedPersonID: cocuk2.ID, RelationshipType: domain.RelParent},
+		// Nazar & Ogulbagt -> Maral
+		{TreeID: "my-tree", PersonID: nazar.ID, RelatedPersonID: maral.ID, RelationshipType: domain.RelParent},
+		{TreeID: "my-tree", PersonID: ogulbagt.ID, RelatedPersonID: maral.ID, RelationshipType: domain.RelParent},
+
+		// Batyr <-> Maral, Döwlet <-> Aýgül
+		{TreeID: "my-tree", PersonID: batyr.ID, RelatedPersonID: maral.ID, RelationshipType: domain.RelSpouse, MarriageDate: pDate("1993-08-20")},
+		{TreeID: "my-tree", PersonID: dowlet.ID, RelatedPersonID: aygul.ID, RelationshipType: domain.RelSpouse, MarriageDate: pDate("1999-05-12")},
+
+		// Batyr & Maral -> Merdan & Jennet
+		{TreeID: "my-tree", PersonID: batyr.ID, RelatedPersonID: merdan.ID, RelationshipType: domain.RelParent},
+		{TreeID: "my-tree", PersonID: maral.ID, RelatedPersonID: merdan.ID, RelationshipType: domain.RelParent},
+		{TreeID: "my-tree", PersonID: batyr.ID, RelatedPersonID: jennet.ID, RelationshipType: domain.RelParent},
+		{TreeID: "my-tree", PersonID: maral.ID, RelatedPersonID: jennet.ID, RelationshipType: domain.RelParent},
+
+		// Döwlet & Aýgül -> Resul
+		{TreeID: "my-tree", PersonID: dowlet.ID, RelatedPersonID: resul.ID, RelationshipType: domain.RelParent},
+		{TreeID: "my-tree", PersonID: aygul.ID, RelatedPersonID: resul.ID, RelationshipType: domain.RelParent},
+
+		// Merdan <-> Selbi
+		{TreeID: "my-tree", PersonID: merdan.ID, RelatedPersonID: selbi.ID, RelationshipType: domain.RelSpouse, MarriageDate: pDate("2019-11-09")},
+
+		// Merdan & Selbi -> Allanur & Aýlar
+		{TreeID: "my-tree", PersonID: merdan.ID, RelatedPersonID: allanur.ID, RelationshipType: domain.RelParent},
+		{TreeID: "my-tree", PersonID: selbi.ID, RelatedPersonID: allanur.ID, RelationshipType: domain.RelParent},
+		{TreeID: "my-tree", PersonID: merdan.ID, RelatedPersonID: aylar.ID, RelationshipType: domain.RelParent},
+		{TreeID: "my-tree", PersonID: selbi.ID, RelatedPersonID: aylar.ID, RelationshipType: domain.RelParent},
 	}
 	for _, r := range rels1 {
 		if err := s.relRepo.Create(r); err != nil {
@@ -111,37 +168,44 @@ func (s *SeedService) SeedDemoData() error {
 		}
 	}
 
-	// ── TREE 2: Demir Ailesi (Başkasının Ağacı - Sadece İnceleme) ─────────────
-	d1940, _ := time.Parse("2006-01-02", "1940-02-10")
-	d2018, _ := time.Parse("2006-01-02", "2018-05-14")
-	d1944, _ := time.Parse("2006-01-02", "1944-08-20")
-	d1972, _ := time.Parse("2006-01-02", "1972-11-15")
-	d1976, _ := time.Parse("2006-01-02", "1976-04-03")
-	d2002, _ := time.Parse("2006-01-02", "2002-09-28")
+	// ── AGAÇ 2: Amanowlar Maşgala Agajy (tree-amanow - 7 agza, Mary) ───────────
+	amMuhammet := &domain.Person{
+		TreeID: "tree-amanow", FirstName: "Muhammet", LastName: "Amanow", Gender: domain.GenderMale,
+		BirthDate: pDate("1945-02-14"), BirthPlace: pStr("Mary"), IsLiving: false,
+		Biography: pStr("Mary sebitiniň abraýly ýaşulysy."),
+	}
+	amTazegul := &domain.Person{
+		TreeID: "tree-amanow", FirstName: "Täzegül", LastName: "Amanowa", MaidenName: pStr("Durdyýewa"), Gender: domain.GenderFemale,
+		BirthDate: pDate("1949-06-21"), BirthPlace: pStr("Baýramaly"), IsLiving: true,
+		Biography: pStr("Garry ene."),
+	}
+	amSerdar := &domain.Person{
+		TreeID: "tree-amanow", FirstName: "Serdar", LastName: "Amanow", Gender: domain.GenderMale,
+		BirthDate: pDate("1975-08-30"), BirthPlace: pStr("Mary"), IsLiving: true,
+		Biography: pStr("Agajyň eýesi. Oba hojalyk hünärmeni."),
+	}
+	amGozel := &domain.Person{
+		TreeID: "tree-amanow", FirstName: "Gözel", LastName: "Amanowa", MaidenName: pStr("Begmyradowa"), Gender: domain.GenderFemale,
+		BirthDate: pDate("1979-03-12"), BirthPlace: pStr("Mary"), IsLiving: true,
+		Biography: pStr("Mugallym."),
+	}
+	amMaksat := &domain.Person{
+		TreeID: "tree-amanow", FirstName: "Maksat", LastName: "Amanow", Gender: domain.GenderMale,
+		BirthDate: pDate("1982-11-19"), BirthPlace: pStr("Mary"), IsLiving: true,
+		Biography: pStr("Inisi. Inžener."),
+	}
+	amYhlas := &domain.Person{
+		TreeID: "tree-amanow", FirstName: "Yhlas", LastName: "Amanow", Gender: domain.GenderMale,
+		BirthDate: pDate("2004-05-14"), BirthPlace: pStr("Mary"), IsLiving: true,
+		Biography: pStr("Talyp."),
+	}
+	amLeyli := &domain.Person{
+		TreeID: "tree-amanow", FirstName: "Leýli", LastName: "Amanowa", Gender: domain.GenderFemale,
+		BirthDate: pDate("2008-09-28"), BirthPlace: pStr("Mary"), IsLiving: true,
+		Biography: pStr("Mekdep okuwçysy."),
+	}
 
-	cityBur := "Bursa"
-	dDede := &domain.Person{
-		TreeID: "tree-demir", FirstName: "Süleyman", LastName: "Demir", Gender: domain.GenderMale,
-		BirthDate: &d1940, BirthPlace: &cityBur, DeathDate: &d2018, IsLiving: false,
-	}
-	dNine := &domain.Person{
-		TreeID: "tree-demir", FirstName: "Hatice", LastName: "Demir", Gender: domain.GenderFemale,
-		BirthDate: &d1944, BirthPlace: &cityBur, IsLiving: true,
-	}
-	dBaba := &domain.Person{
-		TreeID: "tree-demir", FirstName: "Murat", LastName: "Demir", Gender: domain.GenderMale,
-		BirthDate: &d1972, BirthPlace: &cityBur, IsLiving: true,
-	}
-	dAnne := &domain.Person{
-		TreeID: "tree-demir", FirstName: "Selin", LastName: "Demir", Gender: domain.GenderFemale,
-		BirthDate: &d1976, BirthPlace: &cityIst, IsLiving: true,
-	}
-	dTorun := &domain.Person{
-		TreeID: "tree-demir", FirstName: "Deniz", LastName: "Demir", Gender: domain.GenderFemale,
-		BirthDate: &d2002, BirthPlace: &cityBur, IsLiving: true,
-	}
-
-	family2 := []*domain.Person{dDede, dNine, dBaba, dAnne, dTorun}
+	family2 := []*domain.Person{amMuhammet, amTazegul, amSerdar, amGozel, amMaksat, amYhlas, amLeyli}
 	for _, p := range family2 {
 		if err := s.personRepo.Create(p); err != nil {
 			return err
@@ -149,12 +213,18 @@ func (s *SeedService) SeedDemoData() error {
 	}
 
 	rels2 := []*domain.Relationship{
-		{TreeID: "tree-demir", PersonID: dDede.ID, RelatedPersonID: dNine.ID, RelationshipType: domain.RelSpouse},
-		{TreeID: "tree-demir", PersonID: dDede.ID, RelatedPersonID: dBaba.ID, RelationshipType: domain.RelParent},
-		{TreeID: "tree-demir", PersonID: dNine.ID, RelatedPersonID: dBaba.ID, RelationshipType: domain.RelParent},
-		{TreeID: "tree-demir", PersonID: dBaba.ID, RelatedPersonID: dAnne.ID, RelationshipType: domain.RelSpouse},
-		{TreeID: "tree-demir", PersonID: dBaba.ID, RelatedPersonID: dTorun.ID, RelationshipType: domain.RelParent},
-		{TreeID: "tree-demir", PersonID: dAnne.ID, RelatedPersonID: dTorun.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-amanow", PersonID: amMuhammet.ID, RelatedPersonID: amTazegul.ID, RelationshipType: domain.RelSpouse, MarriageDate: pDate("1972-04-18")},
+		{TreeID: "tree-amanow", PersonID: amSerdar.ID, RelatedPersonID: amGozel.ID, RelationshipType: domain.RelSpouse, MarriageDate: pDate("2001-09-08")},
+
+		{TreeID: "tree-amanow", PersonID: amMuhammet.ID, RelatedPersonID: amSerdar.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-amanow", PersonID: amTazegul.ID, RelatedPersonID: amSerdar.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-amanow", PersonID: amMuhammet.ID, RelatedPersonID: amMaksat.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-amanow", PersonID: amTazegul.ID, RelatedPersonID: amMaksat.ID, RelationshipType: domain.RelParent},
+
+		{TreeID: "tree-amanow", PersonID: amSerdar.ID, RelatedPersonID: amYhlas.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-amanow", PersonID: amGozel.ID, RelatedPersonID: amYhlas.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-amanow", PersonID: amSerdar.ID, RelatedPersonID: amLeyli.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-amanow", PersonID: amGozel.ID, RelatedPersonID: amLeyli.ID, RelationshipType: domain.RelParent},
 	}
 	for _, r := range rels2 {
 		if err := s.relRepo.Create(r); err != nil {
@@ -162,26 +232,39 @@ func (s *SeedService) SeedDemoData() error {
 		}
 	}
 
-	// ── TREE 3: Yılmaz Ailesi (Başkasının Ağacı - Sadece İnceleme) ────────────
-	d1938, _ := time.Parse("2006-01-02", "1938-01-05")
-	d1942, _ := time.Parse("2006-01-02", "1942-06-11")
-	d1970, _ := time.Parse("2006-01-02", "1970-12-25")
-	cityAnt := "Antalya"
+	// ── AGAÇ 3: Gurbanowlar Maşgala Agajy (tree-gurbanow - 6 agza, Daşoguz) ────
+	gbBayram := &domain.Person{
+		TreeID: "tree-gurbanow", FirstName: "Baýram", LastName: "Gurbanow", Gender: domain.GenderMale,
+		BirthDate: pDate("1938-03-24"), BirthPlace: pStr("Daşoguz"), IsLiving: false,
+		Biography: pStr("Garry ata. Zähmet weterany."),
+	}
+	gbOgulsat := &domain.Person{
+		TreeID: "tree-gurbanow", FirstName: "Ogulşat", LastName: "Gurbanowa", MaidenName: pStr("Rejepowa"), Gender: domain.GenderFemale,
+		BirthDate: pDate("1943-11-15"), BirthPlace: pStr("Köneürgenç"), IsLiving: true,
+		Biography: pStr("Garry ene."),
+	}
+	gbRowsen := &domain.Person{
+		TreeID: "tree-gurbanow", FirstName: "Röwşen", LastName: "Gurbanow", Gender: domain.GenderMale,
+		BirthDate: pDate("1970-07-04"), BirthPlace: pStr("Daşoguz"), IsLiving: true,
+		Biography: pStr("Agajyň eýesi. Lukman."),
+	}
+	gbAyna := &domain.Person{
+		TreeID: "tree-gurbanow", FirstName: "Aýna", LastName: "Gurbanowa", MaidenName: pStr("Hojayewa"), Gender: domain.GenderFemale,
+		BirthDate: pDate("1974-12-19"), BirthPlace: pStr("Daşoguz"), IsLiving: true,
+		Biography: pStr("Farmasewt."),
+	}
+	gbKuwwat := &domain.Person{
+		TreeID: "tree-gurbanow", FirstName: "Kuwwat", LastName: "Gurbanow", Gender: domain.GenderMale,
+		BirthDate: pDate("1998-04-10"), BirthPlace: pStr("Daşoguz"), IsLiving: true,
+		Biography: pStr("Arhitektor."),
+	}
+	gbSasenem := &domain.Person{
+		TreeID: "tree-gurbanow", FirstName: "Şasenem", LastName: "Gurbanowa", Gender: domain.GenderFemale,
+		BirthDate: pDate("2003-08-25"), BirthPlace: pStr("Daşoguz"), IsLiving: true,
+		Biography: pStr("Talyp gyz."),
+	}
 
-	yDede := &domain.Person{
-		TreeID: "tree-yilmaz", FirstName: "Kemal", LastName: "Yılmaz", Gender: domain.GenderMale,
-		BirthDate: &d1938, BirthPlace: &cityAnt, IsLiving: true,
-	}
-	yNine := &domain.Person{
-		TreeID: "tree-yilmaz", FirstName: "Emine", LastName: "Yılmaz", Gender: domain.GenderFemale,
-		BirthDate: &d1942, BirthPlace: &cityAnt, IsLiving: true,
-	}
-	yOzan := &domain.Person{
-		TreeID: "tree-yilmaz", FirstName: "Ozan", LastName: "Yılmaz", Gender: domain.GenderMale,
-		BirthDate: &d1970, BirthPlace: &cityAnt, IsLiving: true,
-	}
-
-	family3 := []*domain.Person{yDede, yNine, yOzan}
+	family3 := []*domain.Person{gbBayram, gbOgulsat, gbRowsen, gbAyna, gbKuwwat, gbSasenem}
 	for _, p := range family3 {
 		if err := s.personRepo.Create(p); err != nil {
 			return err
@@ -189,11 +272,75 @@ func (s *SeedService) SeedDemoData() error {
 	}
 
 	rels3 := []*domain.Relationship{
-		{TreeID: "tree-yilmaz", PersonID: yDede.ID, RelatedPersonID: yNine.ID, RelationshipType: domain.RelSpouse},
-		{TreeID: "tree-yilmaz", PersonID: yDede.ID, RelatedPersonID: yOzan.ID, RelationshipType: domain.RelParent},
-		{TreeID: "tree-yilmaz", PersonID: yNine.ID, RelatedPersonID: yOzan.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-gurbanow", PersonID: gbBayram.ID, RelatedPersonID: gbOgulsat.ID, RelationshipType: domain.RelSpouse, MarriageDate: pDate("1965-10-12")},
+		{TreeID: "tree-gurbanow", PersonID: gbRowsen.ID, RelatedPersonID: gbAyna.ID, RelationshipType: domain.RelSpouse, MarriageDate: pDate("1996-05-20")},
+
+		{TreeID: "tree-gurbanow", PersonID: gbBayram.ID, RelatedPersonID: gbRowsen.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-gurbanow", PersonID: gbOgulsat.ID, RelatedPersonID: gbRowsen.ID, RelationshipType: domain.RelParent},
+
+		{TreeID: "tree-gurbanow", PersonID: gbRowsen.ID, RelatedPersonID: gbKuwwat.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-gurbanow", PersonID: gbAyna.ID, RelatedPersonID: gbKuwwat.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-gurbanow", PersonID: gbRowsen.ID, RelatedPersonID: gbSasenem.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-gurbanow", PersonID: gbAyna.ID, RelatedPersonID: gbSasenem.ID, RelationshipType: domain.RelParent},
 	}
 	for _, r := range rels3 {
+		if err := s.relRepo.Create(r); err != nil {
+			return err
+		}
+	}
+
+	// ── AGAÇ 4: Myradowlar Maşgala Agajy (tree-myradow - 6 agza, Balkan) ───────
+	myKakamyrat := &domain.Person{
+		TreeID: "tree-myradow", FirstName: "Kakamyrat", LastName: "Myradow", Gender: domain.GenderMale,
+		BirthDate: pDate("1941-09-09"), BirthPlace: pStr("Türkmenbaşy"), IsLiving: false,
+		Biography: pStr("Garry ata. Deňizçi kapitan."),
+	}
+	myDursun := &domain.Person{
+		TreeID: "tree-myradow", FirstName: "Dursun", LastName: "Myradowa", MaidenName: pStr("Allanazarowa"), Gender: domain.GenderFemale,
+		BirthDate: pDate("1946-04-17"), BirthPlace: pStr("Hazar"), IsLiving: true,
+		Biography: pStr("Garry ene."),
+	}
+	mySohrat := &domain.Person{
+		TreeID: "tree-myradow", FirstName: "Şöhrat", LastName: "Myradow", Gender: domain.GenderMale,
+		BirthDate: pDate("1973-10-23"), BirthPlace: pStr("Balkanabat"), IsLiving: true,
+		Biography: pStr("Agajyň eýesi. Nebit-gaz inženeri."),
+	}
+	myMaysa := &domain.Person{
+		TreeID: "tree-myradow", FirstName: "Maýsa", LastName: "Myradowa", MaidenName: pStr("Çaryýewa"), Gender: domain.GenderFemale,
+		BirthDate: pDate("1977-01-30"), BirthPlace: pStr("Türkmenbaşy"), IsLiving: true,
+		Biography: pStr("Iňlis dili mugallymy."),
+	}
+	myArslan := &domain.Person{
+		TreeID: "tree-myradow", FirstName: "Arslan", LastName: "Myradow", Gender: domain.GenderMale,
+		BirthDate: pDate("2001-06-11"), BirthPlace: pStr("Balkanabat"), IsLiving: true,
+		Biography: pStr("Kompýuter grafika dizaýneri."),
+	}
+	myMerjen := &domain.Person{
+		TreeID: "tree-myradow", FirstName: "Merjen", LastName: "Myradowa", Gender: domain.GenderFemale,
+		BirthDate: pDate("2006-03-14"), BirthPlace: pStr("Türkmenbaşy"), IsLiving: true,
+		Biography: pStr("Talyp gyz."),
+	}
+
+	family4 := []*domain.Person{myKakamyrat, myDursun, mySohrat, myMaysa, myArslan, myMerjen}
+	for _, p := range family4 {
+		if err := s.personRepo.Create(p); err != nil {
+			return err
+		}
+	}
+
+	rels4 := []*domain.Relationship{
+		{TreeID: "tree-myradow", PersonID: myKakamyrat.ID, RelatedPersonID: myDursun.ID, RelationshipType: domain.RelSpouse, MarriageDate: pDate("1969-11-25")},
+		{TreeID: "tree-myradow", PersonID: mySohrat.ID, RelatedPersonID: myMaysa.ID, RelationshipType: domain.RelSpouse, MarriageDate: pDate("1999-08-14")},
+
+		{TreeID: "tree-myradow", PersonID: myKakamyrat.ID, RelatedPersonID: mySohrat.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-myradow", PersonID: myDursun.ID, RelatedPersonID: mySohrat.ID, RelationshipType: domain.RelParent},
+
+		{TreeID: "tree-myradow", PersonID: mySohrat.ID, RelatedPersonID: myArslan.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-myradow", PersonID: myMaysa.ID, RelatedPersonID: myArslan.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-myradow", PersonID: mySohrat.ID, RelatedPersonID: myMerjen.ID, RelationshipType: domain.RelParent},
+		{TreeID: "tree-myradow", PersonID: myMaysa.ID, RelatedPersonID: myMerjen.ID, RelationshipType: domain.RelParent},
+	}
+	for _, r := range rels4 {
 		if err := s.relRepo.Create(r); err != nil {
 			return err
 		}

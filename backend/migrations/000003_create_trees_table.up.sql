@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS trees (
 -- Seed initial trees into database
 INSERT INTO trees (id, name, description, owner_name, is_owner)
 VALUES
-    ('my-tree', 'Kaya Ailesi Soy Ağacı', 'Benim kendi aile ağacım (Tam Düzenleme Yetkisi)', 'Ben (Ahmet Kaya)', TRUE),
-    ('tree-demir', 'Demir Ailesi Soy Ağacı', 'Zeynep Demir''in anne tarafı sülalesi (Başkasının Ağacı - Sadece İnceleme)', 'Süleyman Demir', FALSE),
-    ('tree-yilmaz', 'Yılmaz Ailesi Soy Ağacı', 'Fatma Yılmaz''ın ata soy ağacı (Başkasının Ağacı - Sadece İnceleme)', 'Kemal Yılmaz', FALSE)
+    ('my-tree', 'Berdiýewler Maşgala Agajy', 'Meniň maşgala nesil agajym (Doly redaktirleme rugsady bar)', 'Merdan Berdiýew', TRUE),
+    ('tree-amanow', 'Amanowlar Maşgala Agajy', 'Mary welaýatynyň taryhy sülalesi (Gözden geçirme)', 'Serdar Amanow', FALSE),
+    ('tree-gurbanow', 'Gurbanowlar Maşgala Agajy', 'Daşoguz welaýatyndan bolan ata-babalarymyzyň agajy (Gözden geçirme)', 'Röwşen Gurbanow', FALSE),
+    ('tree-myradow', 'Myradowlar Maşgala Agajy', 'Balkan welaýatynyň Hazar ýakasy nesil agajy (Gözden geçirme)', 'Şöhrat Myradow', FALSE)
 ON CONFLICT (id) DO NOTHING;
