@@ -67,6 +67,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
       position: 'fixed', inset: 0, zIndex: 9999,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       backgroundColor: 'rgba(10, 11, 14, 0.82)', backdropFilter: 'blur(6px)',
+      padding: 12, boxSizing: 'border-box',
     }}>
       <div style={{
         background: '#161820',

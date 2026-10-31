@@ -322,6 +322,63 @@
 
 /* ── 2. Top Header & Global App Elements Adapting to Theme ──────────────────── */
 
+/* ── UI Container & Bootstrap-like Grid System ────────────────────────────────── */
+
+.ui-container {
+  width: 100%;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+  box-sizing: border-box;
+}
+
+.ui-container-fluid {
+  width: 100%;
+  padding-left: 12px;
+  padding-right: 12px;
+  box-sizing: border-box;
+}
+
+.ui-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -6px;
+  margin-right: -6px;
+  box-sizing: border-box;
+}
+
+.ui-col {
+  padding-left: 6px;
+  padding-right: 6px;
+  box-sizing: border-box;
+}
+
+.ui-col-12 {
+  flex: 0 0 100%;
+  max-width: 100%;
+  padding-left: 6px;
+  padding-right: 6px;
+  box-sizing: border-box;
+}
+
+.ui-col-auto {
+  flex: 0 0 auto;
+  width: auto;
+  padding-left: 6px;
+  padding-right: 6px;
+  box-sizing: border-box;
+}
+
+.ui-col-fill {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-left: 6px;
+  padding-right: 6px;
+  box-sizing: border-box;
+}
+
 .app-header {
   width: 100%;
   background-color: var(--header-bg);
@@ -332,16 +389,70 @@
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.app-header-container {
-  width: 100%;
-  max-width: 1680px;
-  margin: 0 auto;
-  padding: 0 16px;
-  min-height: 58px;
+/* Distinct Modes: Desktop Header vs Mobile Header */
+.desktop-header-mode {
+  display: block;
+}
+
+.mobile-header-mode {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop-header-mode {
+    display: none !important;
+  }
+
+  .mobile-header-mode {
+    display: block !important;
+  }
+}
+
+.mobile-drawer-panel {
+  background-color: var(--header-panel-bg);
+  border: 1px solid var(--header-panel-border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
+  flex-direction: column;
+  gap: 8px;
+  animation: slideDown 0.15s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mobile-scope-toggle {
+  display: flex;
+  width: 100%;
+  background-color: var(--header-panel-bg);
+  border: 1px solid var(--header-panel-border);
+  border-radius: 6px;
+  padding: 2px;
+  margin-bottom: 6px;
+}
+
+.mobile-scope-toggle button {
+  flex: 1;
+  text-align: center;
+  padding: 5px 6px;
+  font-size: 11px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--header-subtext);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.mobile-scope-toggle button.active {
+  background-color: var(--header-active-bg);
+  color: var(--header-text);
+  font-weight: 600;
+  border: 1px solid var(--header-active-border);
 }
 
 .app-header-left {

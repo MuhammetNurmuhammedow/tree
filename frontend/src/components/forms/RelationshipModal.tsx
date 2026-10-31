@@ -108,6 +108,7 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
       position: 'fixed', inset: 0, zIndex: 9999,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       backgroundColor: 'rgba(10, 11, 14, 0.82)', backdropFilter: 'blur(6px)',
+      padding: 12, boxSizing: 'border-box',
     }}>
       <div style={{
         background: '#161820',
@@ -116,6 +117,8 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
         padding: '24px 28px',
         width: '100%',
         maxWidth: 500,
+        maxHeight: '90vh',
+        overflowY: 'auto',
         boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7)',
         color: '#f5f2eb',
       }}>

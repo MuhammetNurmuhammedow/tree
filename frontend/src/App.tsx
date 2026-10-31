@@ -22,6 +22,7 @@ import {
   EyeIcon,
   CloseIcon,
   UserIcon,
+  MenuIcon,
 } from '@/components/common/Icons';
 
 const App: React.FC = () => {
@@ -48,6 +49,8 @@ const App: React.FC = () => {
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [highlightPersonId, setHighlightPersonId] = useState<string | null>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLDivElement>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Modal states
   const [isAddPersonOpen, setIsAddPersonOpen] = useState(false);
@@ -119,7 +122,9 @@ const App: React.FC = () => {
   // Click outside search container to close dropdown
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+      const inDesktop = searchContainerRef.current?.contains(e.target as Node);
+      const inMobile = mobileSearchRef.current?.contains(e.target as Node);
+      if (!inDesktop && !inMobile) {
         setShowSearchDropdown(false);
       }
     };
@@ -181,24 +186,264 @@ const App: React.FC = () => {
     }
   };
 
+  const renderSearchDropdown = () => {
+    if (!showSearchDropdown || searchResults.length === 0) return null;
+    return (
+      <div className="app-search-dropdown">
+        <div className="app-search-dropdown-header">
+          <span>{tl('search.foundCount')}</span>
+          <span>{searchResults.length}</span>
+        </div>
+        {searchResults.map((item) => (
+          <div key={item.person_id} className="app-search-item">
+            <div
+              onClick={() => handleSelectSearchResult(item, false)}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', flex: 1, minWidth: 0 }}
+            >
+              <div style={{
+                width: 28, height: 28, borderRadius: 6,
+                background: item.gender === 'female' ? '#2b191e' : '#192433',
+                color: item.gender === 'female' ? '#deb1b8' : '#a8c2de',
+                border: item.gender === 'female' ? '1px solid #4f2b33' : '1px solid #2b3b4f',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 11, fontWeight: 600, flexShrink: 0,
+              }}>
+                {item.full_name.charAt(0)}
+              </div>
+              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--header-text)', display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                  <span>{item.full_name}</span>
+                  {item.match_context && (
+                    <span style={{
+                      fontSize: 10,
+                      padding: '1px 5px',
+                      borderRadius: 4,
+                      background: 'rgba(197, 155, 39, 0.15)',
+                      color: '#d4af37',
+                      border: '1px solid rgba(197, 155, 39, 0.3)',
+                      fontWeight: 500,
+                    }}>
+                      {item.match_context}
+                    </span>
+                  )}
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--header-subtext)' }}>
+                  {item.years} {item.birth_place ? `• ${item.birth_place}` : ''}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 8, flexShrink: 0 }}>
+              <button
+                type="button"
+                title={tl('search.focusOnTree')}
+                onClick={() => handleSelectSearchResult(item, false)}
+                className="app-secondary-btn"
+                style={{ padding: '3px 7px', fontSize: 10.5, whiteSpace: 'nowrap' }}
+              >
+                {tl('search.focusOnTree')}
+              </button>
+
+              <button
+                type="button"
+                title={tl('search.openProfile')}
+                onClick={() => handleSelectSearchResult(item, true)}
+                className="app-secondary-btn"
+                style={{ padding: '3px 7px', fontSize: 10.5, whiteSpace: 'nowrap' }}
+              >
+                <UserIcon size={11} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className={`canvas-theme-${theme}`} style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--canvas-bg)', color: 'var(--header-text)', transition: 'background-color 0.2s ease, color 0.2s ease' }}>
       {/* ── Top Header ─────────────────────────────────────────────────────────── */}
       <header className="app-header">
-        <div className="app-header-container">
-          {/* Brand & Tree Selector */}
-          <div className="app-header-left">
-            <div className="app-brand-box">
-              <TreeIcon size={18} />
-            </div>
+        {/* DESKTOP HEADER MODE (Large Screens) */}
+        <div className="desktop-header-mode">
+          <div className="ui-container">
+            <div className="ui-row" style={{ alignItems: 'center', justifyContent: 'space-between', height: 58 }}>
+              {/* Col Left: Brand & Tree Selector */}
+              <div className="ui-col-auto app-header-left">
+                <div className="app-brand-box">
+                  <TreeIcon size={18} />
+                </div>
 
-            {/* Tree Dropdown Selector */}
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <select
+                      value={currentTreeId}
+                      onChange={(e) => setCurrentTreeId(e.target.value)}
+                      className="app-tree-select"
+                    >
+                      {trees.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.name} ({t.member_count} {tl('tree.members')})
+                        </option>
+                      ))}
+                    </select>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsCreateTreeOpen(true)}
+                      title="Kendi yeni soy ağacınızı oluşturun"
+                      className="app-newtree-btn"
+                    >
+                      <PlusIcon size={12} />
+                      <span>{tl('tree.newTree')}</span>
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                    {isReadOnly ? (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'var(--header-newtree-text, #d4a359)', fontWeight: 500 }}>
+                        <ShieldIcon size={10} />
+                        <span>{tl('tree.readOnly')}</span>
+                      </span>
+                    ) : (
+                      <span className="app-editable-badge">
+                        <EditIcon size={10} />
+                        <span>{tl('tree.editable')}</span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Col Center: Search Bar with Scope */}
+              <div className="ui-col-fill app-header-center" ref={searchContainerRef}>
+                <div className="app-search-container">
+                  <div className="app-scope-switcher">
+                    <button
+                      type="button"
+                      onClick={() => setSearchScope('current')}
+                      title={tl('search.scopeCurrent')}
+                      className={`app-scope-btn ${searchScope === 'current' ? 'active' : ''}`}
+                    >
+                      {tl('search.scopeCurrent')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSearchScope('all')}
+                      title={tl('search.scopeAll')}
+                      className={`app-scope-btn ${searchScope === 'all' ? 'active' : ''}`}
+                    >
+                      {tl('search.scopeAll')}
+                    </button>
+                  </div>
+
+                  <span style={{ color: '#8a867c', display: 'flex', alignItems: 'center', marginRight: 6, flexShrink: 0 }}>
+                    <SearchIcon size={14} />
+                  </span>
+
+                  <input
+                    type="text"
+                    placeholder={searchScope === 'current' ? tl('search.placeholderCurrent') : tl('search.placeholderAll')}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => { if (searchResults.length > 0) setShowSearchDropdown(true); }}
+                    className="app-search-input"
+                  />
+
+                  {searchQuery && !isSearching && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setSearchResults([]);
+                        setShowSearchDropdown(false);
+                      }}
+                      style={{ background: 'transparent', border: 'none', color: '#9ea0a8', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 2, marginLeft: 4 }}
+                    >
+                      <CloseIcon size={12} />
+                    </button>
+                  )}
+                  {isSearching && (
+                    <span style={{ fontSize: 11, color: '#d4af37', marginLeft: 4, flexShrink: 0 }}>…</span>
+                  )}
+                </div>
+
+                {renderSearchDropdown()}
+              </div>
+
+              {/* Col Right: Action Buttons */}
+              <div className="ui-col-auto app-header-right">
+                {isReadOnly && (
+                  <button
+                    type="button"
+                    onClick={() => setCurrentTreeId('my-tree')}
+                    className="app-secondary-btn"
+                    style={{ padding: '5px 12px', fontSize: 12 }}
+                  >
+                    <ArrowLeftIcon size={13} />
+                    <span>{tl('tree.backToMyTree')}</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleSeedDemo}
+                  disabled={seeding}
+                  title="Örnek aile ağaçlarını sıfırlayıp yeniden yükler"
+                  className="app-secondary-btn"
+                >
+                  <RefreshIcon size={13} className={seeding ? 'animate-spin' : ''} />
+                  <span>{seeding ? tl('tree.loading') : tl('toolbar.sampleData')}</span>
+                </button>
+
+                {!isReadOnly ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsAddPersonOpen(true)}
+                    className="app-primary-btn"
+                  >
+                    <PlusIcon size={14} />
+                    <span>{tl('toolbar.addPerson')}</span>
+                  </button>
+                ) : (
+                  <div style={{
+                    padding: '5px 10px',
+                    borderRadius: 6,
+                    background: 'var(--header-newtree-bg)',
+                    border: '1px solid var(--header-newtree-border)',
+                    color: 'var(--header-newtree-text)',
+                    fontSize: 11.5,
+                    fontWeight: 500,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 5,
+                  }}>
+                    <ShieldIcon size={13} />
+                    <span>{tl('tree.readOnly')}</span>
+                  </div>
+                )}
+
+                <LanguageSwitcher compact />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* MOBILE HEADER MODE (Phones & Small Tablets) */}
+        <div className="mobile-header-mode">
+          <div className="ui-container">
+            {/* Mobile Row 1: Brand + Tree Select + Actions */}
+            <div className="ui-row" style={{ alignItems: 'center', padding: '8px 0', gap: 6 }}>
+              <div className="app-brand-box" style={{ flexShrink: 0 }}>
+                <TreeIcon size={18} />
+              </div>
+
+              <div style={{ flex: 1, minWidth: 0 }}>
                 <select
                   value={currentTreeId}
                   onChange={(e) => setCurrentTreeId(e.target.value)}
                   className="app-tree-select"
+                  style={{ width: '100%', maxWidth: '100%', fontSize: 12, padding: '4px 6px' }}
                 >
                   {trees.map((t) => (
                     <option key={t.id} value={t.id}>
@@ -206,340 +451,166 @@ const App: React.FC = () => {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                {!isReadOnly && (
+                  <button
+                    type="button"
+                    onClick={() => setIsAddPersonOpen(true)}
+                    className="app-primary-btn"
+                    style={{ padding: '5px 9px', fontSize: 11.5 }}
+                    title={tl('toolbar.addPerson')}
+                  >
+                    <PlusIcon size={13} />
+                    <span>{tl('toolbar.addPerson')}</span>
+                  </button>
+                )}
+
+                <LanguageSwitcher compact />
 
                 <button
                   type="button"
-                  onClick={() => setIsCreateTreeOpen(true)}
-                  title="Kendi yeni soy ağacınızı oluşturun"
-                  className="app-newtree-btn"
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="app-secondary-btn"
+                  style={{ padding: '5px 8px' }}
+                  title="Menýu"
                 >
-                  <PlusIcon size={12} />
-                  <span>{tl('tree.newTree')}</span>
+                  <MenuIcon size={15} />
                 </button>
               </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                {isReadOnly ? (
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'var(--header-newtree-text, #d4a359)', fontWeight: 500 }}>
-                    <ShieldIcon size={10} />
-                    <span>{tl('tree.readOnly')}</span>
-                  </span>
-                ) : (
-                  <span className="app-editable-badge">
-                    <EditIcon size={10} />
-                    <span>{tl('tree.editable')}</span>
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Unified Sleek Search Bar */}
-          <div ref={searchContainerRef} className="app-header-center">
-          <div className="app-search-container" style={{
-            display: 'flex',
-            alignItems: 'center',
-            borderRadius: 7,
-            padding: '3px 8px 3px 4px',
-            boxShadow: '0 1px 4px rgba(0, 0, 0, 0.3)',
-            transition: 'border-color 0.15s',
-          }}>
-            {/* Integrated Scope Switcher */}
-            <div className="app-scope-switcher" style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              borderRadius: 5,
-              padding: '2px',
-              marginRight: 8,
-              flexShrink: 0,
-            }}>
-              <button
-                type="button"
-                onClick={() => setSearchScope('current')}
-                title={tl('search.scopeCurrent')}
-                className={`app-scope-btn ${searchScope === 'current' ? 'active' : ''}`}
-                style={{
-                  padding: '3px 8px',
-                  borderRadius: 4,
-                  fontSize: 11,
-                  fontWeight: searchScope === 'current' ? 600 : 400,
-                  cursor: 'pointer',
-                  transition: 'all 0.12s ease',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {tl('search.scopeCurrent')}
-              </button>
-              <button
-                type="button"
-                onClick={() => setSearchScope('all')}
-                title={tl('search.scopeAll')}
-                className={`app-scope-btn ${searchScope === 'all' ? 'active' : ''}`}
-                style={{
-                  padding: '3px 8px',
-                  borderRadius: 4,
-                  fontSize: 11,
-                  fontWeight: searchScope === 'all' ? 600 : 400,
-                  cursor: 'pointer',
-                  transition: 'all 0.12s ease',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {tl('search.scopeAll')}
-              </button>
             </div>
 
-            {/* Search Icon */}
-            <span style={{ color: '#8a867c', display: 'flex', alignItems: 'center', marginRight: 6, flexShrink: 0 }}>
-              <SearchIcon size={14} />
-            </span>
-
-            {/* Input Field */}
-            <input
-              type="text"
-              placeholder={searchScope === 'current' ? tl('search.placeholderCurrent') : tl('search.placeholderAll')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => { if (searchResults.length > 0) setShowSearchDropdown(true); }}
-              className="app-search-input"
-              style={{
-                flex: 1,
-                border: 'none',
-                background: 'transparent',
-                fontSize: 12,
-                outline: 'none',
-                padding: '4px 0',
-                minWidth: 100,
-              }}
-            />
-
-            {/* Clear or loading indicator */}
-            {searchQuery && !isSearching && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery('');
-                  setSearchResults([]);
-                  setShowSearchDropdown(false);
-                }}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#9ea0a8',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: 2,
-                  marginLeft: 4,
-                }}
-              >
-                <CloseIcon size={12} />
-              </button>
-            )}
-            {isSearching && (
-              <span style={{ fontSize: 11, color: '#d4af37', marginLeft: 4, flexShrink: 0 }}>…</span>
-            )}
-          </div>
-
-          {/* Search Dropdown Results */}
-          {showSearchDropdown && searchResults.length > 0 && (
-            <div className="app-search-dropdown">
-              <div className="app-search-dropdown-header">
-                <span>{tl('search.foundCount')}</span>
-                <span>{searchResults.length}</span>
-              </div>
-              {searchResults.map((item) => (
-                <div
-                  key={item.person_id}
-                  className="app-search-item"
-                >
-                  <div
-                    onClick={() => handleSelectSearchResult(item, false)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', flex: 1 }}
+            {/* Mobile Row 2: Search Bar with Dual-Tab Scope */}
+            <div className="ui-row" style={{ paddingBottom: 8 }}>
+              <div className="ui-col-12" ref={mobileSearchRef} style={{ position: 'relative' }}>
+                <div className="mobile-scope-toggle">
+                  <button
+                    type="button"
+                    onClick={() => setSearchScope('current')}
+                    className={searchScope === 'current' ? 'active' : ''}
                   >
-                    <div style={{
-                      width: 28, height: 28, borderRadius: 6,
-                      background: item.gender === 'female' ? '#2b191e' : '#192433',
-                      color: item.gender === 'female' ? '#deb1b8' : '#a8c2de',
-                      border: item.gender === 'female' ? '1px solid #4f2b33' : '1px solid #2b3b4f',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 11, fontWeight: 600, flexShrink: 0,
-                    }}>
-                      {item.full_name.charAt(0)}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--header-text)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span>{item.full_name}</span>
-                        {item.match_context && (
-                          <span style={{
-                            fontSize: 10,
-                            padding: '1px 5px',
-                            borderRadius: 4,
-                            background: 'rgba(197, 155, 39, 0.15)',
-                            color: '#d4af37',
-                            border: '1px solid rgba(197, 155, 39, 0.3)',
-                            fontWeight: 500,
-                          }}>
-                            {item.match_context}
-                          </span>
-                        )}
-                      </div>
-                      <div style={{ fontSize: 11, color: 'var(--header-subtext)' }}>
-                        {item.years} {item.birth_place ? `• ${item.birth_place}` : ''}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 8 }}>
-                    <span style={{
-                      fontSize: 10, padding: '2px 6px', borderRadius: 4,
-                      background: item.is_my_tree ? 'rgba(82, 140, 110, 0.16)' : 'rgba(82, 117, 156, 0.16)',
-                      color: item.is_my_tree ? '#8db597' : '#9cb8d9',
-                      border: item.is_my_tree ? '1px solid rgba(82, 140, 110, 0.30)' : '1px solid rgba(82, 117, 156, 0.30)',
-                      fontWeight: 500,
-                      whiteSpace: 'nowrap',
-                    }}>
-                      {item.tree_name}
-                    </span>
-
-                    <button
-                      type="button"
-                      title={tl('search.focusOnTree')}
-                      onClick={() => handleSelectSearchResult(item, false)}
-                      className="app-secondary-btn"
-                      style={{
-                        padding: '3px 7px',
-                        fontSize: 10.5,
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {tl('search.focusOnTree')}
-                    </button>
-
-                    <button
-                      type="button"
-                      title={tl('search.openProfile')}
-                      onClick={() => handleSelectSearchResult(item, true)}
-                      className="app-secondary-btn"
-                      style={{
-                        padding: '3px 7px',
-                        fontSize: 10.5,
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      <UserIcon size={11} />
-                    </button>
-                  </div>
+                    {tl('search.scopeCurrent')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSearchScope('all')}
+                    className={searchScope === 'all' ? 'active' : ''}
+                  >
+                    {tl('search.scopeAll')}
+                  </button>
                 </div>
-              ))}
+
+                <div className="app-search-container" style={{ width: '100%' }}>
+                  <span style={{ color: '#8a867c', display: 'flex', alignItems: 'center', marginRight: 6, flexShrink: 0 }}>
+                    <SearchIcon size={14} />
+                  </span>
+                  <input
+                    type="text"
+                    placeholder={searchScope === 'current' ? tl('search.placeholderCurrent') : tl('search.placeholderAll')}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => { if (searchResults.length > 0) setShowSearchDropdown(true); }}
+                    className="app-search-input"
+                  />
+                  {searchQuery && !isSearching && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setSearchResults([]);
+                        setShowSearchDropdown(false);
+                      }}
+                      style={{ background: 'transparent', border: 'none', color: '#9ea0a8', cursor: 'pointer', padding: 2 }}
+                    >
+                      <CloseIcon size={12} />
+                    </button>
+                  )}
+                  {isSearching && (
+                    <span style={{ fontSize: 11, color: '#d4af37', marginLeft: 4 }}>…</span>
+                  )}
+                </div>
+
+                {renderSearchDropdown()}
+              </div>
             </div>
-          )}
+
+            {/* Mobile Row 3: Collapsible Menu Drawer */}
+            {isMobileMenuOpen && (
+              <div className="mobile-drawer-panel">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => { setIsCreateTreeOpen(true); setIsMobileMenuOpen(false); }}
+                    className="app-newtree-btn"
+                    style={{ flex: 1, justifyContent: 'center', padding: '6px 10px', fontSize: 12 }}
+                  >
+                    <PlusIcon size={13} />
+                    <span>{tl('tree.newTree')}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { handleSeedDemo(); setIsMobileMenuOpen(false); }}
+                    disabled={seeding}
+                    className="app-secondary-btn"
+                    style={{ flex: 1, justifyContent: 'center', padding: '6px 10px', fontSize: 12 }}
+                  >
+                    <RefreshIcon size={13} className={seeding ? 'animate-spin' : ''} />
+                    <span>{seeding ? tl('tree.loading') : tl('toolbar.sampleData')}</span>
+                  </button>
+                </div>
+
+                {isReadOnly && (
+                  <button
+                    type="button"
+                    onClick={() => { setCurrentTreeId('my-tree'); setIsMobileMenuOpen(false); }}
+                    className="app-secondary-btn"
+                    style={{ justifyContent: 'center', padding: '6px 10px', fontSize: 12 }}
+                  >
+                    <ArrowLeftIcon size={13} />
+                    <span>{tl('tree.backToMyTree')}</span>
+                  </button>
+                )}
+
+                <div style={{ fontSize: 11, textAlign: 'center', opacity: 0.8, paddingTop: 2 }}>
+                  {isReadOnly ? (
+                    <span style={{ color: 'var(--header-newtree-text, #d4a359)' }}>{tl('tree.readOnly')} ({currentTree.owner_name})</span>
+                  ) : (
+                    <span className="app-editable-badge" style={{ justifyContent: 'center' }}>
+                      <EditIcon size={11} /> {tl('tree.editable')}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-
-        {/* Action Buttons */}
-        <div className="app-header-right">
-          {/* Quick return to my tree */}
-          {isReadOnly && (
-            <button
-              type="button"
-              onClick={() => setCurrentTreeId('my-tree')}
-              style={{
-                padding: '5px 12px',
-                borderRadius: 6,
-                border: '1px solid #455268',
-                background: '#1d2736',
-                color: '#adc4de',
-                fontSize: 12,
-                fontWeight: 500,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
-              }}
-            >
-              <ArrowLeftIcon size={13} />
-              <span>{tl('tree.backToMyTree')}</span>
-            </button>
-          )}
-
-          {/* Seed Button */}
-          <button
-            type="button"
-            onClick={handleSeedDemo}
-            disabled={seeding}
-            title="Örnek aile ağaçlarını sıfırlayıp yeniden yükler"
-            className="app-secondary-btn sample-data-btn"
-            style={{
-              padding: '6px 11px',
-              borderRadius: 6,
-              fontSize: 12,
-              fontWeight: 500,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 5,
-              transition: 'background 0.12s ease',
-            }}
-          >
-            <RefreshIcon size={13} className={seeding ? 'animate-spin' : ''} />
-            <span>{seeding ? tl('tree.loading') : tl('toolbar.sampleData')}</span>
-          </button>
-
-          {/* Add Person Button */}
-          {!isReadOnly ? (
-            <button
-              type="button"
-              onClick={() => setIsAddPersonOpen(true)}
-              className="app-primary-btn"
-            >
-              <PlusIcon size={14} />
-              <span>{tl('toolbar.addPerson')}</span>
-            </button>
-          ) : (
-            <div style={{
-              padding: '5px 10px',
-              borderRadius: 6,
-              background: 'var(--header-newtree-bg)',
-              border: '1px solid var(--header-newtree-border)',
-              color: 'var(--header-newtree-text)',
-              fontSize: 11.5,
-              fontWeight: 500,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 5,
-            }}>
-              <ShieldIcon size={13} />
-              <span>{tl('tree.readOnly')}</span>
-            </div>
-          )}
-
-          {/* Language Switcher */}
-          <LanguageSwitcher compact />
-        </div>
-      </div>
-    </header>
+      </header>
 
       {/* ── Read-only Alert Bar if viewing someone else's tree ─────────────── */}
       {isReadOnly && (
         <div className="app-readonly-bar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <EyeIcon size={14} className="text-[#a8c2de]" />
-            <span>
-              Şu anda <strong>"{currentTree.name}"</strong> {tl('tree.readOnly')}.
-              ({tl('tree.owner')}: {currentTree.owner_name})
-            </span>
+          <div className="ui-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <EyeIcon size={14} className="text-[#a8c2de]" />
+              <span>
+                Şu anda <strong>"{currentTree.name}"</strong> {tl('tree.readOnly')}.
+                ({tl('tree.owner')}: {currentTree.owner_name})
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setCurrentTreeId('my-tree')}
+              className="app-secondary-btn"
+              style={{
+                padding: '3px 10px',
+                fontSize: 11,
+              }}
+            >
+              {tl('tree.backToMyTree')}
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setCurrentTreeId('my-tree')}
-            className="app-secondary-btn"
-            style={{
-              padding: '3px 10px',
-              fontSize: 11,
-            }}
-          >
-            {tl('tree.backToMyTree')}
-          </button>
         </div>
       )}
 
