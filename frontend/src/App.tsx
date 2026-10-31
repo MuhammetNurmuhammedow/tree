@@ -257,29 +257,44 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Enhanced Search Bar with Scope Switch */}
-        <div ref={searchContainerRef} style={{ position: 'relative', flex: 1, maxWidth: 440 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+        {/* Unified Sleek Search Bar */}
+        <div ref={searchContainerRef} style={{ position: 'relative', flex: 1, maxWidth: 460 }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            background: '#090d16',
+            border: '1px solid #1e293b',
+            borderRadius: 8,
+            padding: '3px 8px 3px 4px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
+            transition: 'border-color 0.15s, box-shadow 0.15s',
+          }}>
+            {/* Integrated Scope Switcher */}
             <div style={{
               display: 'inline-flex',
-              padding: 2,
+              alignItems: 'center',
+              background: 'rgba(255, 255, 255, 0.04)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
               borderRadius: 6,
-              background: '#090d16',
-              border: '1px solid #1e293b',
-              fontSize: 11,
+              padding: '2px',
+              marginRight: 8,
+              flexShrink: 0,
             }}>
               <button
                 type="button"
                 onClick={() => setSearchScope('current')}
+                title={tl('search.scopeCurrent')}
                 style={{
-                  padding: '2px 8px',
+                  padding: '3px 8px',
                   borderRadius: 4,
                   border: 'none',
                   background: searchScope === 'current' ? '#2563eb' : 'transparent',
                   color: searchScope === 'current' ? '#ffffff' : '#94a3b8',
+                  fontSize: 11,
                   fontWeight: searchScope === 'current' ? 600 : 400,
                   cursor: 'pointer',
-                  transition: 'all 0.15s',
+                  transition: 'all 0.15s ease',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 🌳 {tl('search.scopeCurrent')}
@@ -287,26 +302,30 @@ const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSearchScope('all')}
+                title={tl('search.scopeAll')}
                 style={{
-                  padding: '2px 8px',
+                  padding: '3px 8px',
                   borderRadius: 4,
                   border: 'none',
                   background: searchScope === 'all' ? '#2563eb' : 'transparent',
                   color: searchScope === 'all' ? '#ffffff' : '#94a3b8',
+                  fontSize: 11,
                   fontWeight: searchScope === 'all' ? 600 : 400,
                   cursor: 'pointer',
-                  transition: 'all 0.15s',
+                  transition: 'all 0.15s ease',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 🌐 {tl('search.scopeAll')}
               </button>
             </div>
-          </div>
 
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-            <span style={{ position: 'absolute', left: 11, color: '#64748b', pointerEvents: 'none' }}>
+            {/* Search Icon */}
+            <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', marginRight: 6, flexShrink: 0 }}>
               <SearchIcon size={14} />
             </span>
+
+            {/* Input Field */}
             <input
               type="text"
               placeholder={searchScope === 'current' ? tl('search.placeholderCurrent') : tl('search.placeholderAll')}
@@ -314,17 +333,18 @@ const App: React.FC = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => { if (searchResults.length > 0) setShowSearchDropdown(true); }}
               style={{
-                width: '100%',
-                padding: '6px 30px 6px 32px',
-                borderRadius: 6,
-                border: '1px solid #334155',
-                background: '#111827',
+                flex: 1,
+                border: 'none',
+                background: 'transparent',
                 color: '#f8fafc',
                 fontSize: 12,
                 outline: 'none',
-                transition: 'border-color 0.15s',
+                padding: '4px 0',
+                minWidth: 100,
               }}
             />
+
+            {/* Clear or loading indicator */}
             {searchQuery && !isSearching && (
               <button
                 type="button"
@@ -334,8 +354,6 @@ const App: React.FC = () => {
                   setShowSearchDropdown(false);
                 }}
                 style={{
-                  position: 'absolute',
-                  right: 8,
                   background: 'transparent',
                   border: 'none',
                   color: '#94a3b8',
@@ -343,13 +361,14 @@ const App: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   padding: 2,
+                  marginLeft: 4,
                 }}
               >
                 <CloseIcon size={12} />
               </button>
             )}
             {isSearching && (
-              <span style={{ position: 'absolute', right: 12, fontSize: 11, color: '#38bdf8' }}>…</span>
+              <span style={{ fontSize: 11, color: '#38bdf8', marginLeft: 4, flexShrink: 0 }}>…</span>
             )}
           </div>
 

@@ -27,8 +27,8 @@ const en = {
     },
     // Search
     search: {
-      placeholderCurrent: 'Search person within this tree… (name, maiden, place)',
-      placeholderAll: 'Search person across all trees…',
+      placeholderCurrent: 'Search person… (name, maiden, place)',
+      placeholderAll: 'Search across all trees…',
       scopeCurrent: 'This Tree',
       scopeAll: 'All Trees',
       noResults: 'No results found',
@@ -172,14 +172,26 @@ const en = {
       errorRequired: 'Tree name is required',
       errorGeneral: 'Could not create tree',
     },
-    // Person Detail Modal (profile)
+    // Person Detail Modal (profile & edit)
     detailModal: {
+      title: 'Person Details',
+      editTitle: 'Edit Person Details',
       born: 'Born',
       died: 'Died',
       biography: 'Biography',
       noBiography: 'No biography entered.',
       close: 'Close',
       edit: 'Edit',
+      save: 'Save',
+      saving: 'Saving…',
+      cancel: 'Cancel',
+      delete: 'Delete from Tree',
+      deleteConfirm: 'Are you sure you want to delete this person from the tree?',
+      updateSuccess: 'Person details updated successfully',
+      livedPlace: 'Birth / Living Place',
+      livingStatus: 'Living Status',
+      isLivingDesc: 'This family member is living',
+      yearsOld: 'years old',
       addRelative: 'Add Relative',
       addParent: 'Add Parent',
       addSpouse: 'Add Spouse',
