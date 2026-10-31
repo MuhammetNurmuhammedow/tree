@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import type { Person, UpdatePersonPayload } from '@/types/person';
@@ -12,6 +12,7 @@ import {
   UserIcon,
   EditIcon,
   CheckIcon,
+  CameraIcon,
 } from '@/components/common/Icons';
 
 interface PersonDetailModalProps {
@@ -68,6 +69,33 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
 
   // Edit form state
   const [editForm, setEditForm] = useState<UpdatePersonPayload>({});
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const avatarUploadRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !person) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Surat 10MB-dan uly bolmaly däl');
+      return;
+    }
+
+    try {
+      setUploadingPhoto(true);
+      toast.loading('Surat ýüklenýär...', { id: 'avatar-upload' });
+      const updatedPerson = await personService.updateAvatar(person.id, file);
+      setPerson(updatedPerson);
+      toast.success('Surat üstünlikli ýüklendi!', { id: 'avatar-upload' });
+      onUpdated?.();
+    } catch (err) {
+      console.error('Surat ýüklemekde säwlik:', err);
+      toast.error('Surat ýüklenip bilinmedi: ' + (err instanceof Error ? err.message : String(err)), { id: 'avatar-upload' });
+    } finally {
+      setUploadingPhoto(false);
+      if (avatarUploadRef.current) avatarUploadRef.current.value = '';
+    }
+  };
 
   useEffect(() => {
     if (personId) {
@@ -203,17 +231,71 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
             {/* Header: avatar + name + close */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div style={{
-                  width: 54, height: 54, borderRadius: '50%',
-                  background: person.gender === 'female' ? '#2b191e' : '#192433',
-                  color: person.gender === 'female' ? '#deb1b8' : '#a8c2de',
-                  border: person.gender === 'female' ? '2px solid #4f2b33' : '2px solid #2b3b4f',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 20, fontWeight: 600,
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-                  flexShrink: 0,
-                }}>
-                  {(person.first_name[0] + (person.last_name[0] || '')).toUpperCase()}
+                <div style={{ position: 'relative', flexShrink: 0 }}>
+                  {person.avatar_url ? (
+                    <img
+                      src={person.avatar_url}
+                      alt={person.first_name}
+                      style={{
+                        width: 58,
+                        height: 58,
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        border: '2px solid #c59b27',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                        display: 'block',
+                      }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: 58, height: 58, borderRadius: '50%',
+                      background: person.gender === 'female' ? '#2b191e' : '#192433',
+                      color: person.gender === 'female' ? '#deb1b8' : '#a8c2de',
+                      border: person.gender === 'female' ? '2px solid #4f2b33' : '2px solid #2b3b4f',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 20, fontWeight: 600,
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                    }}>
+                      {(person.first_name[0] + (person.last_name[0] || '')).toUpperCase()}
+                    </div>
+                  )}
+
+                  {!isReadOnly && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => avatarUploadRef.current?.click()}
+                        disabled={uploadingPhoto}
+                        title="Suraty çalşyryň"
+                        style={{
+                          position: 'absolute',
+                          bottom: -2,
+                          right: -2,
+                          width: 24,
+                          height: 24,
+                          borderRadius: '50%',
+                          background: '#1a1d24',
+                          border: '1.5px solid #d4af37',
+                          color: '#d4af37',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
+                          transition: 'transform 0.1s ease',
+                        }}
+                      >
+                        <CameraIcon size={12} />
+                      </button>
+                      <input
+                        type="file"
+                        ref={avatarUploadRef}
+                        accept="image/png,image/jpeg,image/webp,image/gif"
+                        style={{ display: 'none' }}
+                        onChange={handleAvatarUpload}
+                      />
+                    </>
+                  )}
                 </div>
                 <div>
                   <h2 style={{ fontSize: 19, fontWeight: 600, lineHeight: 1.2, margin: 0, color: '#f5f2eb' }}>

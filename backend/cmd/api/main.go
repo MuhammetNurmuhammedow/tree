@@ -88,7 +88,7 @@ func main() {
 	// ── Routes ─────────────────────────────────────────────────────────────────
 	api := app.Group("/api/v1")
 
-	handler.NewPersonHandler(personSvc).RegisterRoutes(api)
+	handler.NewPersonHandler(personSvc, uploadDir).RegisterRoutes(api)
 	handler.NewRelationshipHandler(relSvc).RegisterRoutes(api)
 	handler.NewTreeHandler(treeSvc).RegisterRoutes(api)
 	handler.NewMediaHandler(uploadDir).RegisterRoutes(api)

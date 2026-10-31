@@ -19,5 +19,21 @@ export const personService = {
 
   delete: (id: string) =>
     api.delete(`/persons/${id}`),
+
+  uploadPhoto: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post<{ url: string; filename: string; size: number }>('/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then((r) => r.data);
+  },
+
+  updateAvatar: (id: string, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post<Person>(`/persons/${id}/avatar`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then((r) => r.data);
+  },
 };
 

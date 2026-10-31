@@ -2,6 +2,9 @@ package handler
 
 import (
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -12,12 +15,13 @@ import (
 
 // PersonHandler handles /api/v1/persons routes.
 type PersonHandler struct {
-	svc *service.PersonService
+	svc       *service.PersonService
+	uploadDir string
 }
 
 // NewPersonHandler creates a new PersonHandler.
-func NewPersonHandler(svc *service.PersonService) *PersonHandler {
-	return &PersonHandler{svc: svc}
+func NewPersonHandler(svc *service.PersonService, uploadDir string) *PersonHandler {
+	return &PersonHandler{svc: svc, uploadDir: uploadDir}
 }
 
 // RegisterRoutes mounts the person routes onto a Fiber router group.
@@ -28,6 +32,7 @@ func (h *PersonHandler) RegisterRoutes(r fiber.Router) {
 	r.Post("/persons", h.Create)
 	r.Put("/persons/:id", h.Update)
 	r.Delete("/persons/:id", h.Delete)
+	r.Post("/persons/:id/avatar", h.UploadAvatar)
 }
 
 // GetAll godoc
@@ -149,5 +154,49 @@ func (h *PersonHandler) Delete(c *fiber.Ctx) error {
 		return fiber.NewError(http.StatusInternalServerError, err.Error())
 	}
 	return c.SendStatus(http.StatusNoContent)
+}
+
+// UploadAvatar godoc
+// @Summary  Upload and set person's avatar
+// @Tags     persons
+// @Accept   multipart/form-data
+// @Produce  json
+// @Param    id   path string true "Person UUID"
+// @Param    file formData file true "Photo file (jpg, png, webp)"
+// @Success  200 {object} domain.Person
+// @Router   /api/v1/persons/{id}/avatar [post]
+func (h *PersonHandler) UploadAvatar(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return fiber.NewError(http.StatusBadRequest, "geçersiz UUID")
+	}
+
+	existing, err := h.svc.GetByID(id)
+	if err != nil {
+		return fiber.NewError(http.StatusNotFound, "kişi bulunamadı")
+	}
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		return fiber.NewError(http.StatusBadRequest, "resim dosyası bulunamadı")
+	}
+
+	url, err := ValidateAndSaveImage(file, c, h.uploadDir)
+	if err != nil {
+		return fiber.NewError(http.StatusBadRequest, err.Error())
+	}
+
+	// Remove old avatar file if stored locally to save disk space
+	if existing.AvatarURL != nil && strings.HasPrefix(*existing.AvatarURL, "/uploads/") {
+		oldFile := filepath.Join(h.uploadDir, filepath.Base(*existing.AvatarURL))
+		_ = os.Remove(oldFile)
+	}
+
+	existing.AvatarURL = &url
+	if err := h.svc.Update(existing); err != nil {
+		return fiber.NewError(http.StatusInternalServerError, "profil fotoğrafı güncellenemedi: "+err.Error())
+	}
+
+	return c.JSON(existing)
 }
 

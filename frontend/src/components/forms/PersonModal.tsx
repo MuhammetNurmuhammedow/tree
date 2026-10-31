@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { CreatePersonPayload, Gender } from '@/types/person';
 import { personService } from '@/services/personService';
-import { UserIcon, CloseIcon, ShieldIcon } from '@/components/common/Icons';
+import { UserIcon, CloseIcon, ShieldIcon, CameraIcon } from '@/components/common/Icons';
 
 interface PersonModalProps {
   isOpen: boolean;
@@ -23,10 +23,27 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
   const [deathPlace, setDeathPlace] = useState('');
   const [isLiving, setIsLiving] = useState(true);
   const [biography, setBiography] = useState('');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      setError('Surat ölçegi 10MB-dan uly bolmaly däl');
+      return;
+    }
+
+    setAvatarFile(file);
+    const objectUrl = URL.createObjectURL(file);
+    setAvatarPreview(objectUrl);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +55,20 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
     try {
       setLoading(true);
       setError(null);
+
+      let uploadedAvatarUrl: string | undefined = undefined;
+      if (avatarFile) {
+        try {
+          const uploadRes = await personService.uploadPhoto(avatarFile);
+          uploadedAvatarUrl = uploadRes.url;
+        } catch (uploadErr) {
+          console.error('Surat ýüklemekde säwlik:', uploadErr);
+          setError('Surat ýüklenip bilinmedi: ' + (uploadErr instanceof Error ? uploadErr.message : String(uploadErr)));
+          setLoading(false);
+          return;
+        }
+      }
+
       const payload: CreatePersonPayload & { tree_id?: string } = {
         first_name: firstName.trim(),
         last_name: lastName.trim(),
@@ -50,6 +81,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
         is_living: isLiving,
         biography: biography.trim() || undefined,
         tree_id: treeId,
+        avatar_url: uploadedAvatarUrl,
       };
 
       await personService.create(payload as CreatePersonPayload);
@@ -104,6 +136,79 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
         )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Round Avatar Upload Section */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '4px 0 8px' }}>
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              style={{
+                position: 'relative',
+                width: 72,
+                height: 72,
+                borderRadius: '50%',
+                border: avatarPreview ? '2px solid #c59b27' : '2px dashed #4b5563',
+                background: avatarPreview ? 'transparent' : '#14161d',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+                transition: 'all 0.15s ease',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+              }}
+              title="Surat ýüklemek üçin basyň"
+            >
+              {avatarPreview ? (
+                <img src={avatarPreview} alt="Avatar preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, color: '#9ca3af' }}>
+                  <CameraIcon size={22} />
+                  <span style={{ fontSize: 9, fontWeight: 500 }}>Surat</span>
+                </div>
+              )}
+            </div>
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              style={{ display: 'none' }}
+              onChange={handlePhotoChange}
+            />
+
+            <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#d4af37',
+                  fontSize: 11.5,
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                }}
+              >
+                {avatarPreview ? 'Suraty çalşyryň' : '+ Surat goşuň'}
+              </button>
+
+              {avatarPreview && (
+                <button
+                  type="button"
+                  onClick={() => { setAvatarFile(null); setAvatarPreview(null); }}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#ef4444',
+                    fontSize: 11.5,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Aýyryň
+                </button>
+              )}
+            </div>
+          </div>
           {/* Ad & Soyad */}
           <div style={{ display: 'flex', gap: 14 }}>
             <div style={{ flex: 1 }}>
