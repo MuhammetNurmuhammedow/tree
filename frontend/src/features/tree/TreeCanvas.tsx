@@ -354,10 +354,10 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
           <button
             type="button"
             onClick={handleResetLayout}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#2d303b] bg-[#16181e] hover:bg-[#20222a] text-[#dedbd2] text-xs font-medium shadow-md transition active:scale-95"
+            className="tree-toolbar-btn"
             title="Sürüklenmiş düğümleri otomatik hiyerarşik dizilime geri döndürür"
           >
-            <RefreshIcon size={13} className="text-[#9ea0a8]" />
+            <RefreshIcon size={13} style={{ opacity: 0.8 }} />
             <span>{t('toolbar.resetLayout')}</span>
           </button>
 
@@ -369,16 +369,16 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
                 setShowThemeMenu(!showThemeMenu);
                 setShowExportMenu(false);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#2d303b] bg-[#16181e] hover:bg-[#20222a] text-[#dedbd2] text-xs font-medium shadow-md transition active:scale-95"
+              className="tree-toolbar-btn"
               title="Tuval Arka Plan Temasını Değiştir"
             >
-              <PaletteIcon size={13} className="text-[#c59b27]" />
+              <PaletteIcon size={13} style={{ color: 'var(--card-accent, #c59b27)' }} />
               <span>{t('toolbar.theme')}</span>
             </button>
 
             {showThemeMenu && (
-              <div className="absolute right-0 mt-1.5 w-56 rounded-md border border-[#2d303b] bg-[#17181f] shadow-2xl p-1.5 z-50 flex flex-col gap-1">
-                <div className="text-[10px] font-bold text-[#8a867c] px-2 py-1 uppercase tracking-wider border-b border-[#252833]">
+              <div className="tree-toolbar-menu">
+                <div className="tree-toolbar-menu-header">
                   {t('toolbar.theme')}
                 </div>
                 {(Object.keys(THEMES) as CanvasTheme[]).map((tKey) => {
@@ -389,11 +389,7 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
                       key={tKey}
                       type="button"
                       onClick={() => handleSelectTheme(tKey)}
-                      className={`flex items-center justify-between px-2.5 py-1.5 rounded text-xs font-medium transition text-left ${
-                        isSelected
-                          ? 'bg-[#252833] text-[#f5f2eb] font-semibold'
-                          : 'text-[#dedbd2] hover:bg-[#20222a]'
-                      }`}
+                      className={`tree-toolbar-menu-item ${isSelected ? 'active' : ''}`}
                     >
                       <div className="flex items-center gap-2">
                         <span
@@ -402,7 +398,7 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
                         />
                         <span>{t(`themes.${tKey}`)}</span>
                       </div>
-                      {isSelected && <CheckIcon size={13} className="text-[#c59b27]" />}
+                      {isSelected && <CheckIcon size={13} style={{ color: 'var(--card-accent, #c59b27)' }} />}
                     </button>
                   );
                 })}
@@ -419,7 +415,7 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
                 setShowExportMenu(!showExportMenu);
                 setShowThemeMenu(false);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#3f5746] bg-[#1a2d21] hover:bg-[#22392b] text-[#cbe3d3] text-xs font-medium shadow-md transition active:scale-95"
+              className="tree-toolbar-export-btn"
               title="Ağacı PNG veya PDF Olarak Dışa Aktar"
             >
               <DownloadIcon size={13} />
@@ -427,31 +423,35 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
             </button>
 
             {showExportMenu && (
-              <div className="absolute right-0 mt-1.5 w-52 rounded-md border border-[#2d303b] bg-[#17181f] shadow-2xl p-1.5 z-50 flex flex-col gap-1">
-                <div className="text-[10px] font-bold text-[#8a867c] px-2 py-1 uppercase tracking-wider border-b border-[#252833]">
+              <div className="tree-toolbar-menu">
+                <div className="tree-toolbar-menu-header">
                   {t('toolbar.export')}
                 </div>
                 <button
                   type="button"
                   onClick={exportToPNG}
-                  className="flex items-center gap-2.5 px-2.5 py-2 rounded text-xs text-[#dedbd2] hover:bg-[#22242d] transition text-left"
+                  className="tree-toolbar-menu-item"
                 >
-                  <ImageIcon size={14} className="text-[#c59b27]" />
-                  <div>
-                    <div className="font-medium text-[#f5f2eb]">PNG</div>
-                    <div className="text-[10px] text-[#9ea0a8]">{t('toolbar.exportPng')}</div>
+                  <div className="flex items-center gap-2.5">
+                    <ImageIcon size={14} style={{ color: 'var(--card-accent, #c59b27)' }} />
+                    <div>
+                      <div className="font-medium" style={{ color: 'var(--header-text)' }}>PNG</div>
+                      <div className="text-[10px]" style={{ color: 'var(--header-subtext)' }}>{t('toolbar.exportPng')}</div>
+                    </div>
                   </div>
                 </button>
 
                 <button
                   type="button"
                   onClick={exportToPDF}
-                  className="flex items-center gap-2.5 px-2.5 py-2 rounded text-xs text-[#dedbd2] hover:bg-[#22242d] transition text-left"
+                  className="tree-toolbar-menu-item"
                 >
-                  <FilePdfIcon size={14} className="text-[#a8525e]" />
-                  <div>
-                    <div className="font-medium text-[#f5f2eb]">PDF</div>
-                    <div className="text-[10px] text-[#9ea0a8]">{t('toolbar.exportPdf')}</div>
+                  <div className="flex items-center gap-2.5">
+                    <FilePdfIcon size={14} className="text-[#a8525e]" />
+                    <div>
+                      <div className="font-medium" style={{ color: 'var(--header-text)' }}>PDF</div>
+                      <div className="text-[10px]" style={{ color: 'var(--header-subtext)' }}>{t('toolbar.exportPdf')}</div>
+                    </div>
                   </div>
                 </button>
               </div>

@@ -196,18 +196,7 @@ const App: React.FC = () => {
       }}>
         {/* Brand & Tree Selector */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 32,
-            height: 32,
-            borderRadius: 7,
-            border: '1px solid #5a4722',
-            background: '#242018',
-            color: '#d4af37',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-          }}>
+          <div className="app-brand-box">
             <TreeIcon size={18} />
           </div>
 
@@ -238,21 +227,7 @@ const App: React.FC = () => {
                 type="button"
                 onClick={() => setIsCreateTreeOpen(true)}
                 title="Kendi yeni soy ağacınızı oluşturun"
-                style={{
-                  padding: '4px 10px',
-                  borderRadius: 6,
-                  border: '1px solid rgba(197, 155, 39, 0.4)',
-                  background: 'rgba(197, 155, 39, 0.1)',
-                  color: '#d4af37',
-                  fontSize: 11,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  whiteSpace: 'nowrap',
-                  transition: 'background 0.15s ease',
-                }}
+                className="app-newtree-btn"
               >
                 <PlusIcon size={12} />
                 <span>{tl('tree.newTree')}</span>
@@ -261,12 +236,12 @@ const App: React.FC = () => {
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
               {isReadOnly ? (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: '#d4a359', fontWeight: 500 }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'var(--header-newtree-text, #d4a359)', fontWeight: 500 }}>
                   <ShieldIcon size={10} />
                   <span>{tl('tree.readOnly')}</span>
                 </span>
               ) : (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: '#8db597', fontWeight: 500 }}>
+                <span className="app-editable-badge">
                   <EditIcon size={10} />
                   <span>{tl('tree.editable')}</span>
                 </span>
@@ -531,21 +506,7 @@ const App: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsAddPersonOpen(true)}
-              style={{
-                padding: '6px 14px',
-                borderRadius: 6,
-                border: '1px solid #3a6850',
-                background: '#254a37',
-                color: '#f5f2eb',
-                fontSize: 12.5,
-                fontWeight: 600,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
-                boxShadow: '0 1px 4px rgba(0, 0, 0, 0.3)',
-                transition: 'background 0.15s ease',
-              }}
+              className="app-primary-btn"
             >
               <PlusIcon size={14} />
               <span>{tl('toolbar.addPerson')}</span>
@@ -554,9 +515,9 @@ const App: React.FC = () => {
             <div style={{
               padding: '5px 10px',
               borderRadius: 6,
-              background: 'rgba(197, 155, 39, 0.12)',
-              border: '1px solid rgba(197, 155, 39, 0.35)',
-              color: '#d4af37',
+              background: 'var(--header-newtree-bg)',
+              border: '1px solid var(--header-newtree-border)',
+              color: 'var(--header-newtree-text)',
               fontSize: 11.5,
               fontWeight: 500,
               display: 'flex',

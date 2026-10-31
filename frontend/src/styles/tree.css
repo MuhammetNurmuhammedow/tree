@@ -31,6 +31,26 @@
   --header-btn-border: #2d303b;
   --header-btn-text: #dedbd2;
   --header-readonly-bg: #191b22;
+
+  --toolbar-btn-bg: #16181e;
+  --toolbar-btn-border: #2d303b;
+  --toolbar-btn-text: #dedbd2;
+  --toolbar-btn-hover: #20222a;
+  --toolbar-export-bg: #1a2d21;
+  --toolbar-export-border: #3f5746;
+  --toolbar-export-text: #cbe3d3;
+  --toolbar-export-hover: #22392b;
+
+  --header-brand-bg: #242018;
+  --header-brand-border: #5a4722;
+  --header-brand-color: #d4af37;
+  --header-newtree-bg: rgba(197, 155, 39, 0.1);
+  --header-newtree-border: rgba(197, 155, 39, 0.4);
+  --header-newtree-text: #d4af37;
+  --header-primary-bg: #254a37;
+  --header-primary-border: #3a6850;
+  --header-primary-text: #f5f2eb;
+  --header-editable-color: #8db597;
 }
 
 /* Theme: Miras & Agajyň Kökleri (Warm Walnut & Heritage Parchment) */
@@ -59,6 +79,26 @@
   --header-btn-border: #382f27;
   --header-btn-text: #ded6cb;
   --header-readonly-bg: #231c17;
+
+  --toolbar-btn-bg: #221c17;
+  --toolbar-btn-border: #382f27;
+  --toolbar-btn-text: #ded6cb;
+  --toolbar-btn-hover: #2c251f;
+  --toolbar-export-bg: #26241b;
+  --toolbar-export-border: #4d4429;
+  --toolbar-export-text: #ecd8a5;
+  --toolbar-export-hover: #322e20;
+
+  --header-brand-bg: #2a221b;
+  --header-brand-border: #594532;
+  --header-brand-color: #d4a359;
+  --header-newtree-bg: rgba(212, 163, 89, 0.12);
+  --header-newtree-border: rgba(212, 163, 89, 0.4);
+  --header-newtree-text: #d4a359;
+  --header-primary-bg: #382d22;
+  --header-primary-border: #594734;
+  --header-primary-text: #faf4e8;
+  --header-editable-color: #a8947b;
 }
 
 /* Theme: Ak Tema (Clean White / Paper Light) */
@@ -88,6 +128,26 @@
   --header-btn-border: #d1d5db;
   --header-btn-text: #374151;
   --header-readonly-bg: #f9fafb;
+
+  --toolbar-btn-bg: #ffffff;
+  --toolbar-btn-border: #d1d5db;
+  --toolbar-btn-text: #1f2937;
+  --toolbar-btn-hover: #f3f4f6;
+  --toolbar-export-bg: #f0fdf4;
+  --toolbar-export-border: #bbf7d0;
+  --toolbar-export-text: #166534;
+  --toolbar-export-hover: #dcfce7;
+
+  --header-brand-bg: #fefce8;
+  --header-brand-border: #fde047;
+  --header-brand-color: #a16207;
+  --header-newtree-bg: #fefce8;
+  --header-newtree-border: #eab308;
+  --header-newtree-text: #854d0e;
+  --header-primary-bg: #15803d;
+  --header-primary-border: #166534;
+  --header-primary-text: #ffffff;
+  --header-editable-color: #15803d;
 }
 
 /* Light Mode Overrides for White Theme */
@@ -238,6 +298,26 @@
   --header-btn-border: #242630;
   --header-btn-text: #dedee4;
   --header-readonly-bg: #14151b;
+
+  --toolbar-btn-bg: #14151a;
+  --toolbar-btn-border: #242630;
+  --toolbar-btn-text: #dedee4;
+  --toolbar-btn-hover: #1e2027;
+  --toolbar-export-bg: #17241c;
+  --toolbar-export-border: #254231;
+  --toolbar-export-text: #c2e2cc;
+  --toolbar-export-hover: #1e3325;
+
+  --header-brand-bg: #1c1a16;
+  --header-brand-border: #3d3524;
+  --header-brand-color: #c59b27;
+  --header-newtree-bg: rgba(197, 155, 39, 0.08);
+  --header-newtree-border: rgba(197, 155, 39, 0.35);
+  --header-newtree-text: #c59b27;
+  --header-primary-bg: #1e3629;
+  --header-primary-border: #2d523e;
+  --header-primary-text: #f0f0f2;
+  --header-editable-color: #7da887;
 }
 
 /* ── 2. Top Header & Global App Elements Adapting to Theme ──────────────────── */
@@ -394,6 +474,157 @@
 
 .app-search-item:hover {
   background-color: var(--header-active-bg);
+}
+
+.app-brand-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  border: 1px solid var(--header-brand-border);
+  background-color: var(--header-brand-bg);
+  color: var(--header-brand-color);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  transition: all 0.2s ease;
+}
+
+.app-newtree-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--header-newtree-border);
+  background-color: var(--header-newtree-bg);
+  color: var(--header-newtree-text);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.app-primary-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--header-primary-border);
+  background-color: var(--header-primary-bg);
+  color: var(--header-primary-text);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  transition: all 0.15s ease;
+}
+
+.app-editable-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--header-editable-color);
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+/* ── Floating Canvas Control Toolbar ────────────────────────────────────────── */
+
+.tree-toolbar-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--toolbar-btn-border);
+  background-color: var(--toolbar-btn-bg);
+  color: var(--toolbar-btn-text);
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.tree-toolbar-btn:hover {
+  background-color: var(--toolbar-btn-hover);
+}
+
+.tree-toolbar-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--toolbar-export-border);
+  background-color: var(--toolbar-export-bg);
+  color: var(--toolbar-export-text);
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.tree-toolbar-export-btn:hover {
+  background-color: var(--toolbar-export-hover);
+}
+
+.tree-toolbar-menu {
+  position: absolute;
+  right: 0;
+  margin-top: 6px;
+  width: 230px;
+  border-radius: 8px;
+  border: 1px solid var(--header-panel-border);
+  background-color: var(--header-panel-bg);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  padding: 6px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tree-toolbar-menu-header {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--header-subtext);
+  padding: 4px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--header-border);
+  margin-bottom: 2px;
+}
+
+.tree-toolbar-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: var(--header-text);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.12s ease;
+  width: 100%;
+}
+
+.tree-toolbar-menu-item:hover {
+  background-color: var(--header-active-bg);
+}
+
+.tree-toolbar-menu-item.active {
+  background-color: var(--header-active-bg);
+  font-weight: 600;
 }
 
 /* ── 2. Canvas Wrapper & Controls ───────────────────────────────────────────── */
