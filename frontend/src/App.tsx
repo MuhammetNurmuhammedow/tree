@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import '@/styles/globals.css';
 import TreeCanvas from '@/features/tree/TreeCanvas';
+import type { CanvasTheme } from '@/features/tree/TreeCanvas';
 import { PersonModal } from '@/components/forms/PersonModal';
 import { RelationshipModal } from '@/components/forms/RelationshipModal';
 import { PersonDetailModal } from '@/features/person/PersonDetailModal';
@@ -25,6 +26,15 @@ import {
 
 const App: React.FC = () => {
   const { t: tl } = useTranslation();
+
+  // Theme state – synced with TreeCanvas localStorage key
+  const [theme, setTheme] = useState<CanvasTheme>(() => {
+    const raw = localStorage.getItem('familytree_canvas_theme');
+    if (raw === 'blueprint') return 'white';
+    const valid: CanvasTheme[] = ['slate', 'white', 'parchment', 'obsidian'];
+    return valid.includes(raw as CanvasTheme) ? (raw as CanvasTheme) : 'slate';
+  });
+
   // Trees state
   const [trees, setTrees] = useState<TreeInfo[]>([]);
   const [currentTreeId, setCurrentTreeId] = useState<string>('my-tree');
@@ -172,16 +182,14 @@ const App: React.FC = () => {
   };
 
   return (
-    <div style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-primary)' }}>
+    <div className={`canvas-theme-${theme}`} style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--canvas-bg)', color: 'var(--header-text)', transition: 'background-color 0.2s ease, color 0.2s ease' }}>
       {/* ── Top Header ─────────────────────────────────────────────────────────── */}
-      <header style={{
+      <header className="app-header" style={{
         height: 58,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '0 20px',
-        background: '#15161c',
-        borderBottom: '1px solid #262832',
         flexShrink: 0,
         zIndex: 50,
         gap: 16,
@@ -209,12 +217,10 @@ const App: React.FC = () => {
               <select
                 value={currentTreeId}
                 onChange={(e) => setCurrentTreeId(e.target.value)}
+                className="app-tree-select"
                 style={{
-                  background: '#1b1d24',
-                  border: '1px solid #2d303b',
                   borderRadius: 6,
                   padding: '4px 10px',
-                  color: '#f5f2eb',
                   fontSize: 13,
                   fontWeight: 600,
                   cursor: 'pointer',
@@ -271,22 +277,18 @@ const App: React.FC = () => {
 
         {/* Unified Sleek Search Bar */}
         <div ref={searchContainerRef} style={{ position: 'relative', flex: 1, maxWidth: 460 }}>
-          <div style={{
+          <div className="app-search-container" style={{
             display: 'flex',
             alignItems: 'center',
-            background: '#13141a',
-            border: '1px solid #2a2c36',
             borderRadius: 7,
             padding: '3px 8px 3px 4px',
             boxShadow: '0 1px 4px rgba(0, 0, 0, 0.3)',
             transition: 'border-color 0.15s',
           }}>
             {/* Integrated Scope Switcher */}
-            <div style={{
+            <div className="app-scope-switcher" style={{
               display: 'inline-flex',
               alignItems: 'center',
-              background: '#1a1c24',
-              border: '1px solid #282a35',
               borderRadius: 5,
               padding: '2px',
               marginRight: 8,
@@ -296,12 +298,10 @@ const App: React.FC = () => {
                 type="button"
                 onClick={() => setSearchScope('current')}
                 title={tl('search.scopeCurrent')}
+                className={`app-scope-btn ${searchScope === 'current' ? 'active' : ''}`}
                 style={{
                   padding: '3px 8px',
                   borderRadius: 4,
-                  border: searchScope === 'current' ? '1px solid #3c4050' : '1px solid transparent',
-                  background: searchScope === 'current' ? '#272a36' : 'transparent',
-                  color: searchScope === 'current' ? '#f5f2eb' : '#9ea0a8',
                   fontSize: 11,
                   fontWeight: searchScope === 'current' ? 600 : 400,
                   cursor: 'pointer',
@@ -315,12 +315,10 @@ const App: React.FC = () => {
                 type="button"
                 onClick={() => setSearchScope('all')}
                 title={tl('search.scopeAll')}
+                className={`app-scope-btn ${searchScope === 'all' ? 'active' : ''}`}
                 style={{
                   padding: '3px 8px',
                   borderRadius: 4,
-                  border: searchScope === 'all' ? '1px solid #3c4050' : '1px solid transparent',
-                  background: searchScope === 'all' ? '#272a36' : 'transparent',
-                  color: searchScope === 'all' ? '#f5f2eb' : '#9ea0a8',
                   fontSize: 11,
                   fontWeight: searchScope === 'all' ? 600 : 400,
                   cursor: 'pointer',
@@ -344,11 +342,11 @@ const App: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => { if (searchResults.length > 0) setShowSearchDropdown(true); }}
+              className="app-search-input"
               style={{
                 flex: 1,
                 border: 'none',
                 background: 'transparent',
-                color: '#f5f2eb',
                 fontSize: 12,
                 outline: 'none',
                 padding: '4px 0',
@@ -386,49 +384,15 @@ const App: React.FC = () => {
 
           {/* Search Dropdown Results */}
           {showSearchDropdown && searchResults.length > 0 && (
-            <div style={{
-              position: 'absolute',
-              top: 'calc(100% + 6px)',
-              left: 0,
-              right: 0,
-              background: '#161820',
-              border: '1px solid #2c303c',
-              borderRadius: 8,
-              boxShadow: '0 12px 32px rgba(0, 0, 0, 0.65)',
-              maxHeight: 340,
-              overflowY: 'auto',
-              zIndex: 100,
-              padding: 4,
-            }}>
-              <div style={{
-                fontSize: 10,
-                fontWeight: 600,
-                color: '#8a867c',
-                padding: '6px 10px',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                display: 'flex',
-                justifyContent: 'space-between',
-                borderBottom: '1px solid #232632',
-                marginBottom: 4,
-              }}>
+            <div className="app-search-dropdown">
+              <div className="app-search-dropdown-header">
                 <span>{tl('search.foundCount')}</span>
                 <span>{searchResults.length}</span>
               </div>
               {searchResults.map((item) => (
                 <div
                   key={item.person_id}
-                  style={{
-                    padding: '7px 10px',
-                    borderRadius: 6,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    transition: 'background 0.12s',
-                    marginBottom: 2,
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = '#212430'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                  className="app-search-item"
                 >
                   <div
                     onClick={() => handleSelectSearchResult(item, false)}
@@ -445,7 +409,7 @@ const App: React.FC = () => {
                       {item.full_name.charAt(0)}
                     </div>
                     <div>
-                      <div style={{ fontSize: 12.5, fontWeight: 500, color: '#f5f2eb', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--header-text)', display: 'flex', alignItems: 'center', gap: 6 }}>
                         <span>{item.full_name}</span>
                         {item.match_context && (
                           <span style={{
@@ -461,7 +425,7 @@ const App: React.FC = () => {
                           </span>
                         )}
                       </div>
-                      <div style={{ fontSize: 11, color: '#9ea0a8' }}>
+                      <div style={{ fontSize: 11, color: 'var(--header-subtext)' }}>
                         {item.years} {item.birth_place ? `• ${item.birth_place}` : ''}
                       </div>
                     </div>
@@ -483,15 +447,10 @@ const App: React.FC = () => {
                       type="button"
                       title={tl('search.focusOnTree')}
                       onClick={() => handleSelectSearchResult(item, false)}
+                      className="app-secondary-btn"
                       style={{
                         padding: '3px 7px',
-                        borderRadius: 4,
-                        border: '1px solid #373b4a',
-                        background: '#20232d',
-                        color: '#d4af37',
                         fontSize: 10.5,
-                        fontWeight: 500,
-                        cursor: 'pointer',
                         whiteSpace: 'nowrap',
                       }}
                     >
@@ -502,15 +461,10 @@ const App: React.FC = () => {
                       type="button"
                       title={tl('search.openProfile')}
                       onClick={() => handleSelectSearchResult(item, true)}
+                      className="app-secondary-btn"
                       style={{
                         padding: '3px 7px',
-                        borderRadius: 4,
-                        border: '1px solid #373b4a',
-                        background: '#20232d',
-                        color: '#dedbd2',
                         fontSize: 10.5,
-                        fontWeight: 500,
-                        cursor: 'pointer',
                         whiteSpace: 'nowrap',
                       }}
                     >
@@ -555,12 +509,10 @@ const App: React.FC = () => {
             onClick={handleSeedDemo}
             disabled={seeding}
             title="Örnek aile ağaçlarını sıfırlayıp yeniden yükler"
+            className="app-secondary-btn"
             style={{
               padding: '6px 11px',
               borderRadius: 6,
-              border: '1px solid #2d303b',
-              background: '#1a1c22',
-              color: '#dedbd2',
               fontSize: 12,
               fontWeight: 500,
               cursor: 'pointer',
@@ -623,16 +575,7 @@ const App: React.FC = () => {
 
       {/* ── Read-only Alert Bar if viewing someone else's tree ─────────────── */}
       {isReadOnly && (
-        <div style={{
-          background: '#191b22',
-          borderBottom: '1px solid #2c303c',
-          padding: '6px 20px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          fontSize: 12,
-          color: '#c8d7e6',
-        }}>
+        <div className="app-readonly-bar">
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <EyeIcon size={14} className="text-[#a8c2de]" />
             <span>
@@ -643,15 +586,10 @@ const App: React.FC = () => {
           <button
             type="button"
             onClick={() => setCurrentTreeId('my-tree')}
+            className="app-secondary-btn"
             style={{
-              background: '#2b394f',
-              color: '#f5f2eb',
-              border: '1px solid #405473',
-              borderRadius: 5,
               padding: '3px 10px',
               fontSize: 11,
-              fontWeight: 500,
-              cursor: 'pointer',
             }}
           >
             {tl('tree.backToMyTree')}
@@ -671,6 +609,8 @@ const App: React.FC = () => {
           onViewProfile={handleViewProfile}
           reloadTrigger={reloadTrigger}
           isReadOnly={isReadOnly}
+          theme={theme}
+          onThemeChange={setTheme}
         />
       </main>
 

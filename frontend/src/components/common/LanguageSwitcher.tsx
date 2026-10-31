@@ -38,13 +38,13 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
           gap: compact ? 6 : 8,
           padding: compact ? '4px 8px' : '5px 12px',
           borderRadius: 6,
-          border: '1px solid #2d303b',
-          background: open ? '#22242d' : '#1a1c22',
-          color: '#dedbd2',
+          border: '1px solid var(--header-btn-border, #2d303b)',
+          background: open ? 'var(--header-active-bg, #22242d)' : 'var(--header-btn-bg, #1a1c22)',
+          color: 'var(--header-btn-text, #dedbd2)',
           fontSize: 12.5,
           cursor: 'pointer',
           fontWeight: 500,
-          transition: 'background 0.12s',
+          transition: 'all 0.15s ease',
           whiteSpace: 'nowrap',
         }}
       >
@@ -54,9 +54,9 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
           letterSpacing: '0.04em',
           padding: '1px 5px',
           borderRadius: 4,
-          background: '#252834',
+          background: 'var(--header-panel-bg, #252834)',
           color: '#d4af37',
-          border: '1px solid #3d4253',
+          border: '1px solid var(--header-panel-border, #3d4253)',
           lineHeight: 1.3,
         }}>
           {current.badge}
@@ -72,11 +72,11 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
           position: 'absolute',
           top: 'calc(100% + 6px)',
           right: 0,
-          background: '#17181f',
-          border: '1px solid #2d303b',
+          background: 'var(--header-panel-bg, #17181f)',
+          border: '1px solid var(--header-panel-border, #2d303b)',
           borderRadius: 8,
           overflow: 'hidden',
-          boxShadow: '0 12px 32px rgba(0,0,0,0.6)',
+          boxShadow: '0 12px 32px rgba(0,0,0,0.3)',
           zIndex: 9999,
           minWidth: 150,
         }}>
@@ -94,14 +94,14 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
                   padding: '9px 12px',
                   border: 'none',
                   background: isActive ? 'rgba(197, 155, 39, 0.15)' : 'transparent',
-                  color: isActive ? '#d4af37' : '#dedbd2',
+                  color: isActive ? '#d4af37' : 'var(--header-text, #dedbd2)',
                   fontSize: 12.5,
                   fontWeight: isActive ? 600 : 400,
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'background 0.1s',
                 }}
-                onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = '#22242d'; }}
+                onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'var(--header-active-bg, #22242d)'; }}
                 onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
               >
                 <span style={{
@@ -110,9 +110,9 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
                   letterSpacing: '0.04em',
                   padding: '1px 5px',
                   borderRadius: 4,
-                  background: isActive ? '#342918' : '#22242e',
-                  color: isActive ? '#d4af37' : '#9ea0a8',
-                  border: isActive ? '1px solid #6b521e' : '1px solid #333647',
+                  background: isActive ? '#342918' : 'var(--header-input-bg, #22242e)',
+                  color: isActive ? '#d4af37' : 'var(--header-subtext, #9ea0a8)',
+                  border: isActive ? '1px solid #6b521e' : '1px solid var(--header-panel-border, #333647)',
                   minWidth: 26,
                   textAlign: 'center',
                   lineHeight: 1.3,

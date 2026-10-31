@@ -38,7 +38,7 @@ import '@/styles/tree.css';
 const nodeTypes = { personNode: PersonNode };
 const edgeTypes = { bloodEdge: BloodEdge, spouseEdge: SpouseEdge };
 
-type CanvasTheme = 'slate' | 'white' | 'parchment' | 'obsidian';
+export type CanvasTheme = 'slate' | 'white' | 'parchment' | 'obsidian';
 
 interface ThemeConfig {
   id: CanvasTheme;
@@ -94,6 +94,8 @@ interface TreeCanvasProps {
   onViewProfile?: (id: string) => void;
   reloadTrigger?: number;
   isReadOnly?: boolean;
+  theme?: CanvasTheme;
+  onThemeChange?: (theme: CanvasTheme) => void;
 }
 
 const TreeCanvas: React.FC<TreeCanvasProps> = ({
@@ -106,6 +108,8 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
   onViewProfile,
   reloadTrigger = 0,
   isReadOnly = false,
+  theme: controlledTheme,
+  onThemeChange,
 }) => {
   const { t } = useTranslation();
   const { nodes: initialNodes, edges: initialEdges, isLoading, error, reload, resetLayout } = useTree(treeId, reloadTrigger);
@@ -115,11 +119,13 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
   const [rfInstance, setRfInstance] = useState<any>(null);
 
   // Canvas Theme
-  const [theme, setTheme] = useState<CanvasTheme>(() => {
+  const [internalTheme, setInternalTheme] = useState<CanvasTheme>(() => {
     const raw = localStorage.getItem('familytree_canvas_theme');
     if (raw === 'blueprint') return 'white';
     return (raw as CanvasTheme) || 'slate';
   });
+
+  const theme = controlledTheme ?? internalTheme;
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -185,11 +191,12 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
     [setEdges]
   );
 
-  const handleSelectTheme = (t: CanvasTheme) => {
-    setTheme(t);
-    localStorage.setItem('familytree_canvas_theme', t);
+  const handleSelectTheme = (tKey: CanvasTheme) => {
+    setInternalTheme(tKey);
+    localStorage.setItem('familytree_canvas_theme', tKey);
+    onThemeChange?.(tKey);
     setShowThemeMenu(false);
-    toast.success(`Tema değiştirildi: ${THEMES[t].name}`);
+    toast.success(`Tema: ${THEMES[tKey].name}`);
   };
 
   const handleResetLayout = () => {

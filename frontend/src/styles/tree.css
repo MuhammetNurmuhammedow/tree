@@ -16,6 +16,21 @@
   --card-accent: #c59b27;
   --edge-color: #555b6c;
   --spouse-color: #c59b27;
+
+  --header-bg: #15161c;
+  --header-border: #262832;
+  --header-text: #f5f2eb;
+  --header-subtext: #8a867c;
+  --header-input-bg: #13141a;
+  --header-input-border: #2a2c36;
+  --header-panel-bg: #1a1c24;
+  --header-panel-border: #282a35;
+  --header-active-bg: #272a36;
+  --header-active-border: #3c4050;
+  --header-btn-bg: #1a1c22;
+  --header-btn-border: #2d303b;
+  --header-btn-text: #dedbd2;
+  --header-readonly-bg: #191b22;
 }
 
 /* Theme: Miras & Agajyň Kökleri (Warm Walnut & Heritage Parchment) */
@@ -29,6 +44,21 @@
   --card-accent: #d4a359;
   --edge-color: #706354;
   --spouse-color: #d4a359;
+
+  --header-bg: #1c1815;
+  --header-border: #362e26;
+  --header-text: #faf4e8;
+  --header-subtext: #a39482;
+  --header-input-bg: #151210;
+  --header-input-border: #382f27;
+  --header-panel-bg: #1e1a16;
+  --header-panel-border: #362d25;
+  --header-active-bg: #2c251f;
+  --header-active-border: #4a3e33;
+  --header-btn-bg: #221c17;
+  --header-btn-border: #382f27;
+  --header-btn-text: #ded6cb;
+  --header-readonly-bg: #231c17;
 }
 
 /* Theme: Ak Tema (Clean White / Paper Light) */
@@ -43,6 +73,21 @@
   --card-accent: #b8860b;
   --edge-color: #717786;
   --spouse-color: #b8860b;
+
+  --header-bg: #ffffff;
+  --header-border: #e2e4e9;
+  --header-text: #111827;
+  --header-subtext: #6b7280;
+  --header-input-bg: #f3f4f6;
+  --header-input-border: #d1d5db;
+  --header-panel-bg: #eef0f3;
+  --header-panel-border: #d5d9e0;
+  --header-active-bg: #ffffff;
+  --header-active-border: #d1d5db;
+  --header-btn-bg: #ffffff;
+  --header-btn-border: #d1d5db;
+  --header-btn-text: #374151;
+  --header-readonly-bg: #f9fafb;
 }
 
 /* Light Mode Overrides for White Theme */
@@ -178,6 +223,177 @@
   --card-accent: #c59b27;
   --edge-color: #4e5058;
   --spouse-color: #c59b27;
+
+  --header-bg: #0f1013;
+  --header-border: #1e2026;
+  --header-text: #f4f4f6;
+  --header-subtext: #7c7e88;
+  --header-input-bg: #090a0c;
+  --header-input-border: #1e2027;
+  --header-panel-bg: #14151a;
+  --header-panel-border: #22242c;
+  --header-active-bg: #1e2027;
+  --header-active-border: #2e313c;
+  --header-btn-bg: #14151a;
+  --header-btn-border: #242630;
+  --header-btn-text: #dedee4;
+  --header-readonly-bg: #14151b;
+}
+
+/* ── 2. Top Header & Global App Elements Adapting to Theme ──────────────────── */
+
+.app-header {
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  flex-shrink: 0;
+  z-index: 50;
+  gap: 16px;
+  color: var(--header-text);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.app-tree-select {
+  background-color: var(--header-input-bg) !important;
+  border: 1px solid var(--header-input-border) !important;
+  color: var(--header-text) !important;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  max-width: 240px;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.app-search-container {
+  display: flex;
+  align-items: center;
+  background-color: var(--header-input-bg);
+  border: 1px solid var(--header-input-border);
+  border-radius: 7px;
+  padding: 3px 8px 3px 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  transition: border-color 0.15s, background-color 0.2s;
+}
+
+.app-scope-switcher {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--header-panel-bg);
+  border: 1px solid var(--header-panel-border);
+  border-radius: 5px;
+  padding: 2px;
+  margin-right: 8px;
+  flex-shrink: 0;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.app-scope-btn {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  white-space: nowrap;
+}
+
+.app-scope-btn.active {
+  border: 1px solid var(--header-active-border);
+  background-color: var(--header-active-bg);
+  color: var(--header-text);
+  font-weight: 600;
+}
+
+.app-scope-btn:not(.active) {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--header-subtext);
+  font-weight: 400;
+}
+
+.app-search-input {
+  flex: 1;
+  border: none !important;
+  background: transparent !important;
+  color: var(--header-text) !important;
+  font-size: 12px;
+  outline: none;
+  padding: 4px 0;
+  min-width: 100px;
+}
+
+.app-secondary-btn {
+  padding: 6px 11px;
+  border-radius: 6px;
+  border: 1px solid var(--header-btn-border);
+  background-color: var(--header-btn-bg);
+  color: var(--header-btn-text);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.app-readonly-bar {
+  background-color: var(--header-readonly-bg);
+  border-bottom: 1px solid var(--header-border);
+  padding: 6px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--header-text);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.app-search-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background-color: var(--header-panel-bg);
+  border: 1px solid var(--header-panel-border);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  max-height: 340px;
+  overflow-y: auto;
+  z-index: 100;
+  padding: 4px;
+}
+
+.app-search-dropdown-header {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--header-subtext);
+  padding: 6px 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--header-border);
+  margin-bottom: 4px;
+}
+
+.app-search-item {
+  padding: 7px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.12s;
+  margin-bottom: 2px;
+}
+
+.app-search-item:hover {
+  background-color: var(--header-active-bg);
 }
 
 /* ── 2. Canvas Wrapper & Controls ───────────────────────────────────────────── */
