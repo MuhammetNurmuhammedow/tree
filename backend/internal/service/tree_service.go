@@ -63,7 +63,11 @@ func (s *TreeService) BuildTree(treeID string) (*TreeGraph, error) {
 		return nil, fmt.Errorf("tree_service.BuildTree persons: %w", err)
 	}
 
-	graph := &TreeGraph{}
+	// Initialize with empty slices (not nil) so JSON encodes as [] not null
+	graph := &TreeGraph{
+		Nodes: make([]*TreeNode, 0),
+		Edges: make([]*TreeEdge, 0),
+	}
 
 	// Build a set of valid person IDs in this tree for edge validation
 	validNodeIDs := make(map[string]bool, len(persons))

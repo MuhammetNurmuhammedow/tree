@@ -42,7 +42,6 @@ export function useTree(treeId = 'my-tree', reloadTrigger = 0): UseTreeReturn {
         setEdges([]);
         return;
       }
-
       const savedPositions = ignoreSavedPositions ? {} : getSavedPositions();
       const { nodes: layoutedNodes, edges: layoutedEdges } = await applyELKLayout(graph, savedPositions);
       setNodes(layoutedNodes);

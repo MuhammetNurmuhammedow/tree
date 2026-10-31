@@ -12,17 +12,21 @@ export async function applyELKLayout(
   graph: TreeGraph,
   customPositions?: Record<string, { x: number; y: number }>
 ): Promise<{ nodes: Node<TreeNodeData>[]; edges: Edge[] }> {
-  // Build a set of valid node IDs — edges referencing missing nodes cause ELK to crash
-  const validNodeIds = new Set(graph.nodes.map((n) => n.id));
+  // Guard: ensure nodes/edges are always arrays (backend may return null for empty tree)
+  const safeNodes = Array.isArray(graph.nodes) ? graph.nodes : [];
+  const safeAllEdges = Array.isArray(graph.edges) ? graph.edges : [];
 
-  const elkNodes: ElkNode['children'] = graph.nodes.map((n) => ({
+  // Build a set of valid node IDs — edges referencing missing nodes cause ELK to crash
+  const validNodeIds = new Set(safeNodes.map((n) => n.id));
+
+  const elkNodes: ElkNode['children'] = safeNodes.map((n) => ({
     id: n.id,
     width: 236,
     height: 110,
   }));
 
   // Filter out any edge whose source or target doesn't exist in the node set
-  const safeEdges = graph.edges.filter(
+  const safeEdges = safeAllEdges.filter(
     (e) => validNodeIds.has(e.source) && validNodeIds.has(e.target)
   );
 
@@ -47,7 +51,7 @@ export async function applyELKLayout(
 
   const layouted = await elk.layout(elkGraph);
 
-  const nodes: Node<TreeNodeData>[] = graph.nodes.map((n) => {
+  const nodes: Node<TreeNodeData>[] = safeNodes.map((n) => {
     // If user previously dragged this node and saved its position, preserve it
     const saved = customPositions?.[n.id];
     if (saved && typeof saved.x === 'number' && typeof saved.y === 'number') {
