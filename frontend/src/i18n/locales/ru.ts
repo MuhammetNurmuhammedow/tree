@@ -52,7 +52,7 @@ const ru = {
     // Canvas themes
     themes: {
       slate: 'Архивный Сланец',
-      blueprint: 'Ботаника и Хвоя',
+      white: 'Светлая тема (Белая)',
       parchment: 'Тёплый Пергамент',
       obsidian: 'Ночные Чернила',
     },

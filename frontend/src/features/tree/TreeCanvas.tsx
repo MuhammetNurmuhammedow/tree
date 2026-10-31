@@ -38,7 +38,7 @@ import '@/styles/tree.css';
 const nodeTypes = { personNode: PersonNode };
 const edgeTypes = { bloodEdge: BloodEdge, spouseEdge: SpouseEdge };
 
-type CanvasTheme = 'slate' | 'blueprint' | 'parchment' | 'obsidian';
+type CanvasTheme = 'slate' | 'white' | 'parchment' | 'obsidian';
 
 interface ThemeConfig {
   id: CanvasTheme;
@@ -58,6 +58,14 @@ const THEMES: Record<CanvasTheme, ThemeConfig> = {
     variant: BackgroundVariant.Dots,
     gap: 22,
   },
+  white: {
+    id: 'white',
+    name: 'Ak Tema (Kagyz / White)',
+    bgHex: '#f5f6f8',
+    gridColor: '#d5d9e0',
+    variant: BackgroundVariant.Dots,
+    gap: 22,
+  },
   parchment: {
     id: 'parchment',
     name: 'Miras (Warm Walnut & Linen)',
@@ -65,14 +73,6 @@ const THEMES: Record<CanvasTheme, ThemeConfig> = {
     gridColor: '#28221c',
     variant: BackgroundVariant.Cross,
     gap: 24,
-  },
-  blueprint: {
-    id: 'blueprint',
-    name: 'Botanika (Cedar & Spruce)',
-    bgHex: '#101614',
-    gridColor: '#1c2722',
-    variant: BackgroundVariant.Lines,
-    gap: 26,
   },
   obsidian: {
     id: 'obsidian',
@@ -116,7 +116,9 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
 
   // Canvas Theme
   const [theme, setTheme] = useState<CanvasTheme>(() => {
-    return (localStorage.getItem('familytree_canvas_theme') as CanvasTheme) || 'slate';
+    const raw = localStorage.getItem('familytree_canvas_theme');
+    if (raw === 'blueprint') return 'white';
+    return (raw as CanvasTheme) || 'slate';
   });
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);

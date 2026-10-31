@@ -52,7 +52,7 @@ const en = {
     // Canvas themes
     themes: {
       slate: 'Archival Slate',
-      blueprint: 'Botanical Forest',
+      white: 'White (Paper / Light)',
       parchment: 'Heritage Parchment',
       obsidian: 'Midnight Obsidian',
     },

@@ -52,7 +52,7 @@ const tk = {
     // Canvas themes
     themes: {
       slate: 'Arhiw Klasik (Grafik)',
-      blueprint: 'Botanika (Zümrüt)',
+      white: 'Ak Tema (Kagyz)',
       parchment: 'Miras (Ýyly Parşömen)',
       obsidian: 'Gijeki Syýa (Obsidiyan)',
     },

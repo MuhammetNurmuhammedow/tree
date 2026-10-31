@@ -31,17 +31,140 @@
   --spouse-color: #d4a359;
 }
 
-/* Theme: Botanika & Zümrüt (Deep Cedar & Spruce Forest) */
+/* Theme: Ak Tema (Clean White / Paper Light) */
+.canvas-theme-white,
 .canvas-theme-blueprint {
-  --canvas-bg: #101614;
-  --canvas-grid: #1c2722;
-  --card-bg: #16201b;
-  --card-border: #273730;
-  --card-text: #edf5f0;
-  --card-subtext: #9eb5a8;
-  --card-accent: #528c6e;
-  --edge-color: #4b6357;
-  --spouse-color: #c79f4c;
+  --canvas-bg: #f5f6f8;
+  --canvas-grid: #d5d9e0;
+  --card-bg: #ffffff;
+  --card-border: #d4d8e0;
+  --card-text: #16181f;
+  --card-subtext: #595e6d;
+  --card-accent: #b8860b;
+  --edge-color: #717786;
+  --spouse-color: #b8860b;
+}
+
+/* Light Mode Overrides for White Theme */
+.canvas-theme-white .person-node,
+.canvas-theme-blueprint .person-node {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.canvas-theme-white .person-node:hover,
+.canvas-theme-blueprint .person-node:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  border-color: #b8860b;
+}
+
+.canvas-theme-white .person-node__topbar,
+.canvas-theme-blueprint .person-node__topbar {
+  border-bottom: 1px solid #edf0f4;
+}
+
+.canvas-theme-white .avatar-male,
+.canvas-theme-blueprint .avatar-male {
+  background: #e8f0f8;
+  color: #1e4572;
+  border-color: #bcd0e6;
+}
+
+.canvas-theme-white .avatar-female,
+.canvas-theme-blueprint .avatar-female {
+  background: #faedf0;
+  color: #7c2434;
+  border-color: #ebc3cb;
+}
+
+.canvas-theme-white .avatar-other,
+.canvas-theme-blueprint .avatar-other {
+  background: #f3edf8;
+  color: #552570;
+  border-color: #dec2ed;
+}
+
+.canvas-theme-white .gender-male,
+.canvas-theme-blueprint .gender-male {
+  background: #edf3fb;
+  color: #1e4572;
+  border-color: #c7dcf3;
+}
+
+.canvas-theme-white .gender-female,
+.canvas-theme-blueprint .gender-female {
+  background: #fcf0f2;
+  color: #7c2434;
+  border-color: #f3cbd3;
+}
+
+.canvas-theme-white .gender-other,
+.canvas-theme-blueprint .gender-other {
+  background: #f7f0fc;
+  color: #5b2675;
+  border-color: #e5ccf5;
+}
+
+.canvas-theme-white .status-living,
+.canvas-theme-blueprint .status-living {
+  background: #edf7f0;
+  color: #1e6338;
+  border-color: #b7e3c5;
+}
+
+.canvas-theme-white .status-dead,
+.canvas-theme-blueprint .status-dead {
+  background: #f3f4f6;
+  color: #4b5563;
+  border-color: #d1d5db;
+}
+
+.canvas-theme-white .person-node__actions,
+.canvas-theme-blueprint .person-node__actions {
+  background: #ffffff;
+  border: 1px solid #d4d8e0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.canvas-theme-white .action-btn,
+.canvas-theme-blueprint .action-btn {
+  background: #f9fafb;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.canvas-theme-white .action-btn:hover,
+.canvas-theme-blueprint .action-btn:hover {
+  background: #f3f4f6;
+  color: #111827;
+  border-color: #d1d5db;
+}
+
+.canvas-theme-white .react-flow__controls,
+.canvas-theme-blueprint .react-flow__controls {
+  background: #ffffff !important;
+  border: 1px solid #d4d8e0 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+}
+
+.canvas-theme-white .react-flow__controls-button,
+.canvas-theme-blueprint .react-flow__controls-button {
+  border-bottom: 1px solid #e5e7eb !important;
+  color: #4b5563 !important;
+  fill: #4b5563 !important;
+}
+
+.canvas-theme-white .react-flow__controls-button:hover,
+.canvas-theme-blueprint .react-flow__controls-button:hover {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+  fill: #111827 !important;
+}
+
+.canvas-theme-white .react-flow__minimap,
+.canvas-theme-blueprint .react-flow__minimap {
+  background: #ffffff !important;
+  border: 1px solid #d4d8e0 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
 }
 
 /* Theme: Gijeki Syýa (Midnight Ink & Ivory Minimal) */
