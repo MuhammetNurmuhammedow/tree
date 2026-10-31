@@ -51,10 +51,10 @@ const en = {
     },
     // Canvas themes
     themes: {
-      slate: 'Dark Slate',
-      blueprint: 'Blueprint',
-      parchment: 'Ancient Parchment',
-      obsidian: 'Deep Obsidian',
+      slate: 'Archival Slate',
+      blueprint: 'Botanical Forest',
+      parchment: 'Heritage Parchment',
+      obsidian: 'Midnight Obsidian',
     },
     // Canvas hints
     canvas: {

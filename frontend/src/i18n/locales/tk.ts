@@ -51,10 +51,10 @@ const tk = {
     },
     // Canvas themes
     themes: {
-      slate: 'Gara Daş',
-      blueprint: 'Mawy Çyzgy',
-      parchment: 'Gadymy Golýazma',
-      obsidian: 'Çuň Obsidiyan',
+      slate: 'Arhiw Klasik (Grafik)',
+      blueprint: 'Botanika (Zümrüt)',
+      parchment: 'Miras (Ýyly Parşömen)',
+      obsidian: 'Gijeki Syýa (Obsidiyan)',
     },
     // Canvas hints
     canvas: {

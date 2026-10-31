@@ -77,9 +77,9 @@ export const SpouseEdge: React.FC<EdgeProps> = ({
         id={id}
         path={edgePath}
         style={{
-          stroke: 'var(--accent-gold)',
-          strokeWidth: 2,
-          strokeDasharray: '6 3',
+          stroke: '#c59b27',
+          strokeWidth: 1.8,
+          strokeDasharray: '5 3',
         }}
       />
       {displayLabel && (
@@ -89,15 +89,16 @@ export const SpouseEdge: React.FC<EdgeProps> = ({
               position: 'absolute',
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
               fontSize: 10.5,
-              fontWeight: 600,
-              color: '#facc15',
-              background: '#0f172a',
-              border: '1px solid rgba(234, 179, 8, 0.4)',
-              padding: '2px 7px',
-              borderRadius: 6,
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.6)',
+              fontWeight: 500,
+              color: '#d4af37',
+              background: '#191b22',
+              border: '1px solid #6e541b',
+              padding: '2px 8px',
+              borderRadius: 5,
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.45)',
               pointerEvents: 'none',
               whiteSpace: 'nowrap',
+              letterSpacing: '0.02em',
             }}
           >
             {displayLabel}

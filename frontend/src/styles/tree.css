@@ -1,54 +1,63 @@
-/* ── Theme Definitions ──────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NESIL AGAJY — Tree Canvas & Person Node Styling
+   Warm, tactile, human-crafted genealogy aesthetics
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
+/* ── 1. Thematic Canvas Presets ──────────────────────────────────────────────── */
+
+/* Theme: Arhiw Klasik (Archival Slate Graphite) */
 .canvas-theme-slate {
-  --canvas-bg: #0f172a;
-  --canvas-grid: #1e293b;
-  --card-bg: #1e293b;
-  --card-border: #334155;
-  --card-text: #f8fafc;
-  --card-subtext: #94a3b8;
-  --card-accent: #3b82f6;
-  --edge-color: #64748b;
-  --spouse-color: #f59e0b;
+  --canvas-bg: #131418;
+  --canvas-grid: #21232b;
+  --card-bg: #1a1c23;
+  --card-border: #2c303c;
+  --card-text: #f5f3ee;
+  --card-subtext: #a8a296;
+  --card-accent: #c59b27;
+  --edge-color: #555b6c;
+  --spouse-color: #c59b27;
 }
 
-.canvas-theme-blueprint {
-  --canvas-bg: #091a2f;
-  --canvas-grid: #173860;
-  --card-bg: #0d2544;
-  --card-border: #1e4d7e;
-  --card-text: #e0f2fe;
-  --card-subtext: #7dd3fc;
-  --card-accent: #38bdf8;
-  --edge-color: #38bdf8;
-  --spouse-color: #fbbf24;
-}
-
+/* Theme: Miras & Agajyň Kökleri (Warm Walnut & Heritage Parchment) */
 .canvas-theme-parchment {
-  --canvas-bg: #1c1815;
-  --canvas-grid: #2e2620;
-  --card-bg: #26201b;
-  --card-border: #4a3e33;
-  --card-text: #fef3c7;
-  --card-subtext: #d5c3ab;
-  --card-accent: #d97706;
-  --edge-color: #8c7865;
-  --spouse-color: #f59e0b;
+  --canvas-bg: #171412;
+  --canvas-grid: #28221c;
+  --card-bg: #221d19;
+  --card-border: #3b322a;
+  --card-text: #faf4e8;
+  --card-subtext: #bfae9b;
+  --card-accent: #d4a359;
+  --edge-color: #706354;
+  --spouse-color: #d4a359;
 }
 
+/* Theme: Botanika & Zümrüt (Deep Cedar & Spruce Forest) */
+.canvas-theme-blueprint {
+  --canvas-bg: #101614;
+  --canvas-grid: #1c2722;
+  --card-bg: #16201b;
+  --card-border: #273730;
+  --card-text: #edf5f0;
+  --card-subtext: #9eb5a8;
+  --card-accent: #528c6e;
+  --edge-color: #4b6357;
+  --spouse-color: #c79f4c;
+}
+
+/* Theme: Gijeki Syýa (Midnight Ink & Ivory Minimal) */
 .canvas-theme-obsidian {
-  --canvas-bg: #09090b;
-  --canvas-grid: #18181b;
-  --card-bg: #121215;
-  --card-border: #27272a;
-  --card-text: #fafafa;
-  --card-subtext: #a1a1aa;
-  --card-accent: #e4e4e7;
-  --edge-color: #52525b;
-  --spouse-color: #eab308;
+  --canvas-bg: #0d0e10;
+  --canvas-grid: #181a1e;
+  --card-bg: #151619;
+  --card-border: #26282f;
+  --card-text: #f4f4f6;
+  --card-subtext: #9ea0a8;
+  --card-accent: #c59b27;
+  --edge-color: #4e5058;
+  --spouse-color: #c59b27;
 }
 
-/* ── React Flow Canvas General ───────────────────────────────────────────────── */
+/* ── 2. Canvas Wrapper & Controls ───────────────────────────────────────────── */
 
 .tree-canvas-wrapper {
   width: 100%;
@@ -56,7 +65,7 @@
   position: relative;
   overflow: hidden;
   background-color: var(--canvas-bg);
-  transition: background-color 0.25s ease;
+  transition: background-color 0.2s ease;
 }
 
 .react-flow__background {
@@ -68,7 +77,7 @@
   border: 1px solid var(--card-border) !important;
   border-radius: 8px !important;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
 }
 
 .react-flow__controls {
@@ -76,7 +85,7 @@
   border-radius: 8px !important;
   overflow: hidden;
   background: var(--card-bg) !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
 }
 
 .react-flow__controls-button {
@@ -90,60 +99,60 @@
 .react-flow__controls-button:hover {
   color: var(--card-text) !important;
   fill: var(--card-text) !important;
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
-/* ── Handcrafted Editorial Person Node Card ──────────────────────────────────── */
+/* ── 3. Handcrafted Editorial Person Node ────────────────────────────────────── */
 
 .person-node {
   background: var(--card-bg);
-  border: 2px solid var(--card-border);
-  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  border-radius: 9px;
   width: 236px;
   cursor: grab;
   position: relative;
   padding: 10px 12px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: transform 0.12s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: transform 0.12s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   user-select: none;
 }
 
 .person-node:hover {
   border-color: var(--card-accent);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--card-accent);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
 }
 
 .person-node:active {
   cursor: grabbing;
 }
 
-/* Gender-specific solid indicators */
+/* Gender & status subtle top accent lines (2px clean line, not neon blocks) */
 .person-node.node-male {
-  border-top: 4px solid #3b82f6;
+  border-top: 3px solid #52759c;
 }
 
 .person-node.node-female {
-  border-top: 4px solid #ec4899;
+  border-top: 3px solid #9c5462;
 }
 
 .person-node.node-other {
-  border-top: 4px solid #8b5cf6;
+  border-top: 3px solid #755a86;
 }
 
 .person-node.node-dead {
-  border-top: 4px solid #64748b;
-  opacity: 0.85;
-  filter: contrast(0.95);
+  border-top: 3px solid #5a5652;
+  opacity: 0.90;
 }
 
-/* Flow handle points */
+/* Flow connector handles */
 .custom-flow-handle {
-  width: 8px !important;
-  height: 8px !important;
+  width: 7px !important;
+  height: 7px !important;
   background: var(--card-border) !important;
-  border: 2px solid var(--card-bg) !important;
-  opacity: 0.6;
-  transition: opacity 0.15s;
+  border: 1.5px solid var(--card-bg) !important;
+  border-radius: 50% !important;
+  opacity: 0.5;
+  transition: opacity 0.15s, background-color 0.15s;
 }
 
 .person-node:hover .custom-flow-handle {
@@ -151,60 +160,59 @@
   background: var(--card-accent) !important;
 }
 
-/* Card Topbar */
+/* Topbar inside Card */
 .person-node__topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
-  border-bottom: 1px dashed var(--card-border);
+  margin-bottom: 7px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   padding-bottom: 5px;
 }
 
 .gender-tag {
   font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   padding: 1px 6px;
   border-radius: 4px;
 }
 
 .gender-male {
-  background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: rgba(82, 117, 156, 0.16);
+  color: #9cb8d9;
+  border: 1px solid rgba(82, 117, 156, 0.30);
 }
 
 .gender-female {
-  background: rgba(236, 72, 153, 0.15);
-  color: #f472b6;
-  border: 1px solid rgba(236, 72, 153, 0.3);
+  background: rgba(156, 84, 98, 0.16);
+  color: #d99ca7;
+  border: 1px solid rgba(156, 84, 98, 0.30);
 }
 
 .gender-other {
-  background: rgba(139, 92, 246, 0.15);
-  color: #a78bfa;
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(117, 90, 134, 0.16);
+  color: #c5b4d4;
+  border: 1px solid rgba(117, 90, 134, 0.30);
 }
 
 .status-tag {
   font-size: 10px;
-  font-weight: 600;
-  padding: 1px 5px;
+  font-weight: 500;
+  padding: 1px 6px;
   border-radius: 4px;
 }
 
 .status-living {
-  background: rgba(34, 197, 94, 0.12);
-  color: #4ade80;
-  border: 1px solid rgba(34, 197, 94, 0.25);
+  background: rgba(82, 140, 110, 0.15);
+  color: #8db597;
+  border: 1px solid rgba(82, 140, 110, 0.30);
 }
 
 .status-dead {
-  background: rgba(100, 116, 139, 0.2);
-  color: #94a3b8;
-  border: 1px solid rgba(100, 116, 139, 0.3);
+  background: rgba(90, 86, 82, 0.18);
+  color: #a39c94;
+  border: 1px solid rgba(90, 86, 82, 0.30);
 }
 
 /* Card Body */
@@ -217,39 +225,43 @@
 .person-node__avatar {
   width: 44px;
   height: 44px;
-  border-radius: 6px;
+  border-radius: 8px;
   object-fit: cover;
   border: 1px solid var(--card-border);
   flex-shrink: 0;
 }
 
+/* Wax-seal / Archival monogram stamp */
 .person-node__avatar-placeholder {
-  width: 44px;
-  height: 44px;
-  border-radius: 6px;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   flex-shrink: 0;
-  border: 1px solid var(--card-border);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .avatar-male {
-  background: #1e3a8a;
-  color: #93c5fd;
+  background: #192433;
+  color: #a8c2de;
+  border-color: #2b3b4f;
 }
 
 .avatar-female {
-  background: #831843;
-  color: #fbcfe8;
+  background: #2b191e;
+  color: #deb1b8;
+  border-color: #4f2b33;
 }
 
 .avatar-other {
-  background: #4c1d95;
-  color: #ddd6fe;
+  background: #23192b;
+  color: #cfb1de;
+  border-color: #402b4f;
 }
 
 .person-node__meta {
@@ -259,7 +271,7 @@
 
 .person-node__fullname {
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--card-text);
   line-height: 1.25;
   margin: 0;
@@ -277,6 +289,7 @@
   font-size: 11px;
   color: var(--card-subtext);
   margin-top: 1px;
+  font-style: italic;
 }
 
 .person-node__row {
@@ -293,36 +306,36 @@
 
 .meta-icon {
   flex-shrink: 0;
-  opacity: 0.7;
+  opacity: 0.65;
 }
 
-/* Hover Actions Menu */
+/* Hover Action Pill Menu (Tactile & Clean) */
 .person-node::after {
   content: '';
   position: absolute;
-  bottom: -40px;
+  bottom: -36px;
   left: 0;
   width: 100%;
-  height: 40px;
+  height: 36px;
   pointer-events: all;
 }
 
 .person-node__actions {
   position: absolute;
-  bottom: -36px;
+  bottom: -32px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 4px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  gap: 3px;
+  background: #181a20;
+  border: 1px solid #2d303b;
   border-radius: 6px;
-  padding: 3px 4px;
+  padding: 3px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.15s ease, transform 0.15s ease;
   z-index: 40;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
   white-space: nowrap;
 }
 
@@ -336,60 +349,59 @@
   align-items: center;
   gap: 4px;
   font-size: 11px;
-  font-weight: 600;
-  padding: 4px 8px;
+  font-weight: 500;
+  padding: 4px 7px;
   border-radius: 4px;
-  border: 1px solid var(--card-border);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
   color: var(--card-subtext);
   cursor: pointer;
   transition: all 0.12s ease;
 }
 
 .action-btn:hover {
-  background: var(--card-accent);
-  color: #ffffff;
-  border-color: var(--card-accent);
+  background: var(--card-border);
+  color: var(--card-text);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .action-view:hover {
-  background: #334155;
-  color: #ffffff;
+  background: var(--card-accent);
+  color: #121316;
 }
 
-/* ── Edge Styling ────────────────────────────────────────────────────────────── */
+/* ── 4. Edge Line Styling ────────────────────────────────────────────────────── */
 
 .react-flow__edge.blood-edge path {
   stroke: var(--edge-color) !important;
-  stroke-width: 2.2 !important;
+  stroke-width: 2 !important;
 }
 
 .react-flow__edge.spouse-edge path {
   stroke: var(--spouse-color) !important;
-  stroke-width: 2 !important;
-  stroke-dasharray: 6 3 !important;
+  stroke-width: 1.8 !important;
+  stroke-dasharray: 5 3 !important;
 }
 
-/* ── Node Search Highlight Animation ─────────────────────────────────────────── */
+/* ── 5. Natural Node Focus Highlight (Warm Gold Ambient, Not Neon Cyan) ──────── */
 
 @keyframes nodeSearchPulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.9), 0 0 30px rgba(56, 189, 248, 0.7);
-    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(197, 155, 39, 0.7), 0 2px 12px rgba(0, 0, 0, 0.4);
+    border-color: #c59b27 !important;
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(56, 189, 248, 0.4), 0 0 50px rgba(56, 189, 248, 0.9);
-    transform: scale(1.05);
-    border-color: #38bdf8 !important;
+    box-shadow: 0 0 0 6px rgba(197, 155, 39, 0.25), 0 4px 20px rgba(197, 155, 39, 0.35);
+    border-color: #d4a359 !important;
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0), 0 0 30px rgba(56, 189, 248, 0.7);
-    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(197, 155, 39, 0), 0 2px 12px rgba(0, 0, 0, 0.4);
+    border-color: #c59b27 !important;
   }
 }
 
 .person-node.node-highlighted {
-  animation: nodeSearchPulse 1.4s infinite ease-in-out !important;
-  border-color: #38bdf8 !important;
+  animation: nodeSearchPulse 1.6s infinite ease-in-out !important;
+  border-color: #c59b27 !important;
   z-index: 1000 !important;
 }

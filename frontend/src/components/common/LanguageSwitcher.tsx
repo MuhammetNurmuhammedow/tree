@@ -37,18 +37,18 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
           alignItems: 'center',
           gap: compact ? 4 : 6,
           padding: compact ? '5px 8px' : '6px 12px',
-          borderRadius: 8,
-          border: '1px solid rgba(255,255,255,0.12)',
-          background: open ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)',
-          color: '#cbd5e1',
-          fontSize: 13,
+          borderRadius: 6,
+          border: '1px solid #2d303b',
+          background: open ? '#22242d' : '#1a1c22',
+          color: '#dedbd2',
+          fontSize: 12.5,
           cursor: 'pointer',
           fontWeight: 500,
-          transition: 'background 0.15s',
+          transition: 'background 0.12s',
           whiteSpace: 'nowrap',
         }}
       >
-        <span style={{ fontSize: 16, lineHeight: 1 }}>{current.flag}</span>
+        <span style={{ fontSize: 15, lineHeight: 1 }}>{current.flag}</span>
         {!compact && <span>{current.label}</span>}
         <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style={{ opacity: 0.6, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>
           <path d="M1 3l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" />
@@ -60,11 +60,11 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
           position: 'absolute',
           top: 'calc(100% + 6px)',
           right: 0,
-          background: '#1e293b',
-          border: '1px solid rgba(255,255,255,0.12)',
-          borderRadius: 10,
+          background: '#17181f',
+          border: '1px solid #2d303b',
+          borderRadius: 8,
           overflow: 'hidden',
-          boxShadow: '0 12px 32px rgba(0,0,0,0.5)',
+          boxShadow: '0 12px 32px rgba(0,0,0,0.6)',
           zIndex: 9999,
           minWidth: 150,
         }}>
@@ -79,23 +79,23 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
                   alignItems: 'center',
                   gap: 10,
                   width: '100%',
-                  padding: '10px 14px',
+                  padding: '9px 12px',
                   border: 'none',
-                  background: isActive ? 'rgba(56,189,248,0.12)' : 'transparent',
-                  color: isActive ? '#38bdf8' : '#cbd5e1',
-                  fontSize: 13,
+                  background: isActive ? 'rgba(197, 155, 39, 0.15)' : 'transparent',
+                  color: isActive ? '#d4af37' : '#dedbd2',
+                  fontSize: 12.5,
                   fontWeight: isActive ? 600 : 400,
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'background 0.1s',
                 }}
-                onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.06)'; }}
+                onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = '#22242d'; }}
                 onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
               >
-                <span style={{ fontSize: 18 }}>{lang.flag}</span>
+                <span style={{ fontSize: 16 }}>{lang.flag}</span>
                 <span>{lang.label}</span>
                 {isActive && (
-                  <span style={{ marginLeft: 'auto', fontSize: 11, opacity: 0.7 }}>✓</span>
+                  <span style={{ marginLeft: 'auto', fontSize: 11, opacity: 0.8, color: '#d4af37' }}>✓</span>
                 )}
               </button>
             );

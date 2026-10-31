@@ -1,4 +1,7 @@
-/* ── Global CSS Variables & Base Styles ─────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NESIL AGAJY — Human-Crafted Heritage & Archival Design System
+   Natural, warm, dignified genealogy aesthetic (No generic AI neon/glassmorphism)
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
 @tailwind base;
 @tailwind components;
@@ -7,35 +10,50 @@
 :root {
   color-scheme: dark;
 
-  /* Premium Dark Theme */
-  --bg-primary:     #080a0f;
-  --bg-secondary:   #10141e;
-  --bg-card:        rgba(16, 20, 30, 0.75);
-  --bg-card-hover:  rgba(26, 32, 48, 0.90);
-  --border-color:   rgba(255, 255, 255, 0.12);
-  --border-focus:   rgba(79, 142, 247, 0.6);
-  --text-primary:   #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted:     #64748b;
+  /* ── Core Archival Heritage Palette ── */
+  --bg-primary:      #121316; /* Deep warm graphite/charcoal */
+  --bg-secondary:    #18191e; /* Natural card / surface layer */
+  --bg-tertiary:     #21232b; /* Elevated hover / input layer */
+  --bg-card:         #191b22;
+  --bg-card-hover:   #21242d;
 
-  /* Accent Colors */
-  --accent-blue:    #3b82f6;
-  --accent-blue-glow: rgba(59, 130, 246, 0.35);
-  --accent-gold:    #eab308;
-  --accent-rose:    #f43f5e;
-  --accent-emerald: #10b981;
+  /* Fine tactile borders (hairline, not neon) */
+  --border-color:    #2a2d37;
+  --border-subtle:   #22242c;
+  --border-focus:    #b88a44; /* Antique brass / warm gold */
 
-  /* Node colors by gender */
-  --node-male:    #3b82f6;
-  --node-female:  #ec4899;
-  --node-other:   #8b5cf6;
-  --node-unknown: #64748b;
-  --node-dead:    #475569;
+  /* Natural archival typography (warm ivory & muted linen) */
+  --text-primary:    #f5f2eb; /* Warm alabaster */
+  --text-secondary:  #b8b2a5; /* Warm linen / muted stone */
+  --text-muted:      #7c766b; /* Muted sepia ink */
 
-  /* Glassmorphism */
-  --glass-bg:      rgba(15, 20, 32, 0.70);
-  --glass-border:  rgba(255, 255, 255, 0.14);
-  --glass-blur:    16px;
+  /* ── Human Heritage Accents (Grounded & Respectful) ── */
+  --accent-gold:     #c59b27; /* Antique brass / lineage gold */
+  --accent-gold-soft: rgba(197, 155, 39, 0.15);
+  --accent-forest:   #346850; /* Cedar & spruce root green */
+  --accent-wine:     #8f3e4e; /* Antique burgundy / damask */
+  --accent-slate:    #4a6583; /* Archival navy / slate */
+
+  /* ── Lineage Identity Colors (Subdued & Dignified) ── */
+  --node-male-bar:    #4b6f96; /* Refined steel navy */
+  --node-male-bg:     #17202c;
+  --node-male-text:   #c8d7e6;
+
+  --node-female-bar:  #9c5462; /* Antique rosewood */
+  --node-female-bg:   #271a1e;
+  --node-female-text: #e6c5cc;
+
+  --node-other-bar:   #755a86;
+  --node-other-bg:    #211a26;
+  --node-other-text:  #d8cce0;
+
+  --node-dead-bar:    #5a5652; /* Memorial granite */
+  --node-dead-bg:     #1c1a18;
+  --node-dead-text:   #9e978e;
+
+  --status-living-bg: rgba(67, 103, 78, 0.20);
+  --status-living-border: rgba(90, 138, 105, 0.40);
+  --status-living-text: #8db597;
 }
 
 * {
@@ -49,48 +67,50 @@ html, body, #root {
   width: 100%;
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   color-scheme: dark;
 }
 
-/* ── Form Controls Default Dark Styling (Fixing white background issues) ──── */
+/* ── Form Controls Default Dark Styling ── */
 input, select, textarea {
   color-scheme: dark;
-  background-color: rgba(255, 255, 255, 0.05) !important;
+  background-color: #15161b !important;
   color: var(--text-primary) !important;
   border: 1px solid var(--border-color);
   outline: none;
   font-family: inherit;
-  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  border-radius: 6px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 input:focus, select:focus, textarea:focus {
-  border-color: var(--accent-blue) !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
-  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--accent-gold) !important;
+  box-shadow: 0 0 0 2px rgba(197, 155, 39, 0.20) !important;
 }
 
-/* Fix browser native select dropdown option styling */
 select option {
-  background-color: #121622 !important;
-  color: #f1f5f9 !important;
+  background-color: #181a21 !important;
+  color: #f5f2eb !important;
   padding: 8px 12px;
 }
 
-select option:hover, select option:checked {
-  background-color: #2563eb !important;
-  color: #ffffff !important;
+/* ── Custom Scrollbar (Warm archival style) ── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-/* Date picker calendar styling */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.85);
-  cursor: pointer;
+::-webkit-scrollbar-track {
+  background: #121316;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+::-webkit-scrollbar-thumb {
+  background: #2b2e38;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3b3f4d;
+}

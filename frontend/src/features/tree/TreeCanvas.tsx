@@ -52,33 +52,33 @@ interface ThemeConfig {
 const THEMES: Record<CanvasTheme, ThemeConfig> = {
   slate: {
     id: 'slate',
-    name: 'Koyu Taş (Slate)',
-    bgHex: '#0f172a',
-    gridColor: '#334155',
+    name: 'Arhiw Klasik (Archival Slate)',
+    bgHex: '#131418',
+    gridColor: '#21232b',
     variant: BackgroundVariant.Dots,
     gap: 22,
   },
-  blueprint: {
-    id: 'blueprint',
-    name: 'Mavi Plan (Blueprint)',
-    bgHex: '#091a2f',
-    gridColor: '#1e4d7e',
-    variant: BackgroundVariant.Lines,
-    gap: 28,
-  },
   parchment: {
     id: 'parchment',
-    name: 'Antik Parşömen (Heritage)',
-    bgHex: '#1c1815',
-    gridColor: '#3d342a',
+    name: 'Miras (Warm Walnut & Linen)',
+    bgHex: '#171412',
+    gridColor: '#28221c',
     variant: BackgroundVariant.Cross,
     gap: 24,
   },
+  blueprint: {
+    id: 'blueprint',
+    name: 'Botanika (Cedar & Spruce)',
+    bgHex: '#101614',
+    gridColor: '#1c2722',
+    variant: BackgroundVariant.Lines,
+    gap: 26,
+  },
   obsidian: {
     id: 'obsidian',
-    name: 'Derin Obsidyen (Minimal)',
-    bgHex: '#09090b',
-    gridColor: '#27272a',
+    name: 'Gijeki Syýa (Midnight Ink)',
+    bgHex: '#0d0e10',
+    gridColor: '#181a1e',
     variant: BackgroundVariant.Dots,
     gap: 20,
   },
@@ -290,9 +290,9 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
   if (isLoading && nodes.length === 0) {
     return (
       <div className={`tree-canvas-wrapper canvas-theme-${theme} flex items-center justify-center`}>
-        <div className="flex items-center gap-3 px-5 py-3 rounded-md border border-slate-700 bg-slate-800/80 text-slate-300 text-sm font-medium shadow-lg">
-          <TreeIcon className="animate-spin text-slate-400" size={20} />
-          <span>Soy ağacı ve nesil dizilimi hesaplanıyor...</span>
+        <div className="flex items-center gap-3 px-5 py-3 rounded-md border border-[#2d303b] bg-[#181a20] text-[#dedbd2] text-sm font-medium shadow-lg">
+          <TreeIcon className="animate-spin text-[#c59b27]" size={20} />
+          <span>Soy ağacı we nesil tertibi hasaplanýar...</span>
         </div>
       </div>
     );
@@ -302,14 +302,14 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
   if (error && nodes.length === 0) {
     return (
       <div className={`tree-canvas-wrapper canvas-theme-${theme} flex flex-col items-center justify-center gap-4`}>
-        <div className="px-6 py-4 rounded-md border border-rose-800/50 bg-rose-950/40 text-rose-300 text-sm flex flex-col items-center gap-3 max-w-md text-center">
+        <div className="px-6 py-4 rounded-md border border-[#4d252a] bg-[#231518] text-[#e0b0b8] text-sm flex flex-col items-center gap-3 max-w-md text-center">
           <span className="font-semibold">{error}</span>
           <button
             type="button"
             onClick={reload}
-            className="px-4 py-2 rounded bg-rose-700 hover:bg-rose-600 text-white font-medium text-xs transition"
+            className="px-4 py-2 rounded bg-[#5c2a31] hover:bg-[#73353e] text-white font-medium text-xs transition"
           >
-            Yeniden Dene
+            Täzeden Synanyş
           </button>
         </div>
       </div>
@@ -319,13 +319,13 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
   // ── Empty state ───────────────────────────────────────────────────────────
   if (!isLoading && nodes.length === 0) {
     return (
-      <div className={`tree-canvas-wrapper canvas-theme-${theme} flex flex-col items-center justify-center gap-4 text-slate-400`}>
-        <div className="p-4 rounded-full border-2 border-dashed border-slate-700 bg-slate-800/50">
-          <TreeIcon size={36} className="text-slate-500" />
+      <div className={`tree-canvas-wrapper canvas-theme-${theme} flex flex-col items-center justify-center gap-4 text-[#9ea0a8]`}>
+        <div className="p-4 rounded-full border border-dashed border-[#3a3e4c] bg-[#1a1c22]">
+          <TreeIcon size={34} className="text-[#c59b27]" />
         </div>
-        <div className="text-base font-semibold text-slate-200">Ağaç Henüz Boş</div>
-        <div className="text-xs text-slate-400 max-w-sm text-center">
-          Bu ağaçta henüz kayıtlı birey bulunmuyor. Üst panelden "+ Yeni Kişi Ekle" butonuna tıklayarak ilk aile üyenizi ekleyin.
+        <div className="text-base font-semibold text-[#f5f2eb]">Agaç Entäk Boş</div>
+        <div className="text-xs text-[#9e978e] max-w-sm text-center leading-relaxed">
+          Bu agaçda entäk bellige alnan şahs ýok. Ýokarky panelden "+ Täze Maşgala Agzasy" düwmesine basyp ilkinji maşgala agzanyzy goşuň.
         </div>
       </div>
     );
@@ -345,10 +345,10 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
           <button
             type="button"
             onClick={handleResetLayout}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-700 bg-slate-900/90 hover:bg-slate-800 text-slate-200 text-xs font-semibold shadow-lg backdrop-blur transition active:scale-95"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#2d303b] bg-[#16181e] hover:bg-[#20222a] text-[#dedbd2] text-xs font-medium shadow-md transition active:scale-95"
             title="Sürüklenmiş düğümleri otomatik hiyerarşik dizilime geri döndürür"
           >
-            <RefreshIcon size={14} className="text-slate-400" />
+            <RefreshIcon size={13} className="text-[#9ea0a8]" />
             <span>{t('toolbar.resetLayout')}</span>
           </button>
 
@@ -360,16 +360,16 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
                 setShowThemeMenu(!showThemeMenu);
                 setShowExportMenu(false);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-700 bg-slate-900/90 hover:bg-slate-800 text-slate-200 text-xs font-semibold shadow-lg backdrop-blur transition active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#2d303b] bg-[#16181e] hover:bg-[#20222a] text-[#dedbd2] text-xs font-medium shadow-md transition active:scale-95"
               title="Tuval Arka Plan Temasını Değiştir"
             >
-              <PaletteIcon size={14} className="text-slate-400" />
+              <PaletteIcon size={13} className="text-[#c59b27]" />
               <span>{t('toolbar.theme')}</span>
             </button>
 
             {showThemeMenu && (
-              <div className="absolute right-0 mt-1.5 w-56 rounded-md border border-slate-700 bg-slate-900 shadow-2xl p-1.5 z-50 flex flex-col gap-1">
-                <div className="text-[11px] font-bold text-slate-400 px-2 py-1 uppercase tracking-wider border-b border-slate-800">
+              <div className="absolute right-0 mt-1.5 w-56 rounded-md border border-[#2d303b] bg-[#17181f] shadow-2xl p-1.5 z-50 flex flex-col gap-1">
+                <div className="text-[10px] font-bold text-[#8a867c] px-2 py-1 uppercase tracking-wider border-b border-[#252833]">
                   {t('toolbar.theme')}
                 </div>
                 {(Object.keys(THEMES) as CanvasTheme[]).map((tKey) => {
@@ -380,20 +380,20 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
                       key={tKey}
                       type="button"
                       onClick={() => handleSelectTheme(tKey)}
-                      className={`flex items-center justify-between px-2.5 py-2 rounded text-xs font-medium transition text-left ${
+                      className={`flex items-center justify-between px-2.5 py-1.5 rounded text-xs font-medium transition text-left ${
                         isSelected
-                          ? 'bg-slate-800 text-white font-semibold'
-                          : 'text-slate-300 hover:bg-slate-800/60'
+                          ? 'bg-[#252833] text-[#f5f2eb] font-semibold'
+                          : 'text-[#dedbd2] hover:bg-[#20222a]'
                       }`}
                     >
                       <div className="flex items-center gap-2">
                         <span
-                          className="w-3.5 h-3.5 rounded border border-slate-600 flex-shrink-0"
+                          className="w-3.5 h-3.5 rounded border border-[#3b3f4f] flex-shrink-0"
                           style={{ backgroundColor: tObj.bgHex }}
                         />
                         <span>{t(`themes.${tKey}`)}</span>
                       </div>
-                      {isSelected && <CheckIcon size={14} className="text-emerald-400" />}
+                      {isSelected && <CheckIcon size={13} className="text-[#c59b27]" />}
                     </button>
                   );
                 })}
@@ -410,39 +410,39 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
                 setShowExportMenu(!showExportMenu);
                 setShowThemeMenu(false);
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-700 bg-emerald-950/80 hover:bg-emerald-900 border-emerald-700/60 text-emerald-300 text-xs font-semibold shadow-lg backdrop-blur transition active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#3f5746] bg-[#1a2d21] hover:bg-[#22392b] text-[#cbe3d3] text-xs font-medium shadow-md transition active:scale-95"
               title="Ağacı PNG veya PDF Olarak Dışa Aktar"
             >
-              <DownloadIcon size={14} />
+              <DownloadIcon size={13} />
               <span>{t('toolbar.export')}</span>
             </button>
 
             {showExportMenu && (
-              <div className="absolute right-0 mt-1.5 w-52 rounded-md border border-slate-700 bg-slate-900 shadow-2xl p-1.5 z-50 flex flex-col gap-1">
-                <div className="text-[11px] font-bold text-slate-400 px-2 py-1 uppercase tracking-wider border-b border-slate-800">
+              <div className="absolute right-0 mt-1.5 w-52 rounded-md border border-[#2d303b] bg-[#17181f] shadow-2xl p-1.5 z-50 flex flex-col gap-1">
+                <div className="text-[10px] font-bold text-[#8a867c] px-2 py-1 uppercase tracking-wider border-b border-[#252833]">
                   {t('toolbar.export')}
                 </div>
                 <button
                   type="button"
                   onClick={exportToPNG}
-                  className="flex items-center gap-2.5 px-2.5 py-2 rounded text-xs text-slate-200 hover:bg-slate-800 transition text-left"
+                  className="flex items-center gap-2.5 px-2.5 py-2 rounded text-xs text-[#dedbd2] hover:bg-[#22242d] transition text-left"
                 >
-                  <ImageIcon size={15} className="text-sky-400" />
+                  <ImageIcon size={14} className="text-[#c59b27]" />
                   <div>
-                    <div className="font-semibold">PNG</div>
-                    <div className="text-[10px] text-slate-400">{t('toolbar.exportPng')}</div>
+                    <div className="font-medium text-[#f5f2eb]">PNG</div>
+                    <div className="text-[10px] text-[#9ea0a8]">{t('toolbar.exportPng')}</div>
                   </div>
                 </button>
 
                 <button
                   type="button"
                   onClick={exportToPDF}
-                  className="flex items-center gap-2.5 px-2.5 py-2 rounded text-xs text-slate-200 hover:bg-slate-800 transition text-left"
+                  className="flex items-center gap-2.5 px-2.5 py-2 rounded text-xs text-[#dedbd2] hover:bg-[#22242d] transition text-left"
                 >
-                  <FilePdfIcon size={15} className="text-rose-400" />
+                  <FilePdfIcon size={14} className="text-[#a8525e]" />
                   <div>
-                    <div className="font-semibold">PDF</div>
-                    <div className="text-[10px] text-slate-400">{t('toolbar.exportPdf')}</div>
+                    <div className="font-medium text-[#f5f2eb]">PDF</div>
+                    <div className="text-[10px] text-[#9ea0a8]">{t('toolbar.exportPdf')}</div>
                   </div>
                 </button>
               </div>

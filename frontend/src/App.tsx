@@ -175,21 +175,32 @@ const App: React.FC = () => {
     <div style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-primary)' }}>
       {/* ── Top Header ─────────────────────────────────────────────────────────── */}
       <header style={{
-        height: 60,
+        height: 58,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '0 20px',
-        background: '#0d131f',
-        borderBottom: '1px solid #1e293b',
+        background: '#15161c',
+        borderBottom: '1px solid #262832',
         flexShrink: 0,
         zIndex: 50,
         gap: 16,
       }}>
         {/* Brand & Tree Selector */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className="flex items-center justify-center w-8 h-8 rounded border border-emerald-500/30 bg-emerald-950/40 text-emerald-400">
-            <TreeIcon size={20} />
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 32,
+            height: 32,
+            borderRadius: 7,
+            border: '1px solid #5a4722',
+            background: '#242018',
+            color: '#d4af37',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+          }}>
+            <TreeIcon size={18} />
           </div>
 
           {/* Tree Dropdown Selector */}
@@ -199,11 +210,11 @@ const App: React.FC = () => {
                 value={currentTreeId}
                 onChange={(e) => setCurrentTreeId(e.target.value)}
                 style={{
-                  background: '#1e293b',
-                  border: '1px solid #334155',
+                  background: '#1b1d24',
+                  border: '1px solid #2d303b',
                   borderRadius: 6,
                   padding: '4px 10px',
-                  color: '#f8fafc',
+                  color: '#f5f2eb',
                   fontSize: 13,
                   fontWeight: 600,
                   cursor: 'pointer',
@@ -224,9 +235,9 @@ const App: React.FC = () => {
                 style={{
                   padding: '4px 10px',
                   borderRadius: 6,
-                  border: '1px solid rgba(16, 185, 129, 0.4)',
-                  background: 'rgba(16, 185, 129, 0.1)',
-                  color: '#34d399',
+                  border: '1px solid rgba(197, 155, 39, 0.4)',
+                  background: 'rgba(197, 155, 39, 0.1)',
+                  color: '#d4af37',
                   fontSize: 11,
                   fontWeight: 600,
                   cursor: 'pointer',
@@ -234,6 +245,7 @@ const App: React.FC = () => {
                   alignItems: 'center',
                   gap: 4,
                   whiteSpace: 'nowrap',
+                  transition: 'background 0.15s ease',
                 }}
               >
                 <PlusIcon size={12} />
@@ -243,12 +255,12 @@ const App: React.FC = () => {
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
               {isReadOnly ? (
-                <span className="flex items-center gap-1 text-[10px] text-amber-400 font-medium">
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: '#d4a359', fontWeight: 500 }}>
                   <ShieldIcon size={10} />
                   <span>{tl('tree.readOnly')}</span>
                 </span>
               ) : (
-                <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: '#8db597', fontWeight: 500 }}>
                   <EditIcon size={10} />
                   <span>{tl('tree.editable')}</span>
                 </span>
@@ -262,20 +274,20 @@ const App: React.FC = () => {
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            background: '#090d16',
-            border: '1px solid #1e293b',
-            borderRadius: 8,
+            background: '#13141a',
+            border: '1px solid #2a2c36',
+            borderRadius: 7,
             padding: '3px 8px 3px 4px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
-            transition: 'border-color 0.15s, box-shadow 0.15s',
+            boxShadow: '0 1px 4px rgba(0, 0, 0, 0.3)',
+            transition: 'border-color 0.15s',
           }}>
             {/* Integrated Scope Switcher */}
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
-              background: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderRadius: 6,
+              background: '#1a1c24',
+              border: '1px solid #282a35',
+              borderRadius: 5,
               padding: '2px',
               marginRight: 8,
               flexShrink: 0,
@@ -287,13 +299,13 @@ const App: React.FC = () => {
                 style={{
                   padding: '3px 8px',
                   borderRadius: 4,
-                  border: 'none',
-                  background: searchScope === 'current' ? '#2563eb' : 'transparent',
-                  color: searchScope === 'current' ? '#ffffff' : '#94a3b8',
+                  border: searchScope === 'current' ? '1px solid #3c4050' : '1px solid transparent',
+                  background: searchScope === 'current' ? '#272a36' : 'transparent',
+                  color: searchScope === 'current' ? '#f5f2eb' : '#9ea0a8',
                   fontSize: 11,
                   fontWeight: searchScope === 'current' ? 600 : 400,
                   cursor: 'pointer',
-                  transition: 'all 0.15s ease',
+                  transition: 'all 0.12s ease',
                   whiteSpace: 'nowrap',
                 }}
               >
@@ -306,13 +318,13 @@ const App: React.FC = () => {
                 style={{
                   padding: '3px 8px',
                   borderRadius: 4,
-                  border: 'none',
-                  background: searchScope === 'all' ? '#2563eb' : 'transparent',
-                  color: searchScope === 'all' ? '#ffffff' : '#94a3b8',
+                  border: searchScope === 'all' ? '1px solid #3c4050' : '1px solid transparent',
+                  background: searchScope === 'all' ? '#272a36' : 'transparent',
+                  color: searchScope === 'all' ? '#f5f2eb' : '#9ea0a8',
                   fontSize: 11,
                   fontWeight: searchScope === 'all' ? 600 : 400,
                   cursor: 'pointer',
-                  transition: 'all 0.15s ease',
+                  transition: 'all 0.12s ease',
                   whiteSpace: 'nowrap',
                 }}
               >
@@ -321,7 +333,7 @@ const App: React.FC = () => {
             </div>
 
             {/* Search Icon */}
-            <span style={{ color: '#64748b', display: 'flex', alignItems: 'center', marginRight: 6, flexShrink: 0 }}>
+            <span style={{ color: '#8a867c', display: 'flex', alignItems: 'center', marginRight: 6, flexShrink: 0 }}>
               <SearchIcon size={14} />
             </span>
 
@@ -336,7 +348,7 @@ const App: React.FC = () => {
                 flex: 1,
                 border: 'none',
                 background: 'transparent',
-                color: '#f8fafc',
+                color: '#f5f2eb',
                 fontSize: 12,
                 outline: 'none',
                 padding: '4px 0',
@@ -356,7 +368,7 @@ const App: React.FC = () => {
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: '#94a3b8',
+                  color: '#9ea0a8',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -368,7 +380,7 @@ const App: React.FC = () => {
               </button>
             )}
             {isSearching && (
-              <span style={{ fontSize: 11, color: '#38bdf8', marginLeft: 4, flexShrink: 0 }}>…</span>
+              <span style={{ fontSize: 11, color: '#d4af37', marginLeft: 4, flexShrink: 0 }}>…</span>
             )}
           </div>
 
@@ -379,10 +391,10 @@ const App: React.FC = () => {
               top: 'calc(100% + 6px)',
               left: 0,
               right: 0,
-              background: '#0f172a',
-              border: '1px solid #334155',
+              background: '#161820',
+              border: '1px solid #2c303c',
               borderRadius: 8,
-              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.85)',
+              boxShadow: '0 12px 32px rgba(0, 0, 0, 0.65)',
               maxHeight: 340,
               overflowY: 'auto',
               zIndex: 100,
@@ -390,13 +402,15 @@ const App: React.FC = () => {
             }}>
               <div style={{
                 fontSize: 10,
-                fontWeight: 700,
-                color: '#64748b',
+                fontWeight: 600,
+                color: '#8a867c',
                 padding: '6px 10px',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
                 display: 'flex',
                 justifyContent: 'space-between',
+                borderBottom: '1px solid #232632',
+                marginBottom: 4,
               }}>
                 <span>{tl('search.foundCount')}</span>
                 <span>{searchResults.length}</span>
@@ -405,15 +419,15 @@ const App: React.FC = () => {
                 <div
                   key={item.person_id}
                   style={{
-                    padding: '8px 10px',
+                    padding: '7px 10px',
                     borderRadius: 6,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    transition: 'background 0.15s',
+                    transition: 'background 0.12s',
                     marginBottom: 2,
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = '#1e293b'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = '#212430'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   <div
@@ -421,31 +435,33 @@ const App: React.FC = () => {
                     style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', flex: 1 }}
                   >
                     <div style={{
-                      width: 30, height: 30, borderRadius: 5,
-                      background: item.gender === 'female' ? '#831843' : '#1e3a8a',
-                      color: item.gender === 'female' ? '#fbcfe8' : '#93c5fd',
+                      width: 28, height: 28, borderRadius: 6,
+                      background: item.gender === 'female' ? '#2b191e' : '#192433',
+                      color: item.gender === 'female' ? '#deb1b8' : '#a8c2de',
+                      border: item.gender === 'female' ? '1px solid #4f2b33' : '1px solid #2b3b4f',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 11, fontWeight: 700, flexShrink: 0,
+                      fontSize: 11, fontWeight: 600, flexShrink: 0,
                     }}>
                       {item.full_name.charAt(0)}
                     </div>
                     <div>
-                      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ fontSize: 12.5, fontWeight: 500, color: '#f5f2eb', display: 'flex', alignItems: 'center', gap: 6 }}>
                         <span>{item.full_name}</span>
                         {item.match_context && (
                           <span style={{
                             fontSize: 10,
                             padding: '1px 5px',
                             borderRadius: 4,
-                            background: 'rgba(56, 189, 248, 0.15)',
-                            color: '#38bdf8',
+                            background: 'rgba(197, 155, 39, 0.15)',
+                            color: '#d4af37',
+                            border: '1px solid rgba(197, 155, 39, 0.3)',
                             fontWeight: 500,
                           }}>
                             {item.match_context}
                           </span>
                         )}
                       </div>
-                      <div style={{ fontSize: 11, color: '#94a3b8' }}>
+                      <div style={{ fontSize: 11, color: '#9ea0a8' }}>
                         {item.years} {item.birth_place ? `• ${item.birth_place}` : ''}
                       </div>
                     </div>
@@ -454,10 +470,10 @@ const App: React.FC = () => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 8 }}>
                     <span style={{
                       fontSize: 10, padding: '2px 6px', borderRadius: 4,
-                      background: item.is_my_tree ? 'rgba(16, 185, 129, 0.12)' : 'rgba(59, 130, 246, 0.12)',
-                      color: item.is_my_tree ? '#34d399' : '#60a5fa',
-                      border: item.is_my_tree ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(59, 130, 246, 0.3)',
-                      fontWeight: 600,
+                      background: item.is_my_tree ? 'rgba(82, 140, 110, 0.16)' : 'rgba(82, 117, 156, 0.16)',
+                      color: item.is_my_tree ? '#8db597' : '#9cb8d9',
+                      border: item.is_my_tree ? '1px solid rgba(82, 140, 110, 0.30)' : '1px solid rgba(82, 117, 156, 0.30)',
+                      fontWeight: 500,
                       whiteSpace: 'nowrap',
                     }}>
                       {item.tree_name}
@@ -470,11 +486,11 @@ const App: React.FC = () => {
                       style={{
                         padding: '3px 7px',
                         borderRadius: 4,
-                        border: '1px solid #334155',
-                        background: '#1e293b',
-                        color: '#38bdf8',
+                        border: '1px solid #373b4a',
+                        background: '#20232d',
+                        color: '#d4af37',
                         fontSize: 10.5,
-                        fontWeight: 600,
+                        fontWeight: 500,
                         cursor: 'pointer',
                         whiteSpace: 'nowrap',
                       }}
@@ -489,9 +505,9 @@ const App: React.FC = () => {
                       style={{
                         padding: '3px 7px',
                         borderRadius: 4,
-                        border: '1px solid #334155',
-                        background: '#1e293b',
-                        color: '#94a3b8',
+                        border: '1px solid #373b4a',
+                        background: '#20232d',
+                        color: '#dedbd2',
                         fontSize: 10.5,
                         fontWeight: 500,
                         cursor: 'pointer',
@@ -515,13 +531,13 @@ const App: React.FC = () => {
               type="button"
               onClick={() => setCurrentTreeId('my-tree')}
               style={{
-                padding: '6px 12px',
+                padding: '5px 12px',
                 borderRadius: 6,
-                border: '1px solid rgba(59, 130, 246, 0.4)',
-                background: 'rgba(59, 130, 246, 0.12)',
-                color: '#60a5fa',
+                border: '1px solid #455268',
+                background: '#1d2736',
+                color: '#adc4de',
                 fontSize: 12,
-                fontWeight: 600,
+                fontWeight: 500,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -542,15 +558,16 @@ const App: React.FC = () => {
             style={{
               padding: '6px 11px',
               borderRadius: 6,
-              border: '1px solid #334155',
-              background: '#1e293b',
-              color: '#cbd5e1',
+              border: '1px solid #2d303b',
+              background: '#1a1c22',
+              color: '#dedbd2',
               fontSize: 12,
               fontWeight: 500,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: 5,
+              transition: 'background 0.12s ease',
             }}
           >
             <RefreshIcon size={13} className={seeding ? 'animate-spin' : ''} />
@@ -563,18 +580,19 @@ const App: React.FC = () => {
               type="button"
               onClick={() => setIsAddPersonOpen(true)}
               style={{
-                padding: '7px 15px',
+                padding: '6px 14px',
                 borderRadius: 6,
-                border: '1px solid #2563eb',
-                background: '#2563eb',
-                color: 'white',
+                border: '1px solid #3a6850',
+                background: '#254a37',
+                color: '#f5f2eb',
                 fontSize: 12.5,
                 fontWeight: 600,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 5,
-                boxShadow: '0 2px 8px rgba(37, 99, 235, 0.3)',
+                boxShadow: '0 1px 4px rgba(0, 0, 0, 0.3)',
+                transition: 'background 0.15s ease',
               }}
             >
               <PlusIcon size={14} />
@@ -584,11 +602,11 @@ const App: React.FC = () => {
             <div style={{
               padding: '5px 10px',
               borderRadius: 6,
-              background: 'rgba(234, 179, 8, 0.1)',
-              border: '1px solid rgba(234, 179, 8, 0.3)',
-              color: '#facc15',
+              background: 'rgba(197, 155, 39, 0.12)',
+              border: '1px solid rgba(197, 155, 39, 0.35)',
+              color: '#d4af37',
               fontSize: 11.5,
-              fontWeight: 600,
+              fontWeight: 500,
               display: 'flex',
               alignItems: 'center',
               gap: 5,
@@ -606,17 +624,17 @@ const App: React.FC = () => {
       {/* ── Read-only Alert Bar if viewing someone else's tree ─────────────── */}
       {isReadOnly && (
         <div style={{
-          background: '#0d1e38',
-          borderBottom: '1px solid #1e3a8a',
+          background: '#191b22',
+          borderBottom: '1px solid #2c303c',
           padding: '6px 20px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           fontSize: 12,
-          color: '#93c5fd',
+          color: '#c8d7e6',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <EyeIcon size={14} className="text-blue-400" />
+            <EyeIcon size={14} className="text-[#a8c2de]" />
             <span>
               Şu anda <strong>"{currentTree.name}"</strong> {tl('tree.readOnly')}.
               ({tl('tree.owner')}: {currentTree.owner_name})
@@ -626,13 +644,13 @@ const App: React.FC = () => {
             type="button"
             onClick={() => setCurrentTreeId('my-tree')}
             style={{
-              background: '#1d4ed8',
-              color: 'white',
-              border: 'none',
-              borderRadius: 4,
+              background: '#2b394f',
+              color: '#f5f2eb',
+              border: '1px solid #405473',
+              borderRadius: 5,
               padding: '3px 10px',
               fontSize: 11,
-              fontWeight: 600,
+              fontWeight: 500,
               cursor: 'pointer',
             }}
           >

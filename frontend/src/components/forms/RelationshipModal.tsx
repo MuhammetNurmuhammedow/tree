@@ -107,31 +107,31 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9999,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      backgroundColor: 'rgba(2, 6, 23, 0.85)', backdropFilter: 'blur(12px)',
+      backgroundColor: 'rgba(10, 11, 14, 0.82)', backdropFilter: 'blur(6px)',
     }}>
       <div style={{
-        background: '#0f172a',
-        border: '1px solid #334155',
-        borderRadius: 14,
+        background: '#161820',
+        border: '1px solid #2d303b',
+        borderRadius: 12,
         padding: '24px 28px',
         width: '100%',
         maxWidth: 500,
-        boxShadow: '0 25px 60px rgba(0, 0, 0, 0.85)',
-        color: '#f1f5f9',
+        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7)',
+        color: '#f5f2eb',
       }}>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ color: '#eab308', display: 'flex' }}><RingIcon size={20} /></span>
+            <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ color: '#c59b27', display: 'flex' }}><RingIcon size={20} /></span>
               {t('relationModal.title')}
             </h2>
-            <p style={{ margin: '4px 0 0', fontSize: 12, color: '#94a3b8' }}>
+            <p style={{ margin: '4px 0 0', fontSize: 12, color: '#a8a296' }}>
               {t('relationModal.subtitle')}
             </p>
           </div>
           <button type="button" onClick={onClose} style={closeButtonStyle}>
-            <CloseIcon size={16} />
+            <CloseIcon size={14} />
           </button>
         </div>
 
@@ -151,11 +151,11 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
                 onClick={() => handleCategoryChange('spouse')}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  padding: '8px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                  border: baseCategory === 'spouse' ? '1px solid #eab308' : '1px solid #334155',
-                  background: baseCategory === 'spouse' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                  color: baseCategory === 'spouse' ? '#facc15' : '#94a3b8',
-                  transition: 'all 0.15s',
+                  padding: '8px 10px', borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: 'pointer',
+                  border: baseCategory === 'spouse' ? '1px solid #6b521e' : '1px solid #2d303b',
+                  background: baseCategory === 'spouse' ? '#2c2518' : '#191b22',
+                  color: baseCategory === 'spouse' ? '#d4af37' : '#a8a296',
+                  transition: 'all 0.12s',
                 }}
               >
                 <HeartIcon size={13} />
@@ -167,11 +167,11 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
                 onClick={() => handleCategoryChange('parent')}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  padding: '8px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                  border: baseCategory === 'parent' ? '1px solid #38bdf8' : '1px solid #334155',
-                  background: baseCategory === 'parent' ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                  color: baseCategory === 'parent' ? '#38bdf8' : '#94a3b8',
-                  transition: 'all 0.15s',
+                  padding: '8px 10px', borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: 'pointer',
+                  border: baseCategory === 'parent' ? '1px solid #364861' : '1px solid #2d303b',
+                  background: baseCategory === 'parent' ? '#1a2432' : '#191b22',
+                  color: baseCategory === 'parent' ? '#a8c2de' : '#a8a296',
+                  transition: 'all 0.12s',
                 }}
               >
                 <UserIcon size={13} />
@@ -183,11 +183,11 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
                 onClick={() => handleCategoryChange('child')}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  padding: '8px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                  border: baseCategory === 'child' ? '1px solid #4ade80' : '1px solid #334155',
-                  background: baseCategory === 'child' ? 'rgba(74, 222, 128, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                  color: baseCategory === 'child' ? '#4ade80' : '#94a3b8',
-                  transition: 'all 0.15s',
+                  padding: '8px 10px', borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: 'pointer',
+                  border: baseCategory === 'child' ? '1px solid #365742' : '1px solid #2d303b',
+                  background: baseCategory === 'child' ? '#192a20' : '#191b22',
+                  color: baseCategory === 'child' ? '#9ec2a8' : '#a8a296',
+                  transition: 'all 0.12s',
                 }}
               >
                 <BabyIcon size={13} />
@@ -337,13 +337,13 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
               style={{
                 padding: '9px 24px',
                 borderRadius: 8,
-                border: 'none',
-                background: '#eab308',
-                color: '#0b0f19',
-                fontWeight: 700,
-                cursor: 'pointer',
-                fontSize: 13,
-                boxShadow: '0 4px 14px rgba(234, 179, 8, 0.3)',
+                border: '1px solid #3a6850',
+                background: '#254a37',
+                color: '#f5f2eb',
+                fontWeight: 600,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                fontSize: 12.5,
+                boxShadow: '0 1px 4px rgba(0, 0, 0, 0.3)',
                 opacity: persons.length === 0 ? 0.5 : 1,
               }}
             >
@@ -360,7 +360,7 @@ const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: 12,
   fontWeight: 500,
-  color: '#94a3b8',
+  color: '#a8a296',
   marginBottom: 6,
 };
 
@@ -368,21 +368,21 @@ const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '9px 12px',
   borderRadius: 8,
-  border: '1px solid #334155',
-  backgroundColor: '#1e293b',
-  color: '#f1f5f9',
+  border: '1px solid #2d303b',
+  backgroundColor: '#121318',
+  color: '#f5f2eb',
   fontSize: 13,
   outline: 'none',
   colorScheme: 'dark',
 };
 
 const closeButtonStyle: React.CSSProperties = {
-  background: 'rgba(255, 255, 255, 0.06)',
-  border: '1px solid #334155',
+  background: 'transparent',
+  border: '1px solid #2d303b',
   borderRadius: 6,
-  width: 30,
-  height: 30,
-  color: '#94a3b8',
+  width: 28,
+  height: 28,
+  color: '#a8a296',
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
@@ -390,9 +390,9 @@ const closeButtonStyle: React.CSSProperties = {
 };
 
 const errorBoxStyle: React.CSSProperties = {
-  background: 'rgba(239, 68, 68, 0.15)',
-  border: '1px solid rgba(239, 68, 68, 0.35)',
-  color: '#f87171',
+  background: 'rgba(160, 60, 70, 0.15)',
+  border: '1px solid rgba(160, 60, 70, 0.35)',
+  color: '#e0b0b8',
   padding: '10px 14px',
   borderRadius: 8,
   marginBottom: 16,
@@ -403,11 +403,11 @@ const errorBoxStyle: React.CSSProperties = {
 };
 
 const cancelButtonStyle: React.CSSProperties = {
-  padding: '9px 18px',
-  borderRadius: 8,
-  border: '1px solid #334155',
+  padding: '8px 16px',
+  borderRadius: 6,
+  border: '1px solid #2d303b',
   background: 'transparent',
-  color: '#94a3b8',
+  color: '#a8a296',
   cursor: 'pointer',
   fontSize: 13,
   fontWeight: 500,
@@ -416,11 +416,11 @@ const cancelButtonStyle: React.CSSProperties = {
 const presetChipStyle = (isSelected: boolean): React.CSSProperties => ({
   padding: '5px 10px',
   borderRadius: 6,
-  border: isSelected ? '1px solid #eab308' : '1px solid #334155',
-  background: isSelected ? 'rgba(234, 179, 8, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-  color: isSelected ? '#facc15' : '#cbd5e1',
+  border: isSelected ? '1px solid #6b521e' : '1px solid #2d303b',
+  background: isSelected ? '#282318' : '#191b22',
+  color: isSelected ? '#d4af37' : '#dedbd2',
   fontSize: 11.5,
   fontWeight: isSelected ? 600 : 400,
   cursor: 'pointer',
-  transition: 'all 0.15s',
+  transition: 'all 0.12s',
 });

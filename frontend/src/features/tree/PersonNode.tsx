@@ -84,7 +84,7 @@ const PersonNode: React.FC<NodeProps<CustomPersonNode>> = ({ data }) => {
 
           {person.maiden_name && (
             <div className="person-node__maiden">
-              Kızlık: <em>{person.maiden_name}</em>
+              {t('personModal.maidenName')}: <em>{person.maiden_name}</em>
             </div>
           )}
 

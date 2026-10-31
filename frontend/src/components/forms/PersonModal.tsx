@@ -66,28 +66,28 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9999,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      backgroundColor: 'rgba(4, 7, 13, 0.82)', backdropFilter: 'blur(16px)',
+      backgroundColor: 'rgba(10, 11, 14, 0.82)', backdropFilter: 'blur(6px)',
     }}>
       <div style={{
-        background: '#0f172a',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        borderRadius: 16,
+        background: '#161820',
+        border: '1px solid #2d303b',
+        borderRadius: 12,
         padding: '24px 28px',
         width: '100%',
         maxWidth: 540,
-        boxShadow: '0 25px 60px rgba(0, 0, 0, 0.75)',
-        color: '#f1f5f9',
+        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7)',
+        color: '#f5f2eb',
         maxHeight: '90vh',
         overflowY: 'auto',
       }}>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.02em', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ color: '#38bdf8', display: 'flex' }}><UserIcon size={20} /></span>
+            <h2 style={{ fontSize: 18, fontWeight: 600, letterSpacing: '-0.01em', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ color: '#c59b27', display: 'flex' }}><UserIcon size={20} /></span>
               {t('personModal.title')}
             </h2>
-            <p style={{ margin: '4px 0 0', fontSize: 12, color: '#94a3b8' }}>
+            <p style={{ margin: '4px 0 0', fontSize: 12, color: '#a8a296' }}>
               {t('personModal.subtitle')}
             </p>
           </div>
@@ -150,10 +150,10 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
 
           {/* Hayatta mı */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px',
-            background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.07)' }}>
+            background: '#191b22', borderRadius: 8, border: '1px solid #2d303b' }}>
             <input type="checkbox" id="isLivingModal" checked={isLiving} onChange={(e) => setIsLiving(e.target.checked)}
-              style={{ width: 18, height: 18, cursor: 'pointer', accentColor: '#3b82f6' }} />
-            <label htmlFor="isLivingModal" style={{ fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#f1f5f9' }}>
+              style={{ width: 18, height: 18, cursor: 'pointer', accentColor: '#346850' }} />
+            <label htmlFor="isLivingModal" style={{ fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#f5f2eb' }}>
               {t('personModal.isLiving')}
             </label>
           </div>
@@ -183,7 +183,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
           {/* Buttons */}
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 12 }}>
             <button type="button" onClick={onClose} style={cancelButtonStyle}>{t('personModal.cancel')}</button>
-            <button type="submit" disabled={loading} style={submitButtonStyle('#2563eb', '0 4px 14px rgba(37,99,235,0.3)')}>
+            <button type="submit" disabled={loading} style={submitButtonStyle('#254a37', '0 1px 4px rgba(0,0,0,0.3)')}>
               {loading ? t('personModal.submitting') : t('personModal.submit')}
             </button>
           </div>
@@ -196,37 +196,37 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
 // ── Shared styles ─────────────────────────────────────────────────────────────
 
 const labelStyle: React.CSSProperties = {
-  display: 'block', fontSize: 12, fontWeight: 500, color: '#94a3b8', marginBottom: 6,
+  display: 'block', fontSize: 12, fontWeight: 500, color: '#a8a296', marginBottom: 6,
 };
 
 const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '10px 14px', borderRadius: 10,
-  border: '1px solid rgba(255,255,255,0.12)',
-  backgroundColor: 'rgba(255,255,255,0.04)',
-  color: '#f1f5f9', fontSize: 13, outline: 'none', colorScheme: 'dark',
+  width: '100%', padding: '9px 12px', borderRadius: 8,
+  border: '1px solid #2d303b',
+  backgroundColor: '#121318',
+  color: '#f5f2eb', fontSize: 13, outline: 'none', colorScheme: 'dark',
 };
 
 const closeButtonStyle: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: 8, width: 32, height: 32, color: '#94a3b8',
+  background: 'transparent', border: '1px solid #2d303b',
+  borderRadius: 6, width: 28, height: 28, color: '#a8a296',
   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
 };
 
 const errorBoxStyle: React.CSSProperties = {
-  background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.35)',
-  color: '#f87171', padding: '10px 14px', borderRadius: 10, marginBottom: 18,
+  background: 'rgba(160, 60, 70, 0.15)', border: '1px solid rgba(160, 60, 70, 0.35)',
+  color: '#e0b0b8', padding: '10px 14px', borderRadius: 8, marginBottom: 18,
   fontSize: 13, display: 'flex', alignItems: 'center', gap: 8,
 };
 
 const cancelButtonStyle: React.CSSProperties = {
-  padding: '9px 18px', borderRadius: 10,
-  border: '1px solid rgba(255,255,255,0.12)',
-  background: 'transparent', color: '#94a3b8',
+  padding: '8px 16px', borderRadius: 6,
+  border: '1px solid #2d303b',
+  background: 'transparent', color: '#a8a296',
   cursor: 'pointer', fontSize: 13, fontWeight: 500,
 };
 
 const submitButtonStyle = (bg: string, shadow: string): React.CSSProperties => ({
-  padding: '9px 24px', borderRadius: 10, border: 'none',
-  background: bg, color: 'white', fontWeight: 600,
+  padding: '8px 20px', borderRadius: 6, border: '1px solid #3a6850',
+  background: bg, color: '#f5f2eb', fontWeight: 600,
   cursor: 'pointer', fontSize: 13, boxShadow: shadow,
 });

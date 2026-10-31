@@ -51,10 +51,10 @@ const ru = {
     },
     // Canvas themes
     themes: {
-      slate: 'Тёмный Сланец',
-      blueprint: 'Синий Чертёж',
-      parchment: 'Старинный Пергамент',
-      obsidian: 'Тёмный Обсидиан',
+      slate: 'Архивный Сланец',
+      blueprint: 'Ботаника и Хвоя',
+      parchment: 'Тёплый Пергамент',
+      obsidian: 'Ночные Чернила',
     },
     // Canvas hints
     canvas: {
