@@ -31,12 +31,12 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
     <div ref={ref} style={{ position: 'relative' }}>
       <button
         onClick={() => setOpen((o) => !o)}
-        title="Dil / Language / Язык"
+        title="Dil / Language / Ýazyk"
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: compact ? 4 : 6,
-          padding: compact ? '5px 8px' : '6px 12px',
+          gap: compact ? 6 : 8,
+          padding: compact ? '4px 8px' : '5px 12px',
           borderRadius: 6,
           border: '1px solid #2d303b',
           background: open ? '#22242d' : '#1a1c22',
@@ -48,7 +48,19 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
           whiteSpace: 'nowrap',
         }}
       >
-        <span style={{ fontSize: 15, lineHeight: 1 }}>{current.flag}</span>
+        <span style={{
+          fontSize: 10,
+          fontWeight: 700,
+          letterSpacing: '0.04em',
+          padding: '1px 5px',
+          borderRadius: 4,
+          background: '#252834',
+          color: '#d4af37',
+          border: '1px solid #3d4253',
+          lineHeight: 1.3,
+        }}>
+          {current.badge}
+        </span>
         {!compact && <span>{current.label}</span>}
         <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style={{ opacity: 0.6, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>
           <path d="M1 3l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" />
@@ -92,7 +104,21 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
                 onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = '#22242d'; }}
                 onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
               >
-                <span style={{ fontSize: 16 }}>{lang.flag}</span>
+                <span style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
+                  padding: '1px 5px',
+                  borderRadius: 4,
+                  background: isActive ? '#342918' : '#22242e',
+                  color: isActive ? '#d4af37' : '#9ea0a8',
+                  border: isActive ? '1px solid #6b521e' : '1px solid #333647',
+                  minWidth: 26,
+                  textAlign: 'center',
+                  lineHeight: 1.3,
+                }}>
+                  {lang.badge}
+                </span>
                 <span>{lang.label}</span>
                 {isActive && (
                   <span style={{ marginLeft: 'auto', fontSize: 11, opacity: 0.8, color: '#d4af37' }}>✓</span>

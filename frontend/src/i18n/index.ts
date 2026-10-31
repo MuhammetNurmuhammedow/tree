@@ -31,9 +31,9 @@ i18n
 export default i18n;
 
 export const SUPPORTED_LANGUAGES = [
-  { code: 'tk', label: 'Türkmençe', flag: '🇹🇲' },
-  { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'ru', label: 'Русский', flag: '🇷🇺' },
+  { code: 'tk', label: 'Türkmençe', badge: 'TK' },
+  { code: 'en', label: 'English', badge: 'EN' },
+  { code: 'ru', label: 'Русский', badge: 'RU' },
 ] as const;
 
 export type LangCode = 'tk' | 'en' | 'ru';
