@@ -1015,35 +1015,48 @@
   border: 1px solid rgba(90, 86, 82, 0.30);
 }
 
-/* Card Body */
+/* Card Body - Column layout with Round Avatar ABOVE info */
 .person-node__body {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  width: 100%;
 }
 
-.person-node__avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  object-fit: cover;
-  border: 1px solid var(--card-border);
-  flex-shrink: 0;
-}
-
-/* Wax-seal / Archival monogram stamp */
-.person-node__avatar-placeholder {
-  width: 42px;
-  height: 42px;
-  border-radius: 8px;
+.person-node__avatar-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
-  font-weight: 600;
+  margin-top: 1px;
+  margin-bottom: 2px;
+}
+
+.person-node__avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--card-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+/* Wax-seal / Archival monogram stamp - Circular */
+.person-node__avatar-placeholder {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
   letter-spacing: 0.04em;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .avatar-male {
@@ -1065,7 +1078,11 @@
 }
 
 .person-node__meta {
-  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   min-width: 0;
 }
 
@@ -1079,6 +1096,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   letter-spacing: -0.01em;
+  text-align: center;
+  width: 100%;
 }
 
 .person-node__fullname strong {
@@ -1090,11 +1109,14 @@
   color: var(--card-subtext);
   margin-top: 1px;
   font-style: italic;
+  text-align: center;
+  width: 100%;
 }
 
 .person-node__row {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
   font-size: 11px;
   color: var(--card-subtext);
@@ -1102,6 +1124,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  width: 100%;
+  text-align: center;
 }
 
 .meta-icon {

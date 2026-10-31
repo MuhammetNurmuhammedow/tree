@@ -63,18 +63,20 @@ const PersonNode: React.FC<NodeProps<CustomPersonNode>> = ({ data }) => {
 
       {/* Main Content */}
       <div className="person-node__body">
-        {/* Avatar */}
-        {person.avatar_url ? (
-          <img
-            src={person.avatar_url}
-            alt={person.first_name}
-            className="person-node__avatar"
-          />
-        ) : (
-          <div className={`person-node__avatar-placeholder avatar-${gender}`}>
-            {getInitials(person)}
-          </div>
-        )}
+        {/* Round Avatar centered ABOVE identity information */}
+        <div className="person-node__avatar-wrapper">
+          {person.avatar_url ? (
+            <img
+              src={person.avatar_url}
+              alt={person.first_name}
+              className="person-node__avatar"
+            />
+          ) : (
+            <div className={`person-node__avatar-placeholder avatar-${gender}`}>
+              {getInitials(person)}
+            </div>
+          )}
+        </div>
 
         {/* Identity & Dates */}
         <div className="person-node__meta">

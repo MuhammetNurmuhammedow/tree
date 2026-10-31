@@ -470,7 +470,7 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           fitView
-          fitViewOptions={{ padding: 0.25 }}
+          fitViewOptions={{ padding: 0.35 }}
           minZoom={0.1}
           maxZoom={2.5}
           proOptions={{ hideAttribution: true }}

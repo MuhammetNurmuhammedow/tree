@@ -204,13 +204,13 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 <div style={{
-                  width: 52, height: 52, borderRadius: 8,
+                  width: 54, height: 54, borderRadius: '50%',
                   background: person.gender === 'female' ? '#2b191e' : '#192433',
                   color: person.gender === 'female' ? '#deb1b8' : '#a8c2de',
-                  border: person.gender === 'female' ? '1px solid #4f2b33' : '1px solid #2b3b4f',
+                  border: person.gender === 'female' ? '2px solid #4f2b33' : '2px solid #2b3b4f',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 20, fontWeight: 600,
-                  boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
                   flexShrink: 0,
                 }}>
                   {(person.first_name[0] + (person.last_name[0] || '')).toUpperCase()}

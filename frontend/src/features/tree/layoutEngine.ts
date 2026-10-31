@@ -21,8 +21,8 @@ export async function applyELKLayout(
 
   const elkNodes: ElkNode['children'] = safeNodes.map((n) => ({
     id: n.id,
-    width: 236,
-    height: 110,
+    width: 228,
+    height: 155,
   }));
 
   // Filter out any edge whose source or target doesn't exist in the node set
@@ -41,9 +41,11 @@ export async function applyELKLayout(
     layoutOptions: {
       'elk.algorithm': 'layered',
       'elk.direction': 'DOWN',
-      'elk.layered.spacing.nodeNodeBetweenLayers': '95',
-      'elk.spacing.nodeNode': '60',
+      'elk.layered.spacing.nodeNodeBetweenLayers': '140', // Generous margin between generation layers
+      'elk.spacing.nodeNode': '75', // Comfortable margin between sibling nodes
       'elk.layered.nodePlacement.strategy': 'BRANDES_KOEPF',
+      'elk.layered.spacing.edgeNodeBetweenLayers': '35',
+      'elk.layered.spacing.edgeEdgeBetweenLayers': '25',
     },
     children: elkNodes,
     edges: elkEdges,
