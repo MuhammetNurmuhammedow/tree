@@ -112,15 +112,26 @@ func (h *PersonHandler) Update(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(http.StatusBadRequest, "geçersiz UUID")
 	}
-	var p domain.Person
-	if err := c.BodyParser(&p); err != nil {
+
+	// Load existing record to preserve immutable fields (tree_id, created_at, etc.)
+	existing, err := h.svc.GetByID(id)
+	if err != nil {
+		return fiber.NewError(http.StatusNotFound, "kişi bulunamadı")
+	}
+
+	// Parse incoming partial payload into the existing record
+	// This way any field not sent by the client stays at its previous value
+	if err := c.BodyParser(existing); err != nil {
 		return fiber.NewError(http.StatusBadRequest, "geçersiz JSON gövdesi")
 	}
-	p.ID = id
-	if err := h.svc.Update(&p); err != nil {
+
+	// Always enforce the correct ID and tree_id (never let client overwrite these)
+	existing.ID = id
+
+	if err := h.svc.Update(existing); err != nil {
 		return fiber.NewError(http.StatusBadRequest, err.Error())
 	}
-	return c.JSON(p)
+	return c.JSON(existing)
 }
 
 // Delete godoc
