@@ -184,74 +184,58 @@ const App: React.FC = () => {
   return (
     <div className={`canvas-theme-${theme}`} style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--canvas-bg)', color: 'var(--header-text)', transition: 'background-color 0.2s ease, color 0.2s ease' }}>
       {/* ── Top Header ─────────────────────────────────────────────────────────── */}
-      <header className="app-header" style={{
-        height: 58,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 20px',
-        flexShrink: 0,
-        zIndex: 50,
-        gap: 16,
-      }}>
-        {/* Brand & Tree Selector */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className="app-brand-box">
-            <TreeIcon size={18} />
-          </div>
-
-          {/* Tree Dropdown Selector */}
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <select
-                value={currentTreeId}
-                onChange={(e) => setCurrentTreeId(e.target.value)}
-                className="app-tree-select"
-                style={{
-                  borderRadius: 6,
-                  padding: '4px 10px',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  maxWidth: 240,
-                }}
-              >
-                {trees.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.name} ({t.member_count} {tl('tree.members')})
-                  </option>
-                ))}
-              </select>
-
-              <button
-                type="button"
-                onClick={() => setIsCreateTreeOpen(true)}
-                title="Kendi yeni soy ağacınızı oluşturun"
-                className="app-newtree-btn"
-              >
-                <PlusIcon size={12} />
-                <span>{tl('tree.newTree')}</span>
-              </button>
+      <header className="app-header">
+        <div className="app-header-container">
+          {/* Brand & Tree Selector */}
+          <div className="app-header-left">
+            <div className="app-brand-box">
+              <TreeIcon size={18} />
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-              {isReadOnly ? (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'var(--header-newtree-text, #d4a359)', fontWeight: 500 }}>
-                  <ShieldIcon size={10} />
-                  <span>{tl('tree.readOnly')}</span>
-                </span>
-              ) : (
-                <span className="app-editable-badge">
-                  <EditIcon size={10} />
-                  <span>{tl('tree.editable')}</span>
-                </span>
-              )}
+            {/* Tree Dropdown Selector */}
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <select
+                  value={currentTreeId}
+                  onChange={(e) => setCurrentTreeId(e.target.value)}
+                  className="app-tree-select"
+                >
+                  {trees.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.name} ({t.member_count} {tl('tree.members')})
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  type="button"
+                  onClick={() => setIsCreateTreeOpen(true)}
+                  title="Kendi yeni soy ağacınızı oluşturun"
+                  className="app-newtree-btn"
+                >
+                  <PlusIcon size={12} />
+                  <span>{tl('tree.newTree')}</span>
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                {isReadOnly ? (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'var(--header-newtree-text, #d4a359)', fontWeight: 500 }}>
+                    <ShieldIcon size={10} />
+                    <span>{tl('tree.readOnly')}</span>
+                  </span>
+                ) : (
+                  <span className="app-editable-badge">
+                    <EditIcon size={10} />
+                    <span>{tl('tree.editable')}</span>
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Unified Sleek Search Bar */}
-        <div ref={searchContainerRef} style={{ position: 'relative', flex: 1, maxWidth: 460 }}>
+          {/* Unified Sleek Search Bar */}
+          <div ref={searchContainerRef} className="app-header-center">
           <div className="app-search-container" style={{
             display: 'flex',
             alignItems: 'center',
@@ -453,7 +437,7 @@ const App: React.FC = () => {
         </div>
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="app-header-right">
           {/* Quick return to my tree */}
           {isReadOnly && (
             <button
@@ -484,7 +468,7 @@ const App: React.FC = () => {
             onClick={handleSeedDemo}
             disabled={seeding}
             title="Örnek aile ağaçlarını sıfırlayıp yeniden yükler"
-            className="app-secondary-btn"
+            className="app-secondary-btn sample-data-btn"
             style={{
               padding: '6px 11px',
               borderRadius: 6,
@@ -532,7 +516,8 @@ const App: React.FC = () => {
           {/* Language Switcher */}
           <LanguageSwitcher compact />
         </div>
-      </header>
+      </div>
+    </header>
 
       {/* ── Read-only Alert Bar if viewing someone else's tree ─────────────── */}
       {isReadOnly && (

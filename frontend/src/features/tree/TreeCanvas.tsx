@@ -349,7 +349,7 @@ const TreeCanvas: React.FC<TreeCanvasProps> = ({
         className={`tree-canvas-wrapper canvas-theme-${theme}`}
       >
         {/* Floating Canvas Control Toolbar */}
-        <div className="absolute top-4 right-4 z-30 flex items-center gap-2">
+        <div className="tree-canvas-toolbar absolute top-4 right-4 z-30 flex items-center gap-2">
           {/* Reset Auto-Layout Button */}
           <button
             type="button"
