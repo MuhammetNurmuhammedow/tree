@@ -12,13 +12,21 @@ export async function applyELKLayout(
   graph: TreeGraph,
   customPositions?: Record<string, { x: number; y: number }>
 ): Promise<{ nodes: Node<TreeNodeData>[]; edges: Edge[] }> {
+  // Build a set of valid node IDs — edges referencing missing nodes cause ELK to crash
+  const validNodeIds = new Set(graph.nodes.map((n) => n.id));
+
   const elkNodes: ElkNode['children'] = graph.nodes.map((n) => ({
     id: n.id,
     width: 236,
     height: 110,
   }));
 
-  const elkEdges = graph.edges.map((e) => ({
+  // Filter out any edge whose source or target doesn't exist in the node set
+  const safeEdges = graph.edges.filter(
+    (e) => validNodeIds.has(e.source) && validNodeIds.has(e.target)
+  );
+
+  const elkEdges = safeEdges.map((e) => ({
     id: e.id,
     sources: [e.source],
     targets: [e.target],
@@ -63,7 +71,7 @@ export async function applyELKLayout(
     };
   });
 
-  const edges: Edge[] = graph.edges.map((e) => ({
+  const edges: Edge[] = safeEdges.map((e) => ({
     id: e.id,
     source: e.source,
     target: e.target,

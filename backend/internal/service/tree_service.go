@@ -65,23 +65,34 @@ func (s *TreeService) BuildTree(treeID string) (*TreeGraph, error) {
 
 	graph := &TreeGraph{}
 
+	// Build a set of valid person IDs in this tree for edge validation
+	validNodeIDs := make(map[string]bool, len(persons))
 	for _, p := range persons {
+		validNodeIDs[p.ID.String()] = true
 		graph.Nodes = append(graph.Nodes, &TreeNode{
 			ID:       p.ID.String(),
 			Type:     "personNode",
 			Position: Position{X: 0, Y: 0},
 			Data:     TreeNodeData{Person: p},
 		})
+	}
 
+	// Collect edges only after all nodes are known
+	for _, p := range persons {
 		rels, err := s.relRepo.GetByPersonID(p.ID)
 		if err != nil {
 			return nil, fmt.Errorf("tree_service.BuildTree rels: %w", err)
 		}
 		for _, rel := range rels {
 			edge := buildEdge(rel)
-			if edge != nil {
-				graph.Edges = append(graph.Edges, edge)
+			if edge == nil {
+				continue
 			}
+			// Skip edges where source or target node does not exist in this tree
+			if !validNodeIDs[edge.Source] || !validNodeIDs[edge.Target] {
+				continue
+			}
+			graph.Edges = append(graph.Edges, edge)
 		}
 	}
 
