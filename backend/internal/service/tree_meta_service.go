@@ -1,10 +1,10 @@
 package service
 
 import (
-	"fmt"
 	"strings"
 	"sync"
 	"time"
+	"unicode"
 
 	"github.com/google/uuid"
 
@@ -114,7 +114,7 @@ func (s *TreeMetaService) CreateTree(name, description string) *domain.Tree {
 		ID:          id,
 		Name:        name,
 		Description: description,
-		OwnerName:   "Ben",
+		OwnerName:   "Men",
 		IsOwner:     true, // Created by current user -> editable
 		MemberCount: 0,
 		CreatedAt:   time.Now(),
@@ -173,71 +173,88 @@ func (s *TreeMetaService) Search(query string, filterTreeID string) []*domain.Se
 		}
 
 		matched := false
+		matchField := ""
 		matchContext := ""
 
 		if strings.Contains(fullName, query) {
 			matched = true
 		} else if maidenName != "" && strings.Contains(strings.ToLower(maidenName), query) {
-			matched = true
-			matchContext = "Gyzlyk / Kızlık: " + maidenName
+			matched, matchField, matchContext = true, "maiden_name", maidenName
 		} else if birthPlace != "" && strings.Contains(strings.ToLower(birthPlace), query) {
-			matched = true
-			matchContext = "Doglan ýeri: " + birthPlace
+			matched, matchField, matchContext = true, "birth_place", birthPlace
 		} else if deathPlace != "" && strings.Contains(strings.ToLower(deathPlace), query) {
-			matched = true
-			matchContext = "Vefat ýeri: " + deathPlace
-		} else if biography != "" && strings.Contains(strings.ToLower(biography), query) {
-			matched = true
-			// Show matching snippet of biography
-			idx := strings.Index(strings.ToLower(biography), query)
-			start := idx - 15
-			if start < 0 {
-				start = 0
-			}
-			end := idx + len(query) + 25
-			if end > len(biography) {
-				end = len(biography)
-			}
-			snippet := biography[start:end]
-			if start > 0 {
-				snippet = "…" + snippet
-			}
-			if end < len(biography) {
-				snippet = snippet + "…"
-			}
-			matchContext = "Ýazgy: " + snippet
+			matched, matchField, matchContext = true, "death_place", deathPlace
+		} else if snippet, ok := matchSnippet(biography, query); ok {
+			matched, matchField, matchContext = true, "biography", snippet
 		}
 
 		if matched {
-			treeName := "Berdiýewler Maşgala Agajy"
-			isMyTree := true
+			treeName := p.TreeID
+			isMyTree := false
 			if t, ok := s.trees[p.TreeID]; ok {
 				treeName = t.Name
 				isMyTree = t.IsOwner
 			}
 
-			born := "?"
-			if p.BirthDate != nil {
-				born = p.BirthDate.Format("2006")
-			}
-			years := "d. " + born
-			if !p.IsLiving && p.DeathDate != nil {
-				years = fmt.Sprintf("%s – %s", born, p.DeathDate.Format("2006"))
-			}
-
-			results = append(results, &domain.SearchResultItem{
+			item := &domain.SearchResultItem{
 				PersonID:     p.ID.String(),
 				FullName:     p.FirstName + " " + p.LastName,
 				TreeID:       p.TreeID,
 				TreeName:     treeName,
 				IsMyTree:     isMyTree,
 				Gender:       string(p.Gender),
-				Years:        years,
+				IsLiving:     p.IsLiving,
 				BirthPlace:   birthPlace,
 				MaidenName:   maidenName,
+				MatchField:   matchField,
 				MatchContext: matchContext,
-			})
+			}
+			if p.BirthDate != nil {
+				item.BirthYear = p.BirthDate.Format("2006")
+			}
+			if p.DeathDate != nil {
+				item.DeathYear = p.DeathDate.Format("2006")
+			}
+			results = append(results, item)
 		}
 	}
 	return results
+}
+
+// matchSnippet finds query (already lower-cased) in text case-insensitively and
+// returns the match with some surrounding context. It works on runes and lowers
+// them one by one, so offsets stay aligned with the original text even when
+// lower-casing would change a string's byte length (e.g. "İ").
+func matchSnippet(text, query string) (string, bool) {
+	if text == "" || query == "" {
+		return "", false
+	}
+	src := []rune(text)
+	q := []rune(query)
+	lower := make([]rune, len(src))
+	for i, r := range src {
+		lower[i] = unicode.ToLower(r)
+	}
+
+	idx := -1
+	for i := 0; i+len(q) <= len(lower); i++ {
+		if string(lower[i:i+len(q)]) == query {
+			idx = i
+			break
+		}
+	}
+	if idx < 0 {
+		return "", false
+	}
+
+	start := max(idx-15, 0)
+	end := min(idx+len(q)+25, len(src))
+	snippet := string(src[start:end])
+	if start > 0 {
+		snippet = "…" + snippet
+	}
+	if end < len(src) {
+		snippet += "…"
+	}
+	return snippet, true
 }

@@ -97,7 +97,8 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
       onSuccess();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('relationModal.errorGeneral'));
+      console.error('Creating relationship failed:', err);
+      setError(t('relationModal.errorGeneral'));
     } finally {
       setLoading(false);
     }
@@ -111,8 +112,8 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
       padding: 12, boxSizing: 'border-box',
     }}>
       <div style={{
-        background: '#161820',
-        border: '1px solid #2d303b',
+        background: 'var(--surface)',
+        border: '1px solid var(--line)',
         borderRadius: 12,
         padding: '24px 28px',
         width: '100%',
@@ -120,16 +121,16 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
         maxHeight: '90vh',
         overflowY: 'auto',
         boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7)',
-        color: '#f5f2eb',
+        color: 'var(--text)',
       }}>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div>
             <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ color: '#c59b27', display: 'flex' }}><RingIcon size={20} /></span>
+              <span style={{ color: 'var(--card-accent)', display: 'flex' }}><RingIcon size={20} /></span>
               {t('relationModal.title')}
             </h2>
-            <p style={{ margin: '4px 0 0', fontSize: 12, color: '#a8a296' }}>
+            <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--text-muted)' }}>
               {t('relationModal.subtitle')}
             </p>
           </div>
@@ -155,14 +156,14 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                   padding: '8px 10px', borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: 'pointer',
-                  border: baseCategory === 'spouse' ? '1px solid #6b521e' : '1px solid #2d303b',
-                  background: baseCategory === 'spouse' ? '#2c2518' : '#191b22',
-                  color: baseCategory === 'spouse' ? '#d4af37' : '#a8a296',
+                  border: baseCategory === 'spouse' ? '1px solid var(--card-accent)' : '1px solid var(--line)',
+                  background: baseCategory === 'spouse' ? 'var(--header-active-bg)' : 'var(--surface-2)',
+                  color: baseCategory === 'spouse' ? 'var(--card-accent)' : 'var(--text-muted)',
                   transition: 'all 0.12s',
                 }}
               >
                 <HeartIcon size={13} />
-                <span>Nika / Ýanýoldaş</span>
+                <span>{t('relationModal.catSpouse')}</span>
               </button>
 
               <button
@@ -171,14 +172,14 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                   padding: '8px 10px', borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: 'pointer',
-                  border: baseCategory === 'parent' ? '1px solid #364861' : '1px solid #2d303b',
-                  background: baseCategory === 'parent' ? '#1a2432' : '#191b22',
-                  color: baseCategory === 'parent' ? '#a8c2de' : '#a8a296',
+                  border: baseCategory === 'parent' ? '1px solid var(--card-accent)' : '1px solid var(--line)',
+                  background: baseCategory === 'parent' ? 'var(--header-active-bg)' : 'var(--surface-2)',
+                  color: baseCategory === 'parent' ? 'var(--card-accent)' : 'var(--text-muted)',
                   transition: 'all 0.12s',
                 }}
               >
                 <UserIcon size={13} />
-                <span>Ene-Ata</span>
+                <span>{t('relationModal.catParent')}</span>
               </button>
 
               <button
@@ -187,14 +188,14 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                   padding: '8px 10px', borderRadius: 6, fontSize: 12, fontWeight: 500, cursor: 'pointer',
-                  border: baseCategory === 'child' ? '1px solid #365742' : '1px solid #2d303b',
-                  background: baseCategory === 'child' ? '#192a20' : '#191b22',
-                  color: baseCategory === 'child' ? '#9ec2a8' : '#a8a296',
+                  border: baseCategory === 'child' ? '1px solid var(--card-accent)' : '1px solid var(--line)',
+                  background: baseCategory === 'child' ? 'var(--header-active-bg)' : 'var(--surface-2)',
+                  color: baseCategory === 'child' ? 'var(--card-accent)' : 'var(--text-muted)',
                   transition: 'all 0.12s',
                 }}
               >
                 <BabyIcon size={13} />
-                <span>Çaga</span>
+                <span>{t('relationModal.catChild')}</span>
               </button>
             </div>
           </div>
@@ -269,7 +270,7 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <label style={labelStyle}>{t('relationModal.customTitleLabel')} *</label>
-              <span style={{ fontSize: 11, color: '#38bdf8' }}>Üstüne ýazyp üýtgedip bilersiňiz</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t('relationModal.editableHint')}</span>
             </div>
             <input
               type="text"
@@ -279,8 +280,8 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
               placeholder={t('relationModal.customTitlePlaceholder')}
               style={{
                 ...inputStyle,
-                borderColor: '#38bdf8',
-                backgroundColor: 'rgba(56, 189, 248, 0.05)',
+                borderColor: 'var(--card-accent)',
+                backgroundColor: 'var(--surface-input)',
                 fontWeight: 600,
               }}
             />
@@ -294,9 +295,9 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
                 padding: '12px',
                 background: 'rgba(255, 255, 255, 0.03)',
                 borderRadius: 8,
-                border: '1px dashed #334155',
+                border: '1px dashed var(--line)',
                 fontSize: 13,
-                color: '#94a3b8',
+                color: 'var(--text-muted)',
               }}>
                 {t('relationModal.noPersons')}
               </div>
@@ -340,9 +341,9 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
               style={{
                 padding: '9px 24px',
                 borderRadius: 8,
-                border: '1px solid #3a6850',
-                background: '#254a37',
-                color: '#f5f2eb',
+                border: '1px solid var(--header-primary-border)',
+                background: 'var(--header-primary-bg)',
+                color: 'var(--header-primary-text)',
                 fontWeight: 600,
                 cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12.5,
@@ -363,7 +364,7 @@ const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: 12,
   fontWeight: 500,
-  color: '#a8a296',
+  color: 'var(--text-muted)',
   marginBottom: 6,
 };
 
@@ -371,9 +372,9 @@ const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '9px 12px',
   borderRadius: 8,
-  border: '1px solid #2d303b',
-  backgroundColor: '#121318',
-  color: '#f5f2eb',
+  border: '1px solid var(--line)',
+  backgroundColor: 'var(--surface-input)',
+  color: 'var(--text)',
   fontSize: 13,
   outline: 'none',
   colorScheme: 'dark',
@@ -381,11 +382,11 @@ const inputStyle: React.CSSProperties = {
 
 const closeButtonStyle: React.CSSProperties = {
   background: 'transparent',
-  border: '1px solid #2d303b',
+  border: '1px solid var(--line)',
   borderRadius: 6,
   width: 28,
   height: 28,
-  color: '#a8a296',
+  color: 'var(--text-muted)',
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
@@ -395,7 +396,7 @@ const closeButtonStyle: React.CSSProperties = {
 const errorBoxStyle: React.CSSProperties = {
   background: 'rgba(160, 60, 70, 0.15)',
   border: '1px solid rgba(160, 60, 70, 0.35)',
-  color: '#e0b0b8',
+  color: 'var(--card-accent)',
   padding: '10px 14px',
   borderRadius: 8,
   marginBottom: 16,
@@ -408,9 +409,9 @@ const errorBoxStyle: React.CSSProperties = {
 const cancelButtonStyle: React.CSSProperties = {
   padding: '8px 16px',
   borderRadius: 6,
-  border: '1px solid #2d303b',
+  border: '1px solid var(--line)',
   background: 'transparent',
-  color: '#a8a296',
+  color: 'var(--text-muted)',
   cursor: 'pointer',
   fontSize: 13,
   fontWeight: 500,
@@ -419,9 +420,9 @@ const cancelButtonStyle: React.CSSProperties = {
 const presetChipStyle = (isSelected: boolean): React.CSSProperties => ({
   padding: '5px 10px',
   borderRadius: 6,
-  border: isSelected ? '1px solid #6b521e' : '1px solid #2d303b',
-  background: isSelected ? '#282318' : '#191b22',
-  color: isSelected ? '#d4af37' : '#dedbd2',
+  border: isSelected ? '1px solid var(--card-accent)' : '1px solid var(--line)',
+  background: isSelected ? 'var(--header-active-bg)' : 'var(--surface-2)',
+  color: isSelected ? 'var(--card-accent)' : 'var(--text)',
   fontSize: 11.5,
   fontWeight: isSelected ? 600 : 400,
   cursor: 'pointer',

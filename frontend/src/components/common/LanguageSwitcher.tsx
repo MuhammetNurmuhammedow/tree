@@ -7,11 +7,12 @@ interface LanguageSwitcherProps {
 }
 
 export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = false }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const current = SUPPORTED_LANGUAGES.find((l) => l.code === i18n.language) ?? SUPPORTED_LANGUAGES[0];
+  const activeCode = i18n.resolvedLanguage ?? i18n.language;
+  const current = SUPPORTED_LANGUAGES.find((l) => l.code === activeCode) ?? SUPPORTED_LANGUAGES[0];
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -31,7 +32,10 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
     <div ref={ref} style={{ position: 'relative' }}>
       <button
         onClick={() => setOpen((o) => !o)}
-        title="Dil / Language / Ýazyk"
+        title={t('language.label')}
+        aria-label={t('language.label')}
+        aria-haspopup="listbox"
+        aria-expanded={open}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -55,7 +59,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
           padding: '1px 5px',
           borderRadius: 4,
           background: 'var(--header-panel-bg, #252834)',
-          color: '#d4af37',
+          color: 'var(--card-accent)',
           border: '1px solid var(--header-panel-border, #3d4253)',
           lineHeight: 1.3,
         }}>
@@ -81,7 +85,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
           minWidth: 150,
         }}>
           {SUPPORTED_LANGUAGES.map((lang) => {
-            const isActive = i18n.language === lang.code;
+            const isActive = current.code === lang.code;
             return (
               <button
                 key={lang.code}
@@ -93,8 +97,8 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
                   width: '100%',
                   padding: '9px 12px',
                   border: 'none',
-                  background: isActive ? 'rgba(197, 155, 39, 0.15)' : 'transparent',
-                  color: isActive ? '#d4af37' : 'var(--header-text, #dedbd2)',
+                  background: isActive ? 'var(--header-active-bg)' : 'transparent',
+                  color: isActive ? 'var(--card-accent)' : 'var(--header-text, #dedbd2)',
                   fontSize: 12.5,
                   fontWeight: isActive ? 600 : 400,
                   cursor: 'pointer',
@@ -110,9 +114,9 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
                   letterSpacing: '0.04em',
                   padding: '1px 5px',
                   borderRadius: 4,
-                  background: isActive ? '#342918' : 'var(--header-input-bg, #22242e)',
-                  color: isActive ? '#d4af37' : 'var(--header-subtext, #9ea0a8)',
-                  border: isActive ? '1px solid #6b521e' : '1px solid var(--header-panel-border, #333647)',
+                  background: isActive ? 'var(--header-active-bg)' : 'var(--header-input-bg, #22242e)',
+                  color: isActive ? 'var(--card-accent)' : 'var(--header-subtext, #9ea0a8)',
+                  border: isActive ? '1px solid var(--card-accent)' : '1px solid var(--header-panel-border, #333647)',
                   minWidth: 26,
                   textAlign: 'center',
                   lineHeight: 1.3,
@@ -121,7 +125,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = fa
                 </span>
                 <span>{lang.label}</span>
                 {isActive && (
-                  <span style={{ marginLeft: 'auto', fontSize: 11, opacity: 0.8, color: '#d4af37' }}>✓</span>
+                  <span style={{ marginLeft: 'auto', fontSize: 11, opacity: 0.8, color: 'var(--card-accent)' }}>✓</span>
                 )}
               </button>
             );

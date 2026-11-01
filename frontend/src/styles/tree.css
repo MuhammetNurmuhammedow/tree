@@ -181,13 +181,6 @@
   border-color: #ebc3cb;
 }
 
-.canvas-theme-white .avatar-other,
-.canvas-theme-blueprint .avatar-other {
-  background: #f3edf8;
-  color: #552570;
-  border-color: #dec2ed;
-}
-
 .canvas-theme-white .gender-male,
 .canvas-theme-blueprint .gender-male {
   background: #edf3fb;
@@ -200,13 +193,6 @@
   background: #fcf0f2;
   color: #7c2434;
   border-color: #f3cbd3;
-}
-
-.canvas-theme-white .gender-other,
-.canvas-theme-blueprint .gender-other {
-  background: #f7f0fc;
-  color: #5b2675;
-  border-color: #e5ccf5;
 }
 
 .canvas-theme-white .status-living,
@@ -576,7 +562,7 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  max-width: 240px;
+  max-width: 320px;
   transition: background-color 0.2s, border-color 0.2s;
 }
 
@@ -902,188 +888,89 @@
   background: rgba(255, 255, 255, 0.05) !important;
 }
 
-/* ── 3. Handcrafted Editorial Person Node ────────────────────────────────────── */
+/* ── 3. Person Card (horizontal, compact) ────────────────────────────────────── */
+/* Size must match NODE_WIDTH / NODE_HEIGHT in features/tree/layoutEngine.ts */
 
 .person-node {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 9px;
+  border-left: 4px solid var(--gender-color, var(--card-border));
+  border-radius: 10px;
   width: 236px;
-  cursor: grab;
+  height: 84px;
+  box-sizing: border-box;
+  cursor: pointer;
   position: relative;
-  padding: 10px 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  transition: transform 0.12s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  padding: 10px 12px 10px 10px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
   user-select: none;
 }
 
 .person-node:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+.person-node.node-male { --gender-color: #52759c; }
+.person-node.node-female { --gender-color: #a35a69; }
+
+/* Deceased: same gender frame, but quieter card and greyed portrait */
+.person-node.is-deceased { background: color-mix(in srgb, var(--card-bg) 88%, var(--canvas-bg)); }
+.person-node.is-deceased .person-node__avatar,
+.person-node.is-deceased .person-node__avatar-placeholder { filter: grayscale(0.85); opacity: 0.8; }
+.person-node.is-deceased .person-node__fullname { color: var(--card-subtext); }
+
+/* Selected person (profile panel open) */
+.person-node.node-selected {
   border-color: var(--card-accent);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-}
-
-.person-node:active {
-  cursor: grabbing;
-}
-
-/* Gender & status subtle top accent lines (2px clean line, not neon blocks) */
-.person-node.node-male {
-  border-top: 3px solid #52759c;
-}
-
-.person-node.node-female {
-  border-top: 3px solid #9c5462;
-}
-
-.person-node.node-other {
-  border-top: 3px solid #755a86;
-}
-
-.person-node.node-dead {
-  border-top: 3px solid #5a5652;
-  opacity: 0.90;
+  border-left-color: var(--gender-color);
+  box-shadow: 0 0 0 2px var(--card-accent), 0 8px 22px rgba(0, 0, 0, 0.4);
 }
 
 /* Flow connector handles */
 .custom-flow-handle {
-  width: 7px !important;
-  height: 7px !important;
+  width: 6px !important;
+  height: 6px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
   background: var(--card-border) !important;
-  border: 1.5px solid var(--card-bg) !important;
-  border-radius: 50% !important;
-  opacity: 0.5;
-  transition: opacity 0.15s, background-color 0.15s;
+  border: none !important;
+  opacity: 0;
 }
 
-.person-node:hover .custom-flow-handle {
-  opacity: 1;
-  background: var(--card-accent) !important;
-}
-
-/* Topbar inside Card */
-.person-node__topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 7px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding-bottom: 5px;
-}
-
-.gender-tag {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  padding: 1px 6px;
-  border-radius: 4px;
-}
-
-.gender-male {
-  background: rgba(82, 117, 156, 0.16);
-  color: #9cb8d9;
-  border: 1px solid rgba(82, 117, 156, 0.30);
-}
-
-.gender-female {
-  background: rgba(156, 84, 98, 0.16);
-  color: #d99ca7;
-  border: 1px solid rgba(156, 84, 98, 0.30);
-}
-
-.gender-other {
-  background: rgba(117, 90, 134, 0.16);
-  color: #c5b4d4;
-  border: 1px solid rgba(117, 90, 134, 0.30);
-}
-
-.status-tag {
-  font-size: 10px;
-  font-weight: 500;
-  padding: 1px 6px;
-  border-radius: 4px;
-}
-
-.status-living {
-  background: rgba(82, 140, 110, 0.15);
-  color: #8db597;
-  border: 1px solid rgba(82, 140, 110, 0.30);
-}
-
-.status-dead {
-  background: rgba(90, 86, 82, 0.18);
-  color: #a39c94;
-  border: 1px solid rgba(90, 86, 82, 0.30);
-}
-
-/* Card Body - Column layout with Round Avatar ABOVE info */
-.person-node__body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 6px;
-  width: 100%;
-}
-
-.person-node__avatar-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1px;
-  margin-bottom: 2px;
-}
-
-.person-node__avatar {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--card-border);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  flex-shrink: 0;
-}
-
-/* Wax-seal / Archival monogram stamp - Circular */
+.person-node__avatar,
 .person-node__avatar-placeholder {
-  width: 50px;
-  height: 50px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
+  flex-shrink: 0;
+  border: 2px solid var(--card-border);
+}
+
+.person-node__avatar { object-fit: cover; }
+
+.person-node__avatar-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  flex-shrink: 0;
-  border: 2px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  letter-spacing: 0.03em;
 }
 
-.avatar-male {
-  background: #192433;
-  color: #a8c2de;
-  border-color: #2b3b4f;
-}
-
-.avatar-female {
-  background: #2b191e;
-  color: #deb1b8;
-  border-color: #4f2b33;
-}
-
-.avatar-other {
-  background: #23192b;
-  color: #cfb1de;
-  border-color: #402b4f;
-}
+.avatar-male { background: #192433; color: #a8c2de; border-color: #2b3b4f; }
+.avatar-female { background: #2b191e; color: #deb1b8; border-color: #4f2b33; }
 
 .person-node__meta {
-  width: 100%;
+  min-width: 0;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  min-width: 0;
+  gap: 2px;
 }
 
 .person-node__fullname {
@@ -1095,46 +982,46 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: -0.01em;
-  text-align: center;
-  width: 100%;
 }
 
-.person-node__fullname strong {
-  font-weight: 700;
-}
-
-.person-node__maiden {
-  font-size: 11px;
-  color: var(--card-subtext);
-  margin-top: 1px;
-  font-style: italic;
-  text-align: center;
-  width: 100%;
-}
+.person-node__fullname strong { font-weight: 700; }
 
 .person-node__row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--card-subtext);
-  margin-top: 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%;
-  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
-.meta-icon {
-  flex-shrink: 0;
-  opacity: 0.65;
+.person-node__maiden {
+  font-size: 10.5px;
+  color: var(--card-subtext);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.85;
+}
+
+.person-node__cross {
+  margin-right: 3px;
+  opacity: 0.8;
 }
 
 /* Hover Action Pill Menu (Tactile & Clean) */
 .person-node::after {
+  content: '';
+  position: absolute;
+  bottom: -36px;
+  left: 0;
+  width: 100%;
+  height: 36px;
+  pointer-events: none;
+}
+
+.person-node:hover::after {
   content: '';
   position: absolute;
   bottom: -36px;
@@ -1228,4 +1115,295 @@
   animation: nodeSearchPulse 1.6s infinite ease-in-out !important;
   border-color: #c59b27 !important;
   z-index: 1000 !important;
+}
+
+/* ── 6. Genealogy edges ──────────────────────────────────────────────────────── */
+
+.family-edge--blood {
+  stroke: var(--edge-color) !important;
+  stroke-width: 2 !important;
+}
+
+.family-edge--spouse {
+  stroke: var(--spouse-color) !important;
+  stroke-width: 2 !important;
+}
+
+.family-edge--spouse.is-former {
+  stroke: var(--edge-color) !important;
+  stroke-dasharray: 5 4 !important;
+}
+
+/* Marriage badge sitting in the gap between two spouse cards */
+.spouse-badge {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-bg);
+  border: 1.5px solid var(--spouse-color);
+  color: var(--spouse-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  pointer-events: all;
+  cursor: help;
+}
+
+.spouse-badge.is-former {
+  border-color: var(--edge-color);
+  color: var(--edge-color);
+  border-style: dashed;
+}
+
+/* Side handles only anchor spouse lines; they are never shown */
+.spouse-handle {
+  opacity: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border: none !important;
+  pointer-events: none !important;
+}
+
+/* ── 7. Header details & toasts ──────────────────────────────────────────────── */
+
+.app-member-count {
+  font-size: 10px;
+  color: var(--header-subtext);
+  font-weight: 500;
+}
+
+.app-toast {
+  background: var(--header-panel-bg) !important;
+  color: var(--header-text) !important;
+  border: 1px solid var(--header-panel-border) !important;
+  font-size: 13px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* ── 8. Surface tokens for panels & dialogs (follow the canvas theme) ───────── */
+
+.canvas-theme-slate {
+  --surface: #161820;
+  --surface-2: #1c1f28;
+  --surface-input: #121318;
+  --line: #2c303c;
+  --text: #f5f2eb;
+  --text-muted: #a8a296;
+}
+
+.canvas-theme-obsidian {
+  --surface: #121317;
+  --surface-2: #18191e;
+  --surface-input: #0b0c0e;
+  --line: #262830;
+  --text: #f4f4f6;
+  --text-muted: #9ea0a8;
+}
+
+.canvas-theme-parchment {
+  --surface: #1e1a16;
+  --surface-2: #26201b;
+  --surface-input: #151210;
+  --line: #3b322a;
+  --text: #faf4e8;
+  --text-muted: #bfae9b;
+}
+
+.canvas-theme-white,
+.canvas-theme-blueprint {
+  --surface: #ffffff;
+  --surface-2: #f4f5f7;
+  --surface-input: #ffffff;
+  --line: #d9dde3;
+  --text: #111827;
+  --text-muted: #5b6170;
+}
+
+/* ── 9. Person side panel (bottom sheet on phones) ───────────────────────────── */
+
+.person-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(400px, 100%);
+  z-index: 60;
+  background: var(--surface);
+  color: var(--text);
+  border-left: 1px solid var(--line);
+  box-shadow: -12px 0 32px rgba(0, 0, 0, 0.28);
+  overflow-y: auto;
+  padding: 20px 22px 28px;
+  box-sizing: border-box;
+  animation: panelIn 0.18s ease-out;
+}
+
+@keyframes panelIn {
+  from { transform: translateX(24px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@media (max-width: 640px) {
+  .person-panel {
+    top: auto;
+    left: 0;
+    width: 100%;
+    max-height: 78%;
+    border-left: none;
+    border-top: 1px solid var(--line);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.35);
+    animation-name: sheetIn;
+  }
+  .person-panel::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--line);
+    margin: -8px auto 12px;
+  }
+}
+
+@keyframes sheetIn {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.panel-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 18px 0 8px;
+}
+
+.family-group-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 8px 0 4px;
+}
+
+.family-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+}
+
+.family-chip:hover,
+.family-chip:focus-visible {
+  background: var(--surface-2);
+  border-color: var(--line);
+  outline: none;
+}
+
+.family-chip__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  object-fit: cover;
+  border: 2px solid var(--line);
+}
+
+.family-chip__years {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ── 10. Canvas controls & legend ────────────────────────────────────────────── */
+
+.canvas-controls {
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.canvas-controls button {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--card-border);
+  color: var(--card-subtext);
+  cursor: pointer;
+}
+
+.canvas-controls button:last-child { border-bottom: none; }
+
+.canvas-controls button:hover:not(:disabled),
+.canvas-controls button[aria-pressed='true'] {
+  color: var(--card-text);
+  background: color-mix(in srgb, var(--card-accent) 14%, transparent);
+}
+
+.canvas-controls button:disabled { opacity: 0.35; cursor: default; }
+
+.canvas-legend {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  color: var(--card-text);
+  font-size: 12px;
+  display: grid;
+  grid-template-columns: 28px auto;
+  align-items: center;
+  gap: 7px 8px;
+  min-width: 170px;
+}
+
+.canvas-legend__title {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--card-subtext);
+}
+
+.legend-swatch {
+  width: 22px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-left: 4px solid var(--swatch, var(--card-border));
+}
+
+.legend-line {
+  width: 26px;
+  height: 0;
+  border-top: 2px solid var(--line-color);
 }

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
-import type { Person, UpdatePersonPayload } from '@/types/person';
+import type { Gender, Person, UpdatePersonPayload } from '@/types/person';
 import { personService } from '@/services/personService';
+import { formatLifespan, yearOf } from '@/i18n/format';
 import {
   CloseIcon,
   MapPinIcon,
@@ -15,8 +16,18 @@ import {
   CameraIcon,
 } from '@/components/common/Icons';
 
+export interface PersonFamily {
+  parents: Person[];
+  spouses: Person[];
+  siblings: Person[];
+  children: Person[];
+}
+
 interface PersonDetailModalProps {
   personId: string | null;
+  /** Relatives derived from the loaded tree; each entry is clickable. */
+  family?: PersonFamily;
+  onSelectPerson?: (id: string) => void;
   treeId?: string;
   onClose: () => void;
   onDeleted?: () => void;
@@ -28,10 +39,10 @@ interface PersonDetailModalProps {
 const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '8px 10px',
-  background: '#121318',
-  border: '1px solid #2d303b',
+  background: 'var(--surface-input)',
+  border: '1px solid var(--line)',
   borderRadius: 6,
-  color: '#f5f2eb',
+  color: 'var(--text)',
   fontSize: 13,
   outline: 'none',
   boxSizing: 'border-box',
@@ -40,7 +51,7 @@ const inputStyle: React.CSSProperties = {
 const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: 11,
-  color: '#a8a296',
+  color: 'var(--text-muted)',
   marginBottom: 4,
   fontWeight: 500,
 };
@@ -58,9 +69,12 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
   onDeleted,
   onUpdated,
   onAddRelative,
+  family,
+  onSelectPerson,
   isReadOnly = false,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const formatDate = (iso: string) => new Date(iso).toLocaleDateString(i18n.resolvedLanguage);
   const [person, setPerson] = useState<Person | null>(null);
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -77,20 +91,20 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
     if (!file || !person) return;
 
     if (file.size > 10 * 1024 * 1024) {
-      toast.error('Surat 10MB-dan uly bolmaly däl');
+      toast.error(t('photo.tooLarge'));
       return;
     }
 
     try {
       setUploadingPhoto(true);
-      toast.loading('Surat ýüklenýär...', { id: 'avatar-upload' });
+      toast.loading(t('photo.uploading'), { id: 'avatar-upload' });
       const updatedPerson = await personService.updateAvatar(person.id, file);
       setPerson(updatedPerson);
-      toast.success('Surat üstünlikli ýüklendi!', { id: 'avatar-upload' });
+      toast.success(t('photo.uploadSuccess'), { id: 'avatar-upload' });
       onUpdated?.();
     } catch (err) {
-      console.error('Surat ýüklemekde säwlik:', err);
-      toast.error('Surat ýüklenip bilinmedi: ' + (err instanceof Error ? err.message : String(err)), { id: 'avatar-upload' });
+      console.error('Photo upload failed:', err);
+      toast.error(t('photo.uploadError'), { id: 'avatar-upload' });
     } finally {
       setUploadingPhoto(false);
       if (avatarUploadRef.current) avatarUploadRef.current.value = '';
@@ -110,6 +124,15 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
       setIsEditing(false);
     }
   }, [personId]);
+
+  // Escape closes the panel (unless a form field is being edited)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isEditing) onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isEditing, onClose]);
 
   if (!personId) return null;
 
@@ -155,7 +178,8 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
       toast.success(t('detailModal.updateSuccess'));
       onUpdated?.();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Ýalňyşlyk boldy');
+      console.error('Saving person failed:', err);
+      toast.error(t('errors.generic'));
     } finally {
       setSaving(false);
     }
@@ -171,7 +195,8 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
         onUpdated?.();
         onClose();
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Silinemedi');
+        console.error('Deleting person failed:', err);
+        toast.error(t('errors.generic'));
       } finally {
         setDeleting(false);
       }
@@ -191,26 +216,15 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
   };
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 9999,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      backgroundColor: 'rgba(10, 11, 14, 0.82)', backdropFilter: 'blur(6px)',
-    }}>
-      <div style={{
-        background: '#161820',
-        border: '1px solid #2d313d',
-        borderRadius: 10,
-        padding: '24px 28px',
-        width: '100%',
-        maxWidth: 520,
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7)',
-        color: '#f5f2eb',
-        maxHeight: '92vh',
-        overflowY: 'auto',
-      }}>
+    <aside
+      className="person-panel"
+      role="dialog"
+      aria-label={person ? `${person.first_name} ${person.last_name}` : t('detailModal.title')}
+    >
+      <div>
         {loading || !person ? (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: '#9ea0a8', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-            <RefreshIcon size={16} className="animate-spin text-[#c59b27]" />
+          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            <RefreshIcon size={16} className="animate-spin text-[var(--card-accent)]" />
             <span>{t('detailModal.title')}…</span>
           </div>
         ) : (
@@ -219,12 +233,12 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
             {isReadOnly && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                padding: '8px 12px', background: '#1c1e28',
-                border: '1px solid #333849', borderRadius: 6,
-                marginBottom: 16, fontSize: 12, color: '#adc4de',
+                padding: '8px 12px', background: 'var(--surface-2)',
+                border: '1px solid var(--line)', borderRadius: 6,
+                marginBottom: 16, fontSize: 12, color: 'var(--text-muted)',
               }}>
                 <EyeIcon size={14} />
-                <span>Bu profil başka bir kullanıcının ağacında yer aldığı için salt okunurdur.</span>
+                <span>{t('detailModal.readOnlyNotice')}</span>
               </div>
             )}
 
@@ -241,20 +255,17 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                         height: 58,
                         borderRadius: '50%',
                         objectFit: 'cover',
-                        border: '2px solid #c59b27',
+                        border: '2px solid var(--card-accent)',
                         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
                         display: 'block',
                       }}
                     />
                   ) : (
-                    <div style={{
+                    <div className={`avatar-${person.gender}`} style={{
                       width: 58, height: 58, borderRadius: '50%',
-                      background: person.gender === 'female' ? '#2b191e' : '#192433',
-                      color: person.gender === 'female' ? '#deb1b8' : '#a8c2de',
-                      border: person.gender === 'female' ? '2px solid #4f2b33' : '2px solid #2b3b4f',
+                      border: '2px solid var(--line)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 20, fontWeight: 600,
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
                     }}>
                       {(person.first_name[0] + (person.last_name[0] || '')).toUpperCase()}
                     </div>
@@ -266,7 +277,7 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                         type="button"
                         onClick={() => avatarUploadRef.current?.click()}
                         disabled={uploadingPhoto}
-                        title="Suraty çalşyryň"
+                        title={t('photo.change')}
                         style={{
                           position: 'absolute',
                           bottom: -2,
@@ -274,9 +285,9 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                           width: 24,
                           height: 24,
                           borderRadius: '50%',
-                          background: '#1a1d24',
-                          border: '1.5px solid #d4af37',
-                          color: '#d4af37',
+                          background: 'var(--surface-2)',
+                          border: '1.5px solid var(--card-accent)',
+                          color: 'var(--card-accent)',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
@@ -298,14 +309,14 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                   )}
                 </div>
                 <div>
-                  <h2 style={{ fontSize: 19, fontWeight: 600, lineHeight: 1.2, margin: 0, color: '#f5f2eb' }}>
+                  <h2 style={{ fontSize: 19, fontWeight: 600, lineHeight: 1.2, margin: 0, color: 'var(--text)' }}>
                     {isEditing
                       ? `${editForm.first_name || ''} ${editForm.last_name || ''}`.trim() || t('detailModal.editTitle')
                       : `${person.first_name} ${person.last_name}`}
                   </h2>
                   {!isEditing && person.maiden_name && (
-                    <span style={{ fontSize: 12, color: '#a8a296', fontStyle: 'italic', display: 'block', marginTop: 2 }}>
-                      ({t('personModal.maidenName')}: {person.maiden_name})
+                    <span style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic', display: 'block', marginTop: 2 }}>
+                      ({t('search.matchMaiden')}: {person.maiden_name})
                     </span>
                   )}
                   {!isEditing && (
@@ -322,17 +333,16 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                       {calculateAge(person) !== null && (
                         <span style={{
                           fontSize: 10.5, padding: '2px 8px', borderRadius: 4,
-                          background: '#1d202a', color: '#a8a296',
-                          border: '1px solid #2d313f',
+                          background: 'var(--surface-2)', color: 'var(--text-muted)',
+                          border: '1px solid var(--line)',
                         }}>
-                          {calculateAge(person)} {t('detailModal.yearsOld')}
-                          {!person.is_living ? ' (vefat)' : ''}
+                          {t('detailModal.age', { count: calculateAge(person) })}
                         </span>
                       )}
                     </div>
                   )}
                   {isEditing && (
-                    <span style={{ fontSize: 11, color: '#d4af37', marginTop: 4, display: 'block' }}>
+                    <span style={{ fontSize: 11, color: 'var(--card-accent)', marginTop: 4, display: 'block' }}>
                       {t('detailModal.editTitle')}
                     </span>
                   )}
@@ -344,8 +354,8 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                 onClick={onClose}
                 style={{
                   background: 'transparent',
-                  border: '1px solid #2d313d', borderRadius: 6,
-                  width: 28, height: 28, color: '#a8a296', cursor: 'pointer',
+                  border: '1px solid var(--line)', borderRadius: 6,
+                  width: 28, height: 28, color: 'var(--text-muted)', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0,
                 }}
@@ -354,23 +364,23 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
               </button>
             </div>
 
-            <hr style={{ border: 'none', borderTop: '1px solid #242733', margin: '14px 0' }} />
+            <hr style={{ border: 'none', borderTop: '1px solid var(--line)', margin: '14px 0' }} />
 
             {/* ===== VIEW MODE ===== */}
             {!isEditing && (
               <>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, fontSize: 13, marginBottom: 16 }}>
                   {/* Born */}
-                  <div style={{ padding: '10px 12px', background: '#1c1f28', borderRadius: 6, border: '1px solid #2c303c' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#8a867c', fontSize: 11, marginBottom: 2 }}>
+                  <div style={{ padding: '10px 12px', background: 'var(--surface-2)', borderRadius: 6, border: '1px solid var(--line)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)', fontSize: 11, marginBottom: 2 }}>
                       <CalendarIcon size={12} />
                       <span>{t('detailModal.born')}</span>
                     </div>
-                    <strong style={{ fontSize: 13.5, color: '#f5f2eb' }}>
-                      {person.birth_date ? new Date(person.birth_date).toLocaleDateString() : '—'}
+                    <strong style={{ fontSize: 13.5, color: 'var(--text)' }}>
+                      {person.birth_date ? formatDate(person.birth_date) : '—'}
                     </strong>
                     {person.birth_place && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#a8a296', fontSize: 11.5, marginTop: 4 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)', fontSize: 11.5, marginTop: 4 }}>
                         <MapPinIcon size={11} />
                         <span>{person.birth_place}</span>
                       </div>
@@ -379,29 +389,29 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
 
                   {/* Died / Gender */}
                   {!person.is_living ? (
-                    <div style={{ padding: '10px 12px', background: '#1c1f28', borderRadius: 6, border: '1px solid #2c303c' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#8a867c', fontSize: 11, marginBottom: 2 }}>
+                    <div style={{ padding: '10px 12px', background: 'var(--surface-2)', borderRadius: 6, border: '1px solid var(--line)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)', fontSize: 11, marginBottom: 2 }}>
                         <CalendarIcon size={12} />
                         <span>{t('detailModal.died')}</span>
                       </div>
-                      <strong style={{ fontSize: 13.5, color: '#f5f2eb' }}>
-                        {person.death_date ? new Date(person.death_date).toLocaleDateString() : '—'}
+                      <strong style={{ fontSize: 13.5, color: 'var(--text)' }}>
+                        {person.death_date ? formatDate(person.death_date) : '—'}
                       </strong>
                       {person.death_place && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#a8a296', fontSize: 11.5, marginTop: 4 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)', fontSize: 11.5, marginTop: 4 }}>
                           <MapPinIcon size={11} />
                           <span>{person.death_place}</span>
                         </div>
                       )}
                     </div>
                   ) : (
-                    <div style={{ padding: '10px 12px', background: '#1c1f28', borderRadius: 6, border: '1px solid #2c303c' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#8a867c', fontSize: 11, marginBottom: 2 }}>
+                    <div style={{ padding: '10px 12px', background: 'var(--surface-2)', borderRadius: 6, border: '1px solid var(--line)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-muted)', fontSize: 11, marginBottom: 2 }}>
                         <UserIcon size={12} />
                         <span>{t('personModal.gender')}</span>
                       </div>
-                      <strong style={{ fontSize: 13.5, color: '#f5f2eb' }}>
-                        {person.gender === 'female' ? t('personModal.genderFemale') : person.gender === 'male' ? t('personModal.genderMale') : t('personModal.genderOther')}
+                      <strong style={{ fontSize: 13.5, color: 'var(--text)' }}>
+                        {person.gender === 'female' ? t('personModal.genderFemale') : t('personModal.genderMale')}
                       </strong>
                     </div>
                   )}
@@ -410,15 +420,29 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                 {/* Biography */}
                 {person.biography && (
                   <div style={{ marginBottom: 16 }}>
-                    <span style={{ color: '#8a867c', display: 'block', fontSize: 11, marginBottom: 5 }}>{t('detailModal.biography')}</span>
+                    <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: 11, marginBottom: 5 }}>{t('detailModal.biography')}</span>
                     <p style={{
-                      fontSize: 12.5, lineHeight: 1.6, background: '#1c1f28',
-                      padding: 12, borderRadius: 6, border: '1px solid #2c303c',
-                      margin: 0, color: '#dedbd2',
+                      fontSize: 12.5, lineHeight: 1.6, background: 'var(--surface-2)',
+                      padding: 12, borderRadius: 6, border: '1px solid var(--line)',
+                      margin: 0, color: 'var(--text)',
                     }}>
                       {person.biography}
                     </p>
                   </div>
+                )}
+
+                {/* Immediate family */}
+                {family && (
+                  <section style={{ marginBottom: 16 }}>
+                    <h3 className="panel-section-title">{t('family.title')}</h3>
+                    <FamilyGroup label={t('family.parents')} people={family.parents} onSelect={onSelectPerson} />
+                    <FamilyGroup label={t('family.spouses')} people={family.spouses} onSelect={onSelectPerson} />
+                    <FamilyGroup label={t('family.siblings')} people={family.siblings} onSelect={onSelectPerson} />
+                    <FamilyGroup label={t('family.children')} people={family.children} onSelect={onSelectPerson} />
+                    {family.parents.length + family.spouses.length + family.siblings.length + family.children.length === 0 && (
+                      <p style={{ fontSize: 12.5, color: 'var(--text-muted)', margin: 0 }}>{t('family.none')}</p>
+                    )}
+                  </section>
                 )}
 
                 {/* Add relative buttons */}
@@ -431,8 +455,8 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                         onClick={() => { onAddRelative?.(type); onClose(); }}
                         style={{
                           flex: 1, padding: '7px 6px', borderRadius: 6,
-                          border: '1px solid #2c303c', background: '#1c1f28',
-                          color: '#dedbd2', cursor: 'pointer', fontSize: 11, fontWeight: 500,
+                          border: '1px solid var(--line)', background: 'var(--surface-2)',
+                          color: 'var(--text)', cursor: 'pointer', fontSize: 11, fontWeight: 500,
                           transition: 'background 0.12s ease',
                         }}
                       >
@@ -454,7 +478,7 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                       style={{
                         padding: '8px 14px', borderRadius: 6,
                         border: '1px solid rgba(160, 60, 70, 0.4)',
-                        background: 'rgba(160, 60, 70, 0.12)', color: '#d9828d',
+                        background: 'rgba(160, 60, 70, 0.12)', color: 'var(--card-accent)',
                         cursor: 'pointer', fontSize: 12, fontWeight: 500,
                       }}
                     >
@@ -469,8 +493,8 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                         onClick={startEdit}
                         style={{
                           padding: '8px 16px', borderRadius: 6,
-                          border: '1px solid #5a4722',
-                          background: '#242018', color: '#d4af37',
+                          border: '1px solid var(--header-newtree-border)',
+                          background: 'var(--header-newtree-bg)', color: 'var(--card-accent)',
                           cursor: 'pointer', fontSize: 12, fontWeight: 600,
                           display: 'flex', alignItems: 'center', gap: 5,
                         }}
@@ -484,8 +508,8 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                       onClick={onClose}
                       style={{
                         padding: '8px 20px', borderRadius: 6,
-                        border: '1px solid #2d313d', background: '#1c1f28',
-                        color: '#dedbd2', cursor: 'pointer', fontSize: 12, fontWeight: 500,
+                        border: '1px solid var(--line)', background: 'var(--surface-2)',
+                        color: 'var(--text)', cursor: 'pointer', fontSize: 12, fontWeight: 500,
                       }}
                     >
                       {t('detailModal.close')}
@@ -533,11 +557,10 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                     <select
                       style={{ ...inputStyle, appearance: 'none' }}
                       value={editForm.gender || 'male'}
-                      onChange={e => setEditForm(f => ({ ...f, gender: e.target.value as any }))}
+                      onChange={e => setEditForm(f => ({ ...f, gender: e.target.value as Gender }))}
                     >
                       <option value="male">{t('personModal.genderMale')}</option>
                       <option value="female">{t('personModal.genderFemale')}</option>
-                      <option value="other">{t('personModal.genderOther')}</option>
                     </select>
                   </div>
                 </div>
@@ -558,7 +581,7 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                     <input
                       style={inputStyle}
                       value={editForm.birth_place || ''}
-                      placeholder="Aşgabat, Türkmenistan"
+                      placeholder={t('detailModal.placeholderPlace')}
                       onChange={e => setEditForm(f => ({ ...f, birth_place: e.target.value }))}
                     />
                   </div>
@@ -567,27 +590,27 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                 {/* Living status toggle */}
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '10px 12px', background: '#1c1f28',
-                  border: '1px solid #2c303c', borderRadius: 6, marginBottom: 10,
+                  padding: '10px 12px', background: 'var(--surface-2)',
+                  border: '1px solid var(--line)', borderRadius: 6, marginBottom: 10,
                 }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', flex: 1 }}>
                     <div
                       onClick={() => setEditForm(f => ({ ...f, is_living: !f.is_living }))}
                       style={{
                         width: 36, height: 20, borderRadius: 10, cursor: 'pointer',
-                        background: editForm.is_living ? '#346850' : '#45423e',
+                        background: editForm.is_living ? 'var(--header-primary-bg)' : 'var(--line)',
                         position: 'relative', transition: 'background 0.15s ease', flexShrink: 0,
                       }}
                     >
                       <div style={{
                         position: 'absolute', top: 2, left: editForm.is_living ? 18 : 2,
-                        width: 16, height: 16, borderRadius: 8, background: '#f5f2eb',
+                        width: 16, height: 16, borderRadius: 8, background: 'var(--text)',
                         transition: 'left 0.15s ease',
                       }} />
                     </div>
                     <div>
-                      <div style={{ fontSize: 12.5, color: '#f5f2eb', fontWeight: 500 }}>{t('detailModal.livingStatus')}</div>
-                      <div style={{ fontSize: 11, color: '#a8a296' }}>{t('detailModal.isLivingDesc')}</div>
+                      <div style={{ fontSize: 12.5, color: 'var(--text)', fontWeight: 500 }}>{t('detailModal.livingStatus')}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t('detailModal.isLivingDesc')}</div>
                     </div>
                   </label>
                 </div>
@@ -605,11 +628,11 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                       />
                     </div>
                     <div style={fieldGroupStyle}>
-                      <label style={labelStyle}>{t('personModal.deathPlace') || 'Aradan çykan ýeri'}</label>
+                      <label style={labelStyle}>{t('personModal.deathPlace')}</label>
                       <input
                         style={inputStyle}
                         value={editForm.death_place || ''}
-                        placeholder="Aşgabat"
+                        placeholder={t('personModal.placeholderDeathPlace')}
                         onChange={e => setEditForm(f => ({ ...f, death_place: e.target.value }))}
                       />
                     </div>
@@ -635,8 +658,8 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                     disabled={saving}
                     style={{
                       padding: '8px 16px', borderRadius: 6,
-                      border: '1px solid #2d313d', background: 'transparent',
-                      color: '#a8a296', cursor: 'pointer', fontSize: 12, fontWeight: 500,
+                      border: '1px solid var(--line)', background: 'transparent',
+                      color: 'var(--text-muted)', cursor: 'pointer', fontSize: 12, fontWeight: 500,
                     }}
                   >
                     {t('detailModal.cancel')}
@@ -647,9 +670,9 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
                     disabled={saving || !editForm.first_name || !editForm.last_name}
                     style={{
                       padding: '8px 20px', borderRadius: 6,
-                      border: '1px solid #3f6850',
-                      background: saving ? 'rgba(63, 104, 80, 0.2)' : '#254a37',
-                      color: '#f5f2eb', cursor: saving ? 'not-allowed' : 'pointer',
+                      border: '1px solid var(--header-primary-border)',
+                      background: saving ? 'rgba(63, 104, 80, 0.2)' : 'var(--header-primary-bg)',
+                      color: 'var(--header-primary-text)', cursor: saving ? 'not-allowed' : 'pointer',
                       fontSize: 12, fontWeight: 600,
                       display: 'flex', alignItems: 'center', gap: 5,
                       opacity: (!editForm.first_name || !editForm.last_name) ? 0.5 : 1,
@@ -668,6 +691,37 @@ export const PersonDetailModal: React.FC<PersonDetailModalProps> = ({
           </div>
         )}
       </div>
+    </aside>
+  );
+};
+
+const FamilyGroup: React.FC<{
+  label: string;
+  people: Person[];
+  onSelect?: (id: string) => void;
+}> = ({ label, people, onSelect }) => {
+  const { t } = useTranslation();
+  if (people.length === 0) return null;
+  return (
+    <div>
+      <div className="family-group-label">{label}</div>
+      {people.map((p) => (
+        <button key={p.id} type="button" className="family-chip" onClick={() => onSelect?.(p.id)}>
+          {p.avatar_url ? (
+            <img src={p.avatar_url} alt="" className="family-chip__avatar" />
+          ) : (
+            <span className={`family-chip__avatar avatar-${p.gender}`} aria-hidden="true">
+              {(p.first_name[0] + (p.last_name[0] || '')).toUpperCase()}
+            </span>
+          )}
+          <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {p.first_name} {p.last_name}
+          </span>
+          <span className="family-chip__years">
+            {formatLifespan(t, yearOf(p.birth_date), yearOf(p.death_date), p.is_living)}
+          </span>
+        </button>
+      ))}
     </div>
   );
 };

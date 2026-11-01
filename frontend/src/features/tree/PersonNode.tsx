@@ -5,7 +5,9 @@ import type { NodeProps, Node } from '@xyflow/react';
 import type { TreeNodeData } from '@/types/tree';
 import type { Person } from '@/types/person';
 import { useTreeEvents } from './TreeEventsContext';
-import { UserIcon, HeartIcon, BabyIcon, EyeIcon, CalendarIcon, MapPinIcon } from '@/components/common/Icons';
+import { formatLifespan, yearOf } from '@/i18n/format';
+import { SPOUSE_ANCHOR_Y } from './layoutEngine';
+import { UserIcon, HeartIcon, BabyIcon, EyeIcon } from '@/components/common/Icons';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -13,14 +15,6 @@ function getInitials(p: Person): string {
   const f = p.first_name ? p.first_name[0] : '?';
   const l = p.last_name ? p.last_name[0] : '';
   return (f + l).toUpperCase();
-}
-
-function formatYears(person: Person): string {
-  const born = person.birth_date ? person.birth_date.slice(0, 4) : '?';
-  if (!person.is_living && person.death_date) {
-    return `${born} – ${person.death_date.slice(0, 4)}`;
-  }
-  return person.is_living ? `d. ${born}` : `d. ${born} – vefat`;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -36,72 +30,51 @@ const PersonNode: React.FC<NodeProps<CustomPersonNode>> = ({ data }) => {
 
   const isDead = !person.is_living;
   const gender = person.gender;
+  const genderLabel = gender === 'female' ? t('personModal.genderFemale') : t('personModal.genderMale');
+  const lifespan = formatLifespan(t, yearOf(person.birth_date), yearOf(person.death_date), person.is_living);
 
   const nodeClass = [
     'person-node',
-    isDead ? 'node-dead' : `node-${gender}`,
+    `node-${gender}`,
+    isDead ? 'is-deceased' : '',
+    data.isSelected ? 'node-selected' : '',
     data.isHighlighted ? 'node-highlighted' : '',
   ].filter(Boolean).join(' ');
 
   return (
-    <div className={nodeClass} onClick={() => onViewProfile?.(person.id)}>
+    <div
+      className={nodeClass}
+      onClick={() => onViewProfile?.(person.id)}
+      aria-label={`${person.first_name} ${person.last_name}, ${genderLabel}, ${isDead ? t('node.deceased') : t('node.living')}, ${lifespan}`}
+    >
       {/* React Flow handles for connectors */}
-      <Handle type="target" position={Position.Top} className="custom-flow-handle" />
-      <Handle type="source" position={Position.Bottom} className="custom-flow-handle" />
+      <Handle id="top" type="target" position={Position.Top} className="custom-flow-handle" isConnectable={false} />
+      <Handle id="bottom" type="source" position={Position.Bottom} className="custom-flow-handle" isConnectable={false} />
+      <Handle id="spouse-left" type="target" position={Position.Left} className="spouse-handle" style={{ top: SPOUSE_ANCHOR_Y }} isConnectable={false} />
+      <Handle id="spouse-right" type="source" position={Position.Right} className="spouse-handle" style={{ top: SPOUSE_ANCHOR_Y }} isConnectable={false} />
 
-      {/* Header Badge */}
-      <div className="person-node__topbar">
-        <span className={`gender-tag gender-${gender}`}>
-          {gender === 'male' ? t('personModal.genderMale') : gender === 'female' ? t('personModal.genderFemale') : t('personModal.genderOther')}
-        </span>
-        {isDead ? (
-          <span className="status-tag status-dead">{t('node.deceased')}</span>
-        ) : (
-          <span className="status-tag status-living">{t('node.living')}</span>
-        )}
-      </div>
-
-      {/* Main Content */}
-      <div className="person-node__body">
-        {/* Round Avatar centered ABOVE identity information */}
-        <div className="person-node__avatar-wrapper">
-          {person.avatar_url ? (
-            <img
-              src={person.avatar_url}
-              alt={person.first_name}
-              className="person-node__avatar"
-            />
-          ) : (
-            <div className={`person-node__avatar-placeholder avatar-${gender}`}>
-              {getInitials(person)}
-            </div>
-          )}
+      {person.avatar_url ? (
+        <img src={person.avatar_url} alt="" className="person-node__avatar" />
+      ) : (
+        <div className={`person-node__avatar-placeholder avatar-${gender}`} aria-hidden="true">
+          {getInitials(person)}
         </div>
+      )}
 
-        {/* Identity & Dates */}
-        <div className="person-node__meta">
-          <h4 className="person-node__fullname" title={`${person.first_name} ${person.last_name}`}>
-            {person.first_name} <strong>{person.last_name}</strong>
-          </h4>
-
-          {person.maiden_name && (
-            <div className="person-node__maiden">
-              {t('personModal.maidenName')}: <em>{person.maiden_name}</em>
-            </div>
-          )}
-
-          <div className="person-node__row">
-            <CalendarIcon size={12} className="meta-icon" />
-            <span>{formatYears(person)}</span>
+      <div className="person-node__meta">
+        <h4 className="person-node__fullname" title={`${person.first_name} ${person.last_name}`}>
+          {person.first_name} <strong>{person.last_name}</strong>
+        </h4>
+        <div className="person-node__row" title={person.birth_place}>
+          {isDead && <span className="person-node__cross" aria-hidden="true">†</span>}
+          {lifespan}
+          {person.birth_place ? ` · ${person.birth_place}` : ''}
+        </div>
+        {person.maiden_name && (
+          <div className="person-node__maiden">
+            {t('search.matchMaiden')}: {person.maiden_name}
           </div>
-
-          {person.birth_place && (
-            <div className="person-node__row">
-              <MapPinIcon size={12} className="meta-icon" />
-              <span className="truncate">{person.birth_place}</span>
-            </div>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Tactical Hover Menu */}

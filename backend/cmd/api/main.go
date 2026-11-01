@@ -30,11 +30,11 @@ func main() {
 
 	pool, err := postgres.NewPool(cfg)
 	if err != nil {
-		log.Printf("⚠️ PostgreSQL bağlantısı kurulamadı (%v). Geçici In-Memory modu devrede.", err)
+		log.Printf("⚠️ PostgreSQL bilen baglanyşyk gurup bolmady (%v). Wagtlaýyn ýatdaky (in-memory) tertip işledildi.", err)
 		personRepo = repository.NewMemPersonRepo()
 		relRepo = repository.NewMemRelRepo()
 	} else {
-		log.Println("🐘 PostgreSQL veritabanı bağlantısı başarılı! (Host: " + cfg.DBHost + ", Port: " + cfg.DBPort + ")")
+		log.Println("🐘 PostgreSQL maglumat bazasy bilen baglanyşyk üstünlikli! (Host: " + cfg.DBHost + ", Port: " + cfg.DBPort + ")")
 		migDir := "./migrations"
 		if _, err := os.Stat(migDir); err == nil {
 			if migErr := postgres.RunMigrations(pool, migDir); migErr != nil {
@@ -56,18 +56,18 @@ func main() {
 
 	// Pre-seed demo data if repository is empty so the app has data immediately
 	if existing, err := personRepo.GetAll(); err == nil && len(existing) == 0 {
-		log.Println("🌱 Veritabanı boş tespit edildi, demo aile ağaçları yükleniyor...")
+		log.Println("🌱 Maglumat bazasy boş, nusga maşgala agaçlary ýüklenýär...")
 		if err := seedSvc.SeedDemoData(); err != nil {
-			log.Printf("Demo veri yüklenirken hata: %v", err)
+			log.Printf("Nusga maglumatlar ýüklenende ýalňyşlyk: %v", err)
 		} else {
-			log.Println("✅ Demo veriler başarıyla yüklendi!")
+			log.Println("✅ Nusga maglumatlar üstünlikli ýüklendi!")
 		}
 	}
 
 	// ── Upload directory ───────────────────────────────────────────────────────
 	uploadDir := "./uploads"
 	if err := os.MkdirAll(uploadDir, 0755); err != nil {
-		log.Fatalf("Upload klasörü oluşturulamadı: %v", err)
+		log.Fatalf("Ýükleme bukjasyny döredip bolmady: %v", err)
 	}
 
 	// ── Fiber App ──────────────────────────────────────────────────────────────
@@ -104,7 +104,7 @@ func main() {
 			Description string `json:"description"`
 		}
 		if err := c.BodyParser(&req); err != nil || req.Name == "" {
-			return fiber.NewError(fiber.StatusBadRequest, "ağaç adı zorunludur")
+			return fiber.NewError(fiber.StatusBadRequest, "agajyň ady hökmany")
 		}
 		newTree := treeMetaSvc.CreateTree(req.Name, req.Description)
 		return c.Status(fiber.StatusCreated).JSON(newTree)
@@ -123,7 +123,7 @@ func main() {
 		if err := seedSvc.SeedDemoData(); err != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 		}
-		return c.JSON(fiber.Map{"message": "Demo aile ağaçları başarıyla yüklendi"})
+		return c.JSON(fiber.Map{"message": "Nusga maşgala agaçlary üstünlikli ýüklendi"})
 	})
 
 	// Health check
@@ -139,6 +139,6 @@ func main() {
 	addr := ":" + cfg.AppPort
 	log.Printf("🌳 Family Tree API [%s] → http://localhost%s", dbMode, addr)
 	if err := app.Listen(addr); err != nil {
-		log.Fatalf("Sunucu başlatılamadı: %v", err)
+		log.Fatalf("Serweri işledip bolmady: %v", err)
 	}
 }

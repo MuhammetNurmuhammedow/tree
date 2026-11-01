@@ -24,6 +24,15 @@ const en = {
       editable: 'My Tree (Editable)',
       members: 'members',
       backToMyTree: 'Switch to My Tree',
+      memberCount_one: '{{count}} member',
+      memberCount_other: '{{count}} members',
+      readOnlyBanner: 'You are viewing “{{name}}” in read-only mode.',
+      newTreeHint: 'Create your own new family tree',
+      sampleDataHint: 'Reset and reload the sample family trees',
+      sampleDataConfirm: 'This deletes all people and relationships in every tree and loads the sample data again. Continue?',
+      sampleDataError: 'Could not load the sample data',
+      menu: 'Menu',
+      fallbackName: 'Family Tree',
     },
     // Search
     search: {
@@ -36,6 +45,10 @@ const en = {
       foundCount: 'Found Persons',
       focusOnTree: 'Show on Tree',
       openProfile: 'Profile',
+      matchMaiden: 'Maiden name',
+      matchBirthPlace: 'Birthplace',
+      matchDeathPlace: 'Place of death',
+      matchBiography: 'Biography',
     },
     // Toolbar buttons
     toolbar: {
@@ -51,10 +64,8 @@ const en = {
     },
     // Canvas themes
     themes: {
-      slate: 'Archival Slate',
-      white: 'White (Paper / Light)',
-      parchment: 'Heritage Parchment',
-      obsidian: 'Midnight Obsidian',
+      carpet: 'Carpet (light)',
+      night: 'Night (dark)',
     },
     // Canvas hints
     canvas: {
@@ -63,6 +74,28 @@ const en = {
       empty: 'This tree is empty',
       emptyHint: 'Click "Add Person" to add your first family member.',
       error: 'An error occurred while loading the family tree',
+      retry: 'Try Again',
+      layoutReset: 'Cards were re-arranged automatically',
+      resetLayoutHint: 'Return dragged cards to the automatic layout',
+      themeHint: 'Change the canvas background theme',
+      exportHint: 'Export the tree as PNG or PDF',
+      exportingPng: 'Preparing high-resolution PNG…',
+      themeChanged: 'Theme: {{name}}',
+      zoomIn: 'Zoom in',
+      zoomOut: 'Zoom out',
+      fitView: 'Show whole tree',
+      focusSelected: 'Center on selected person',
+      showLegend: 'Legend',
+      minimap: 'Tree overview',
+      a11yNode: 'Press Enter or Space to open this person.',
+      a11yEdge: 'Family connection.',
+      a11yMoved: 'Card moved.',
+      a11yControls: 'Canvas controls',
+      a11yHandle: 'Connection point',
+      print: 'Print',
+      printHint: 'Print the whole tree (Ctrl+P)',
+      preparingPrint: 'Preparing for print…',
+      printedOn: 'Printed on {{date}}',
     },
     // Person Node
     node: {
@@ -90,8 +123,6 @@ const en = {
       gender: 'Gender',
       genderMale: 'Male',
       genderFemale: 'Female',
-      genderOther: 'Other',
-      genderUnknown: 'Unknown',
       birthDate: 'Date of Birth',
       birthPlace: 'Place of Birth',
       isLiving: 'This family member is living',
@@ -157,6 +188,10 @@ const en = {
       personLabel: '{{name}} ({{gender}}) {{birth}}',
       male: 'Male',
       female: 'Female',
+      catSpouse: 'Spouse',
+      catParent: 'Parent',
+      catChild: 'Child',
+      editableHint: 'You can type over it to change it',
     },
     // Create Tree Modal
     createTreeModal: {
@@ -196,6 +231,10 @@ const en = {
       addParent: 'Add Parent',
       addSpouse: 'Add Spouse',
       addChild: 'Add Child',
+      readOnlyNotice: 'This profile belongs to another user\'s tree, so it is read-only.',
+      placeholderPlace: 'City, country',
+      age_one: '{{count}} year old',
+      age_other: '{{count}} years old',
     },
     // Toast messages
     toast: {
@@ -204,6 +243,38 @@ const en = {
       pngError: 'An error occurred while creating PNG',
       pdfError: 'An error occurred while creating PDF',
       treeLoaded: 'Tree loaded',
+    },
+    photo: {
+      label: 'Photo',
+      add: '+ Add photo',
+      change: 'Change photo',
+      remove: 'Remove',
+      clickToUpload: 'Click to upload a photo',
+      tooLarge: 'The photo must be smaller than 10 MB',
+      uploading: 'Uploading photo…',
+      uploadSuccess: 'Photo uploaded',
+      uploadError: 'Could not upload the photo',
+    },
+    errors: {
+      generic: 'Something went wrong. Please try again.',
+      loadTree: 'Could not load the family tree',
+    },
+    legend: {
+      title: 'Legend',
+      male: 'Male',
+      female: 'Female',
+      deceased: 'Deceased (faded, †)',
+      married: 'Married',
+      divorced: 'Divorced',
+      parentChild: 'Parent → child',
+    },
+    family: {
+      title: 'Immediate family',
+      parents: 'Parents',
+      spouses: 'Spouses',
+      siblings: 'Siblings',
+      children: 'Children',
+      none: 'No relatives added yet.',
     },
   },
 } as const;

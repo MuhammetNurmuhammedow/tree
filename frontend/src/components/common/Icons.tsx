@@ -433,3 +433,76 @@ export const ImageIcon: React.FC<IconProps> = ({ size = 18, className = '', ...p
   </svg>
 );
 
+
+const strokeIcon = (children: React.ReactNode, defaultSize = 16): React.FC<IconProps> =>
+  ({ size = defaultSize, className = '', ...props }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      {children}
+    </svg>
+  );
+
+export const MinusIcon = strokeIcon(<line x1="5" y1="12" x2="19" y2="12" />);
+
+export const FitViewIcon = strokeIcon(
+  <>
+    <path d="M4 9V5a1 1 0 0 1 1-1h4" />
+    <path d="M15 4h4a1 1 0 0 1 1 1v4" />
+    <path d="M20 15v4a1 1 0 0 1-1 1h-4" />
+    <path d="M9 20H5a1 1 0 0 1-1-1v-4" />
+  </>
+);
+
+export const TargetIcon = strokeIcon(
+  <>
+    <circle cx="12" cy="12" r="8" />
+    <circle cx="12" cy="12" r="3" />
+  </>
+);
+
+export const InfoIcon = strokeIcon(
+  <>
+    <circle cx="12" cy="12" r="9" />
+    <line x1="12" y1="11" x2="12" y2="16" />
+    <line x1="12" y1="8" x2="12.01" y2="8" />
+  </>
+);
+
+/**
+ * Stylised Turkmen carpet "göl": an octagonal medallion with a stepped
+ * diamond and a centre square, used as the app's ornament.
+ */
+export const GulIcon: React.FC<IconProps> = ({ size = 20, className = '', ...props }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" className={className} aria-hidden="true" {...props}>
+    <path d="M8 1.5h8l6.5 6.5v8L16 22.5H8L1.5 16V8z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    <path d="M12 4.5l3 3 1.5-0.01v1.51l3 3-3 3v1.5H15l-3 3-3-3H7.5V15l-3-3 3-3V7.5H9z" fill="currentColor" opacity="0.28" />
+    <path d="M12 7.5l4.5 4.5-4.5 4.5L7.5 12z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+    <rect x="10.6" y="10.6" width="2.8" height="2.8" transform="rotate(45 12 12)" fill="currentColor" />
+  </svg>
+);
+
+export const MoreIcon: React.FC<IconProps> = ({ size = 16, className = '', ...props }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true" {...props}>
+    <circle cx="5" cy="12" r="1.8" />
+    <circle cx="12" cy="12" r="1.8" />
+    <circle cx="19" cy="12" r="1.8" />
+  </svg>
+);
+
+export const PrinterIcon = strokeIcon(
+  <>
+    <path d="M6 9V3h12v6" />
+    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+    <rect x="6" y="14" width="12" height="7" />
+  </>
+);

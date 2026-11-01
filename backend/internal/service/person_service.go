@@ -65,14 +65,17 @@ func (s *PersonService) Delete(id uuid.UUID) error {
 // validate enforces domain rules for a person.
 func validate(p *domain.Person) error {
 	if strings.TrimSpace(p.FirstName) == "" {
-		return errors.New("first_name boş olamaz")
+		return errors.New("first_name boş bolup bilmez")
 	}
 	if strings.TrimSpace(p.LastName) == "" {
-		return errors.New("last_name boş olamaz")
+		return errors.New("last_name boş bolup bilmez")
+	}
+	if !p.Gender.Valid() {
+		return errors.New("gender diňe 'male' ýa-da 'female' bolup biler")
 	}
 	if p.BirthDate != nil && p.DeathDate != nil {
 		if p.DeathDate.Before(*p.BirthDate) {
-			return errors.New("ölüm tarihi, doğum tarihinden önce olamaz")
+			return errors.New("aradan çykan senesi doglan senesinden öň bolup bilmez")
 		}
 	}
 	return nil

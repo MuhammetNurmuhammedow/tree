@@ -1,6 +1,6 @@
 // TypeScript type definitions for Person domain model
 
-export type Gender = 'male' | 'female' | 'other' | 'unknown';
+export type Gender = 'male' | 'female';
 
 export interface Person {
   id: string;

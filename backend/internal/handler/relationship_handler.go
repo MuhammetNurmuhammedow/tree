@@ -27,7 +27,7 @@ func (h *RelationshipHandler) RegisterRoutes(r fiber.Router) {
 func (h *RelationshipHandler) Create(c *fiber.Ctx) error {
 	var rel domain.Relationship
 	if err := c.BodyParser(&rel); err != nil {
-		return fiber.NewError(http.StatusBadRequest, "geçersiz JSON gövdesi")
+		return fiber.NewError(http.StatusBadRequest, "nädogry JSON mazmuny")
 	}
 	if err := h.svc.Create(&rel); err != nil {
 		return fiber.NewError(http.StatusBadRequest, err.Error())
@@ -38,7 +38,7 @@ func (h *RelationshipHandler) Create(c *fiber.Ctx) error {
 func (h *RelationshipHandler) Delete(c *fiber.Ctx) error {
 	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
-		return fiber.NewError(http.StatusBadRequest, "geçersiz UUID")
+		return fiber.NewError(http.StatusBadRequest, "nädogry UUID")
 	}
 	if err := h.svc.Delete(id); err != nil {
 		return fiber.NewError(http.StatusInternalServerError, err.Error())
@@ -49,7 +49,7 @@ func (h *RelationshipHandler) Delete(c *fiber.Ctx) error {
 func (h *RelationshipHandler) GetByPersonID(c *fiber.Ctx) error {
 	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
-		return fiber.NewError(http.StatusBadRequest, "geçersiz UUID")
+		return fiber.NewError(http.StatusBadRequest, "nädogry UUID")
 	}
 	rels, err := h.svc.GetByPersonID(id)
 	if err != nil {

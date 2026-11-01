@@ -65,7 +65,7 @@ func (r *MemRelRepo) Delete(id uuid.UUID) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if _, ok := r.rels[id]; !ok {
-		return errors.New("ilişki bulunamadı")
+		return errors.New("gatnaşyk tapylmady")
 	}
 	delete(r.rels, id)
 	return nil

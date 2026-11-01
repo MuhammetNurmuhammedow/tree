@@ -32,8 +32,11 @@ type TreeEdge struct {
 	ID     string `json:"id"`
 	Source string `json:"source"`
 	Target string `json:"target"`
-	Type   string `json:"type"`   // "bloodEdge" | "spouseEdge"
-	Label  string `json:"label,omitempty"`
+	Type   string `json:"type"` // "bloodEdge" | "spouseEdge"
+	// RelationshipType lets the frontend pick a localized default label.
+	RelationshipType string `json:"relationship_type"`
+	// Label is the user's custom kinship title (relationship notes), if any.
+	Label string `json:"label,omitempty"`
 }
 
 // TreeGraph is the full graph payload sent to the frontend.
@@ -117,44 +120,27 @@ func (s *TreeService) BuildSubTree(rootID uuid.UUID) (*TreeGraph, error) {
 }
 
 func buildEdge(rel *domain.Relationship) *TreeEdge {
-	src := rel.PersonID.String()
-	tgt := rel.RelatedPersonID.String()
-
+	var edgeType string
 	switch rel.RelationshipType {
 	case domain.RelParent, domain.RelAdoptiveParent:
-		return &TreeEdge{
-			ID:     "e-" + rel.ID.String(),
-			Source: src,
-			Target: tgt,
-			Type:   "bloodEdge",
-		}
-	case domain.RelSpouse:
-		label := "evli"
-		if rel.Notes != nil && *rel.Notes != "" {
-			label = *rel.Notes
-		}
-		return &TreeEdge{
-			ID:     "e-" + rel.ID.String(),
-			Source: src,
-			Target: tgt,
-			Type:   "spouseEdge",
-			Label:  label,
-		}
-	case domain.RelFormerSpouse:
-		label := "eski eş"
-		if rel.Notes != nil && *rel.Notes != "" {
-			label = *rel.Notes
-		}
-		return &TreeEdge{
-			ID:     "e-" + rel.ID.String(),
-			Source: src,
-			Target: tgt,
-			Type:   "spouseEdge",
-			Label:  label,
-		}
+		edgeType = "bloodEdge"
+	case domain.RelSpouse, domain.RelFormerSpouse:
+		edgeType = "spouseEdge"
 	default:
 		return nil
 	}
+
+	edge := &TreeEdge{
+		ID:               "e-" + rel.ID.String(),
+		Source:           rel.PersonID.String(),
+		Target:           rel.RelatedPersonID.String(),
+		Type:             edgeType,
+		RelationshipType: string(rel.RelationshipType),
+	}
+	if rel.Notes != nil {
+		edge.Label = *rel.Notes
+	}
+	return edge
 }
 
 func deduplicateEdges(edges []*TreeEdge) []*TreeEdge {

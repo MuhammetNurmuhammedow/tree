@@ -5,6 +5,8 @@ import type { Person } from './person';
 export interface TreeNodeData extends Record<string, unknown> {
   person: Person;
   isHighlighted?: boolean;
+  /** Person whose profile panel is open. */
+  isSelected?: boolean;
   onAddParent?: (id: string) => void;
   onAddSpouse?: (id: string) => void;
   onAddChild?: (id: string) => void;
@@ -30,7 +32,16 @@ export interface TreeEdge {
   source: string;
   target: string;
   type: EdgeType;
+  relationship_type?: string;
+  /** User's custom kinship title; empty means "use the localized default". */
   label?: string;
+}
+
+/** Extra data the layout engine attaches to React Flow edges. */
+export interface FamilyEdgeData extends Record<string, unknown> {
+  relationshipType?: string;
+  /** For a child of a couple: the other parent, so the line starts mid-marriage. */
+  partnerId?: string;
 }
 
 export interface TreeGraph {
@@ -55,8 +66,11 @@ export interface SearchResultItem {
   tree_name: string;
   is_my_tree: boolean;
   gender: string;
-  years: string;
+  is_living: boolean;
+  birth_year?: string;
+  death_year?: string;
   birth_place?: string;
   maiden_name?: string;
+  match_field?: 'maiden_name' | 'birth_place' | 'death_place' | 'biography';
   match_context?: string;
 }
