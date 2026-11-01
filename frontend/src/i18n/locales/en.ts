@@ -150,14 +150,14 @@ const en = {
       bondType: 'Kinship / Relationship Type',
       customTitleLabel: 'Displayed Kinship Title (Customizable)',
       customTitlePlaceholder: 'e.g. Husband, Wife, Partner, Mother-in-law, Fiancé…',
-      
+
       // Marriage
       spouseGeneral: 'Spouse / Partner (Marriage)',
       spouseHusband: 'Husband',
       spouseWife: 'Wife',
       formerSpouse: 'Former Spouse (Divorced)',
       fiance: 'Fiancé / Fiancée',
-      
+
       // In-laws
       inLawFather: 'Father-in-law',
       inLawMother: 'Mother-in-law',
@@ -263,7 +263,7 @@ const en = {
       title: 'Legend',
       male: 'Male',
       female: 'Female',
-      deceased: 'Deceased (faded, †)',
+      deceased: 'Deceased (faded, )',
       married: 'Married',
       divorced: 'Divorced',
       parentChild: 'Parent → child',

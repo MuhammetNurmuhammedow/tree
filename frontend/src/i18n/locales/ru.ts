@@ -152,14 +152,14 @@ const ru = {
       bondType: 'Тип Родства / Брака',
       customTitleLabel: 'Отображаемое Название Родства (Изменяемое)',
       customTitlePlaceholder: 'Напр: Муж, Жена, Супруг, Свекровь, Тёща, Невестка, Зять…',
-      
+
       // Marriage
       spouseGeneral: 'Супруг(а) / Брак',
       spouseHusband: 'Муж',
       spouseWife: 'Жена',
       formerSpouse: 'Бывший супруг(а) (Развод)',
       fiance: 'Жених / Невеста',
-      
+
       // In-laws
       inLawFather: 'Свёкор / Тесть',
       inLawMother: 'Свекровь / Тёща',
@@ -267,7 +267,7 @@ const ru = {
       title: 'Легенда',
       male: 'Мужчина',
       female: 'Женщина',
-      deceased: 'Умерший (бледно, †)',
+      deceased: 'Умерший (бледно, )',
       married: 'В браке',
       divorced: 'В разводе',
       parentChild: 'Родитель → ребёнок',

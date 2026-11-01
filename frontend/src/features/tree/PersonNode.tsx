@@ -66,7 +66,7 @@ const PersonNode: React.FC<NodeProps<CustomPersonNode>> = ({ data }) => {
           {person.first_name} <strong>{person.last_name}</strong>
         </h4>
         <div className="person-node__row" title={person.birth_place}>
-          {isDead && <span className="person-node__cross" aria-hidden="true">†</span>}
+          {isDead && <span className="person-node__cross" aria-hidden="true"></span>}
           {lifespan}
           {person.birth_place ? ` · ${person.birth_place}` : ''}
         </div>

@@ -150,14 +150,14 @@ const tk = {
       bondType: 'Akrabalyk / Nika Gatnaşygy',
       customTitleLabel: 'Görkeziljek Akrabalyk Ady (Islegiňize görä üýtgediň)',
       customTitlePlaceholder: 'Mysal: Ýanýoldaşy, Gelni, Äri, Gaýyn ata, Guda, Baja…',
-      
+
       // Marriage roles
       spouseGeneral: 'Ýanýoldaş / Nika bagy',
       spouseHusband: 'Äri (Adamsy)',
       spouseWife: 'Aýaly (Gelni)',
       formerSpouse: 'Öňki Ýanýoldaş (Aýrylyşan)',
       fiance: 'Adagly (Gudaçylyk)',
-      
+
       // In-laws
       inLawFather: 'Gaýyn ata',
       inLawMother: 'Gaýyn ene',
@@ -263,7 +263,7 @@ const tk = {
       title: 'Düşündiriş',
       male: 'Erkek',
       female: 'Aýal',
-      deceased: 'Aradan çykan (solgun, †)',
+      deceased: 'Aradan çykan (solgun, )',
       married: 'Nikaly',
       divorced: 'Aýrylyşan',
       parentChild: 'Ene-ata → çaga',
