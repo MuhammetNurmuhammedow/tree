@@ -26,7 +26,7 @@ func (r *MemPersonRepo) GetByID(id uuid.UUID) (*domain.Person, error) {
 	defer r.mu.RUnlock()
 	p, ok := r.persons[id]
 	if !ok {
-		return nil, errors.New("kişi bulunamadı")
+		return nil, errors.New("adam tapylmady")
 	}
 	return p, nil
 }
@@ -87,7 +87,7 @@ func (r *MemPersonRepo) Update(p *domain.Person) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if _, ok := r.persons[p.ID]; !ok {
-		return errors.New("kişi bulunamadı")
+		return errors.New("adam tapylmady")
 	}
 	p.UpdatedAt = time.Now()
 	r.persons[p.ID] = p

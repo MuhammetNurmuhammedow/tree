@@ -45,7 +45,7 @@ func scanRel(row pgx.Row) (*domain.Relationship, error) {
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, errors.New("ilişki bulunamadı")
+			return nil, errors.New("gatnaşyk tapylmady")
 		}
 		return nil, err
 	}
@@ -153,7 +153,7 @@ func (r *RelRepo) Delete(id uuid.UUID) error {
 		return fmt.Errorf("delete relationship: %w", err)
 	}
 	if tag.RowsAffected() == 0 {
-		return errors.New("ilişki bulunamadı")
+		return errors.New("gatnaşyk tapylmady")
 	}
 	return nil
 }

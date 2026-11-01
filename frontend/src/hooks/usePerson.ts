@@ -13,7 +13,7 @@ export function usePerson() {
       const data = await personService.getAll();
       setPersons(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Hata oluştu');
+      setError(err instanceof Error ? err.message : 'request failed');
     } finally {
       setLoading(false);
     }

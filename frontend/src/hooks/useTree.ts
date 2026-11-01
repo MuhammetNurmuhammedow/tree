@@ -47,7 +47,8 @@ export function useTree(treeId = 'my-tree', reloadTrigger = 0): UseTreeReturn {
       setNodes(layoutedNodes);
       setEdges(layoutedEdges);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ağaç yüklenemedi');
+      console.error('Failed to load tree:', err);
+      setError(err instanceof Error ? err.message : 'load failed');
     } finally {
       setLoading(false);
     }

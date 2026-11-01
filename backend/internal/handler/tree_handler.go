@@ -42,7 +42,7 @@ func (h *TreeHandler) GetFullTree(c *fiber.Ctx) error {
 func (h *TreeHandler) GetSubTree(c *fiber.Ctx) error {
 	rootID, err := uuid.Parse(c.Params("rootId"))
 	if err != nil {
-		return fiber.NewError(http.StatusBadRequest, "geçersiz UUID")
+		return fiber.NewError(http.StatusBadRequest, "nädogry UUID")
 	}
 	graph, err := h.svc.BuildSubTree(rootID)
 	if err != nil {

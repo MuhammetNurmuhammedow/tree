@@ -26,7 +26,7 @@ func (s *RelationshipService) Create(rel *domain.Relationship) error {
 		return errors.New("person_id ve related_person_id zorunludur")
 	}
 	if rel.PersonID == rel.RelatedPersonID {
-		return errors.New("kişi kendisiyle ilişkilendirilemez")
+		return errors.New("adamy özi bilen baglanyşdyryp bolmaýar")
 	}
 	return s.relRepo.Create(rel)
 }

@@ -1,0 +1,592 @@
+/*
+ * Traditional Turkmen look, inspired by carpet colours and the octagonal göl motif.
+ * Two themes share every rule below; they differ only in their tokens:
+ *   .canvas-theme-carpet  — ivory/parchment ground, carpet red, gold (default)
+ *   .canvas-theme-night   — deep indigo ground, muted red, gold
+ * Loaded after tree.css so these rules win over the generic component styles.
+ */
+
+/* ── Tokens ─────────────────────────────────────────────────────────────────── */
+
+.canvas-theme-carpet {
+  --canvas-bg: #f3e9d4;
+  --canvas-grid: #dccaa6;
+  --card-bg: #fffaf0;
+  --card-border: #d8c39b;
+  --card-frame: #e8d8b6;
+  --card-text: #2b1d14;
+  --card-subtext: #735f4a;
+  --card-accent: #9e2a2b;
+  --edge-color: #8c7457;
+  --spouse-color: #9e2a2b;
+  --gold: #b8862b;
+  --male: #2f4a7a;
+  --female: #a8323e;
+  --pattern-stroke: rgba(140, 100, 50, 0.09);
+
+  --header-bg: #fbf5e7;
+  --header-border: #e2d2b0;
+  --header-text: #2b1d14;
+  --header-subtext: #7a6650;
+  --header-input-bg: #fffdf7;
+  --header-input-border: #d8c39b;
+  --header-panel-bg: #fffaf0;
+  --header-panel-border: #e0cfa9;
+  --header-active-bg: #f3e6c9;
+  --header-active-border: #d8c39b;
+  --header-btn-bg: #fffaf0;
+  --header-btn-border: #d8c39b;
+  --header-btn-text: #3a2a1e;
+  --header-readonly-bg: #f4e5c4;
+  --header-brand-bg: #9e2a2b;
+  --header-brand-border: #7c1d1f;
+  --header-brand-color: #f4d58d;
+  --header-newtree-bg: rgba(158, 42, 43, 0.08);
+  --header-newtree-border: rgba(158, 42, 43, 0.35);
+  --header-newtree-text: #9e2a2b;
+  --header-primary-bg: #9e2a2b;
+  --header-primary-border: #7c1d1f;
+  --header-primary-text: #fff8ea;
+  --header-editable-color: #4f6b3a;
+
+  --surface: #fffaf0;
+  --surface-2: #f6edda;
+  --surface-input: #fffdf7;
+  --line: #dfcca6;
+  --text: #2b1d14;
+  --text-muted: #735f4a;
+
+  --avatar-male-bg: #e6ebf4;
+  --avatar-male-fg: #2f4a7a;
+  --avatar-female-bg: #f6e4e3;
+  --avatar-female-fg: #8f2a32;
+  --shadow: 0 2px 6px rgba(90, 60, 25, 0.12);
+  --shadow-lg: 0 10px 28px rgba(90, 60, 25, 0.18);
+}
+
+.canvas-theme-night {
+  --canvas-bg: #131a2c;
+  --canvas-grid: #222b44;
+  --card-bg: #1b2338;
+  --card-border: #34405f;
+  --card-frame: #2a3450;
+  --card-text: #f2e6cf;
+  --card-subtext: #b4a78f;
+  --card-accent: #d0a24a;
+  --edge-color: #6f7b98;
+  --spouse-color: #c8513f;
+  --gold: #d0a24a;
+  --male: #7d9bd1;
+  --female: #d9707c;
+  --pattern-stroke: rgba(208, 162, 74, 0.06);
+
+  --header-bg: #161e33;
+  --header-border: #2a3452;
+  --header-text: #f2e6cf;
+  --header-subtext: #a99d86;
+  --header-input-bg: #10172a;
+  --header-input-border: #34405f;
+  --header-panel-bg: #1b2338;
+  --header-panel-border: #34405f;
+  --header-active-bg: #24304d;
+  --header-active-border: #3f4c70;
+  --header-btn-bg: #1b2338;
+  --header-btn-border: #34405f;
+  --header-btn-text: #ead9b9;
+  --header-readonly-bg: #2a2a3a;
+  --header-brand-bg: #8f2a2a;
+  --header-brand-border: #6d1f1f;
+  --header-brand-color: #f1cf7d;
+  --header-newtree-bg: rgba(208, 162, 74, 0.1);
+  --header-newtree-border: rgba(208, 162, 74, 0.4);
+  --header-newtree-text: #d0a24a;
+  --header-primary-bg: #8f2a2a;
+  --header-primary-border: #a83a32;
+  --header-primary-text: #fff3dc;
+  --header-editable-color: #9cbc86;
+
+  --surface: #182036;
+  --surface-2: #1f2840;
+  --surface-input: #10172a;
+  --line: #34405f;
+  --text: #f2e6cf;
+  --text-muted: #b4a78f;
+
+  --avatar-male-bg: #24304d;
+  --avatar-male-fg: #b9c9ea;
+  --avatar-female-bg: #3a2128;
+  --avatar-female-fg: #f0b9bf;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+/* ── Typography ─────────────────────────────────────────────────────────────── */
+
+:is(.canvas-theme-carpet, .canvas-theme-night) {
+  font-family: 'PT Sans', 'Segoe UI', Roboto, sans-serif;
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) :is(h1, h2, h3, .person-node__fullname, .app-tree-select, .canvas-state-title) {
+  font-family: 'PT Serif', Georgia, serif;
+}
+
+/* ── Header with a carpet-border strip underneath ───────────────────────────── */
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-header {
+  position: relative;
+  border-bottom: none;
+  box-shadow: var(--shadow);
+}
+
+/* Repeating band of stepped diamonds, like the guard border of a Turkmen carpet */
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -8px;
+  height: 8px;
+  pointer-events: none;
+  background-color: var(--header-brand-bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='8' viewBox='0 0 16 8'%3E%3Cpath d='M8 0.8 L11.6 4 L8 7.2 L4.4 4 Z' fill='none' stroke='%23e9c46a' stroke-width='1'/%3E%3Crect x='7.2' y='3.2' width='1.6' height='1.6' fill='%23f6ead0'/%3E%3Cpath d='M0 4 L1.5 2.5 L1.5 5.5 Z M16 4 L14.5 2.5 L14.5 5.5 Z' fill='%23e9c46a'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 16px 8px;
+  z-index: 1;
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-brand-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 2px var(--header-brand-border), inset 0 0 0 3px rgba(244, 213, 141, 0.45);
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-tree-select {
+  font-size: 16px;
+  font-weight: 700;
+  padding: 2px 6px;
+  margin-left: -6px;
+  border-color: transparent !important;
+  background-color: transparent !important;
+  max-width: 340px;
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-tree-select:hover,
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-tree-select:focus-visible {
+  background-color: var(--header-active-bg) !important;
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-search-container {
+  border-radius: 999px;
+  padding: 4px 12px 4px 5px;
+  box-shadow: none;
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-search-container:focus-within {
+  border-color: var(--card-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--card-accent) 18%, transparent);
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-scope-switcher {
+  border-radius: 999px;
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-scope-btn {
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 12px;
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-search-input {
+  font-size: 13px;
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-primary-btn {
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), var(--shadow);
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-primary-btn:hover {
+  filter: brightness(1.08);
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-secondary-btn {
+  border-radius: 8px;
+}
+
+.app-icon-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--header-btn-border);
+  background: var(--header-btn-bg);
+  color: var(--header-btn-text);
+  cursor: pointer;
+}
+
+.app-icon-btn:hover,
+.app-icon-btn[aria-expanded='true'] {
+  background: var(--header-active-bg);
+}
+
+.app-more-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 210px;
+  z-index: 200;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+}
+
+.app-more-menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.app-more-menu button:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+.app-more-menu button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-readonly-bar {
+  margin-top: 8px; /* clear the carpet strip */
+  border-bottom: 1px solid var(--line);
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .app-search-dropdown,
+:is(.canvas-theme-carpet, .canvas-theme-night) .mobile-drawer-panel {
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── Canvas ground: parchment with a faint field of göl medallions ─────────── */
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .tree-canvas-wrapper,
+.tree-canvas-wrapper:is(.canvas-theme-carpet, .canvas-theme-night) {
+  background-color: var(--canvas-bg);
+  background-image: radial-gradient(ellipse at center, transparent 55%, color-mix(in srgb, var(--canvas-bg) 70%, #000 6%) 100%), var(--gul-pattern);
+  background-size: 100% 100%, 72px 72px;
+}
+
+.canvas-theme-carpet {
+  --gul-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%238c6432' stroke-opacity='0.11' stroke-width='1.2'%3E%3Cpath d='M28 22h16l8 8v12l-8 8H28l-8-8V30z'/%3E%3Cpath d='M36 28l8 8-8 8-8-8z'/%3E%3Cpath d='M0 0l6 6M72 0l-6 6M0 72l6-6M72 72l-6-6'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.canvas-theme-night {
+  --gul-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23d0a24a' stroke-opacity='0.07' stroke-width='1.2'%3E%3Cpath d='M28 22h16l8 8v12l-8 8H28l-8-8V30z'/%3E%3Cpath d='M36 28l8 8-8 8-8-8z'/%3E%3Cpath d='M0 0l6 6M72 0l-6 6M0 72l6-6M72 72l-6-6'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .react-flow__background,
+:is(.canvas-theme-carpet, .canvas-theme-night) .react-flow {
+  background-color: transparent !important;
+}
+
+/* ── Person card: ivory panel with a fine inner frame and corner diamonds ──── */
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .person-node {
+  border-radius: 6px;
+  border: 1px solid var(--card-border);
+  border-top: 4px solid var(--gender-color);
+  padding: 10px 12px;
+  box-shadow: inset 0 0 0 3px var(--card-bg), inset 0 0 0 4px var(--card-frame), var(--shadow);
+  background-image:
+    var(--corner), var(--corner), var(--corner), var(--corner);
+  background-position: 5px 5px, calc(100% - 5px) 5px, 5px calc(100% - 5px), calc(100% - 5px) calc(100% - 5px);
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+  --corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'%3E%3Cpath d='M3 0l3 3-3 3-3-3z' fill='%23b8862b'/%3E%3C/svg%3E");
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .person-node:hover {
+  box-shadow: inset 0 0 0 3px var(--card-bg), inset 0 0 0 4px var(--card-frame), var(--shadow-lg);
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .person-node.node-male { --gender-color: var(--male); }
+:is(.canvas-theme-carpet, .canvas-theme-night) .person-node.node-female { --gender-color: var(--female); }
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .person-node.is-deceased {
+  background-color: color-mix(in srgb, var(--card-bg) 82%, var(--canvas-bg));
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .person-node.node-selected {
+  border-color: var(--card-accent);
+  border-top-color: var(--gender-color);
+  box-shadow: inset 0 0 0 3px var(--card-bg), inset 0 0 0 4px var(--card-frame), 0 0 0 2px var(--card-accent), var(--shadow-lg);
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .person-node__fullname {
+  font-size: 14.5px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) :is(.person-node__avatar, .person-node__avatar-placeholder) {
+  border: 2px solid var(--card-bg);
+  box-shadow: 0 0 0 1.5px var(--gender-color);
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) :is(.avatar-male) { background: var(--avatar-male-bg); color: var(--avatar-male-fg); }
+:is(.canvas-theme-carpet, .canvas-theme-night) :is(.avatar-female) { background: var(--avatar-female-bg); color: var(--avatar-female-fg); }
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .person-node__actions {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .action-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .action-btn:hover {
+  background: var(--surface-2);
+  border-color: var(--line);
+  color: var(--text);
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .action-view:hover {
+  background: var(--card-accent);
+  border-color: var(--card-accent);
+  color: var(--header-primary-text);
+}
+
+/* ── Lines ──────────────────────────────────────────────────────────────────── */
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .family-edge--blood {
+  stroke-width: 1.8 !important;
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .spouse-badge {
+  width: 26px;
+  height: 26px;
+  background: var(--card-bg);
+  border: 1.5px solid var(--spouse-color);
+  box-shadow: 0 0 0 3px var(--canvas-bg), var(--shadow);
+}
+
+/* ── Canvas dock (bottom-left controls, legend, menus) ──────────────────────── */
+
+.canvas-dock {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: end;
+  gap: 8px;
+}
+
+.canvas-dock > .canvas-legend {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.canvas-controls__divider {
+  display: block;
+  height: 6px;
+  background: var(--card-border);
+  opacity: 0.5;
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) :is(.canvas-controls, .canvas-legend, .react-flow__minimap) {
+  border-radius: 8px !important;
+  border: 1px solid var(--card-border) !important;
+  background: var(--card-bg) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .canvas-controls button[aria-pressed='true'] {
+  color: var(--card-accent);
+}
+
+.canvas-menu {
+  min-width: 200px;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  color: var(--text);
+}
+
+.canvas-menu__header {
+  padding: 6px 8px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.canvas-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.canvas-menu__item:hover {
+  background: var(--surface-2);
+}
+
+.canvas-menu__swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.canvas-menu__check {
+  margin-left: auto;
+  color: var(--card-accent);
+}
+
+/* ── Loading / empty / error states ─────────────────────────────────────────── */
+
+.canvas-state-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  box-shadow: var(--shadow-lg);
+}
+
+.canvas-state-icon {
+  color: var(--card-accent);
+}
+
+.canvas-state-title {
+  font-size: 20px;
+  color: var(--text);
+}
+
+.canvas-state-hint {
+  max-width: 360px;
+  text-align: center;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+@keyframes spinSlow {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 2.4s linear infinite;
+}
+
+/* ── Profile panel & dialogs ────────────────────────────────────────────────── */
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .person-panel {
+  border-top: 4px solid var(--header-brand-bg);
+}
+
+@media (max-width: 640px) {
+  :is(.canvas-theme-carpet, .canvas-theme-night) .person-panel {
+    border-top: 4px solid var(--header-brand-bg);
+  }
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .panel-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--card-accent);
+}
+
+/* Small diamond flourishes either side of section titles */
+:is(.canvas-theme-carpet, .canvas-theme-night) .panel-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--line), transparent);
+}
+
+:is(.canvas-theme-carpet, .canvas-theme-night) .family-chip__avatar {
+  border-color: var(--card-bg);
+}
+
+/* ── Parent→child branches ──────────────────────────────────────────────────── */
+
+.canvas-theme-carpet {
+  --branch-color: #7a5634;
+  --branch-grain: rgba(255, 236, 200, 0.35);
+  --leaf-color: #6f8f43;
+  --leaf-edge: #55702f;
+}
+
+.canvas-theme-night {
+  --branch-color: #a07a52;
+  --branch-grain: rgba(255, 230, 190, 0.25);
+  --leaf-color: #7fa36a;
+  --leaf-edge: #5f8250;
+}
+
+.family-branch__wood {
+  fill: var(--branch-color, var(--edge-color));
+  stroke: var(--branch-color, var(--edge-color));
+  stroke-width: 0.6;
+  stroke-linejoin: round;
+}
+
+.family-branch__grain {
+  fill: none;
+  stroke: var(--branch-grain, transparent);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+.family-branch__leaf {
+  fill: var(--leaf-color, #6f8f43);
+  stroke: var(--leaf-edge, #55702f);
+  stroke-width: 0.8;
+}
+
+/* Legend sample for the parent→child line */
+.legend-line.is-branch {
+  height: 4px;
+  border-top: none;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(to right, var(--branch-color), var(--branch-color));
+  clip-path: polygon(0 0, 100% 35%, 100% 65%, 0 100%);
+}

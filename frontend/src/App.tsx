@@ -2,17 +2,23 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import '@/styles/globals.css';
 import TreeCanvas from '@/features/tree/TreeCanvas';
-import type { CanvasTheme } from '@/features/tree/TreeCanvas';
+import '@/styles/theme-turkmen.css';
+import { normalizeTheme, type CanvasTheme } from '@/features/tree/TreeCanvas';
 import { PersonModal } from '@/components/forms/PersonModal';
 import { RelationshipModal } from '@/components/forms/RelationshipModal';
-import { PersonDetailModal } from '@/features/person/PersonDetailModal';
+import { PersonDetailModal, type PersonFamily } from '@/features/person/PersonDetailModal';
+import type { Node as FlowNode, Edge } from '@xyflow/react';
+import type { FamilyEdgeData, TreeNodeData } from '@/types/tree';
 import { CreateTreeModal } from '@/components/forms/CreateTreeModal';
 import { LanguageSwitcher } from '@/components/common/LanguageSwitcher';
 import { treeService } from '@/services/treeService';
 import type { TreeInfo, SearchResultItem } from '@/types/tree';
 import api from '@/services/api';
+import toast, { Toaster } from 'react-hot-toast';
+import { formatLifespan } from '@/i18n/format';
 import {
-  TreeIcon,
+  GulIcon,
+  MoreIcon,
   SearchIcon,
   PlusIcon,
   RefreshIcon,
@@ -25,16 +31,52 @@ import {
   MenuIcon,
 } from '@/components/common/Icons';
 
+const MATCH_FIELD_LABEL: Record<NonNullable<SearchResultItem['match_field']>, string> = {
+  maiden_name: 'search.matchMaiden',
+  birth_place: 'search.matchBirthPlace',
+  death_place: 'search.matchDeathPlace',
+  biography: 'search.matchBiography',
+};
+
+/** Derives a person's parents, spouses, siblings and children from the laid-out graph. */
+function familyOf(personId: string, nodes: FlowNode<TreeNodeData>[], edges: Edge[]): PersonFamily {
+  const byId = new Map(nodes.map((n) => [n.id, n.data.person]));
+  const pick = (ids: Iterable<string>) =>
+    [...new Set(ids)]
+      .filter((id) => id !== personId && byId.has(id))
+      .map((id) => byId.get(id)!)
+      .sort((a, b) => (a.birth_date ?? '9999').localeCompare(b.birth_date ?? '9999'));
+
+  // A child of a couple has one blood edge from one parent plus `partnerId` for the other.
+  const parentsOf = (id: string) =>
+    edges
+      .filter((e) => e.type === 'bloodEdge' && e.target === id)
+      .flatMap((e) => [e.source, (e.data as FamilyEdgeData | undefined)?.partnerId].filter(Boolean) as string[]);
+  const childrenOf = (id: string) =>
+    edges
+      .filter((e) => e.type === 'bloodEdge' && (e.source === id || (e.data as FamilyEdgeData | undefined)?.partnerId === id))
+      .map((e) => e.target);
+
+  const parents = parentsOf(personId);
+  return {
+    parents: pick(parents),
+    spouses: pick(
+      edges
+        .filter((e) => e.type === 'spouseEdge' && (e.source === personId || e.target === personId))
+        .map((e) => (e.source === personId ? e.target : e.source))
+    ),
+    siblings: pick(parents.flatMap(childrenOf)),
+    children: pick(childrenOf(personId)),
+  };
+}
+
 const App: React.FC = () => {
   const { t: tl } = useTranslation();
 
   // Theme state – synced with TreeCanvas localStorage key
-  const [theme, setTheme] = useState<CanvasTheme>(() => {
-    const raw = localStorage.getItem('familytree_canvas_theme');
-    if (raw === 'blueprint') return 'white';
-    const valid: CanvasTheme[] = ['slate', 'white', 'parchment', 'obsidian'];
-    return valid.includes(raw as CanvasTheme) ? (raw as CanvasTheme) : 'slate';
-  });
+  const [theme, setTheme] = useState<CanvasTheme>(() => normalizeTheme(localStorage.getItem('familytree_canvas_theme')));
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
 
   // Trees state
   const [trees, setTrees] = useState<TreeInfo[]>([]);
@@ -61,6 +103,12 @@ const App: React.FC = () => {
   }>({ isOpen: false });
 
   const [profilePersonId, setProfilePersonId] = useState<string | null>(null);
+  const [graph, setGraph] = useState<{ nodes: FlowNode<TreeNodeData>[]; edges: Edge[] }>({ nodes: [], edges: [] });
+  const handleGraphChange = useCallback((nodes: FlowNode<TreeNodeData>[], edges: Edge[]) => setGraph({ nodes, edges }), []);
+  const profileFamily = React.useMemo(
+    () => (profilePersonId ? familyOf(profilePersonId, graph.nodes, graph.edges) : undefined),
+    [profilePersonId, graph]
+  );
   const [reloadTrigger, setReloadTrigger] = useState(1);
   const [seeding, setSeeding] = useState(false);
 
@@ -72,7 +120,7 @@ const App: React.FC = () => {
         setTrees(data);
       }
     } catch (err) {
-      console.error('Ağaç listesi alınamadı:', err);
+      console.error('Failed to load tree list:', err);
     }
   }, []);
 
@@ -83,10 +131,10 @@ const App: React.FC = () => {
   // Current tree info
   const currentTree = (Array.isArray(trees) ? trees.find((t) => t.id === currentTreeId) : undefined) || {
     id: currentTreeId,
-    name: 'Berdiýewler Maşgala Agajy',
+    name: '',
     is_owner: true,
-    owner_name: 'Merdan Berdiýew',
-    member_count: 14,
+    owner_name: '',
+    member_count: 0,
     created_at: '',
   };
 
@@ -110,7 +158,7 @@ const App: React.FC = () => {
           setShowSearchDropdown(true);
         }
       } catch (err) {
-        console.error('Arama hatası:', err);
+        console.error('Search failed:', err);
       } finally {
         setIsSearching(false);
       }
@@ -126,6 +174,9 @@ const App: React.FC = () => {
       const inMobile = mobileSearchRef.current?.contains(e.target as Node);
       if (!inDesktop && !inMobile) {
         setShowSearchDropdown(false);
+      }
+      if (!moreMenuRef.current?.contains(e.target as Node)) {
+        setIsMoreMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -175,12 +226,15 @@ const App: React.FC = () => {
   }, []);
 
   const handleSeedDemo = async () => {
+    // Re-seeding wipes every person and relationship, so always ask first.
+    if (!window.confirm(tl('tree.sampleDataConfirm'))) return;
     try {
       setSeeding(true);
       await api.post('/seed');
       handleTreeUpdated();
     } catch (err) {
-      alert('Demo aileler yüklenirken hata oluştu: ' + (err instanceof Error ? err.message : String(err)));
+      console.error('Seeding failed:', err);
+      toast.error(tl('tree.sampleDataError'));
     } finally {
       setSeeding(false);
     }
@@ -200,35 +254,30 @@ const App: React.FC = () => {
               onClick={() => handleSelectSearchResult(item, false)}
               style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', flex: 1, minWidth: 0 }}
             >
-              <div style={{
-                width: 28, height: 28, borderRadius: 6,
-                background: item.gender === 'female' ? '#2b191e' : '#192433',
-                color: item.gender === 'female' ? '#deb1b8' : '#a8c2de',
-                border: item.gender === 'female' ? '1px solid #4f2b33' : '1px solid #2b3b4f',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 11, fontWeight: 600, flexShrink: 0,
-              }}>
+              <div className={`family-chip__avatar avatar-${item.gender}`} style={{ width: 28, height: 28 }} aria-hidden="true">
                 {item.full_name.charAt(0)}
               </div>
               <div style={{ minWidth: 0, overflow: 'hidden' }}>
                 <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--header-text)', display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                   <span>{item.full_name}</span>
-                  {item.match_context && (
+                  {item.match_field && item.match_context && (
                     <span style={{
                       fontSize: 10,
                       padding: '1px 5px',
                       borderRadius: 4,
-                      background: 'rgba(197, 155, 39, 0.15)',
-                      color: '#d4af37',
-                      border: '1px solid rgba(197, 155, 39, 0.3)',
+                      background: 'color-mix(in srgb, var(--card-accent) 10%, transparent)',
+                      color: 'var(--card-accent)',
+                      border: '1px solid color-mix(in srgb, var(--card-accent) 30%, transparent)',
                       fontWeight: 500,
                     }}>
-                      {item.match_context}
+                      {tl(MATCH_FIELD_LABEL[item.match_field])}: {item.match_context}
                     </span>
                   )}
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--header-subtext)' }}>
-                  {item.years} {item.birth_place ? `• ${item.birth_place}` : ''}
+                  {formatLifespan(tl, item.birth_year, item.death_year, item.is_living)}
+                  {item.birth_place ? ` • ${item.birth_place}` : ''}
+                  {searchScope === 'all' ? ` • ${item.tree_name}` : ''}
                 </div>
               </div>
             </div>
@@ -270,34 +319,23 @@ const App: React.FC = () => {
             <div className="ui-row" style={{ alignItems: 'center', justifyContent: 'space-between', height: 58 }}>
               {/* Col Left: Brand & Tree Selector */}
               <div className="ui-col-auto app-header-left">
-                <div className="app-brand-box">
-                  <TreeIcon size={18} />
+                <div className="app-brand-box" title={tl('app.title')}>
+                  <GulIcon size={22} />
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <select
-                      value={currentTreeId}
-                      onChange={(e) => setCurrentTreeId(e.target.value)}
-                      className="app-tree-select"
-                    >
-                      {trees.map((t) => (
-                        <option key={t.id} value={t.id}>
-                          {t.name} ({t.member_count} {tl('tree.members')})
-                        </option>
-                      ))}
-                    </select>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsCreateTreeOpen(true)}
-                      title="Kendi yeni soy ağacınızı oluşturun"
-                      className="app-newtree-btn"
-                    >
-                      <PlusIcon size={12} />
-                      <span>{tl('tree.newTree')}</span>
-                    </button>
-                  </div>
+                  <select
+                    value={currentTreeId}
+                    onChange={(e) => setCurrentTreeId(e.target.value)}
+                    className="app-tree-select"
+                    aria-label={tl('tree.select')}
+                  >
+                    {trees.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </select>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
                     {isReadOnly ? (
@@ -310,6 +348,9 @@ const App: React.FC = () => {
                         <EditIcon size={10} />
                         <span>{tl('tree.editable')}</span>
                       </span>
+                    )}
+                    {trees.length > 0 && (
+                      <span className="app-member-count">· {tl('tree.memberCount', { count: currentTree.member_count })}</span>
                     )}
                   </div>
                 </div>
@@ -337,7 +378,7 @@ const App: React.FC = () => {
                     </button>
                   </div>
 
-                  <span style={{ color: '#8a867c', display: 'flex', alignItems: 'center', marginRight: 6, flexShrink: 0 }}>
+                  <span style={{ color: 'var(--header-subtext)', display: 'flex', alignItems: 'center', marginRight: 6, flexShrink: 0 }}>
                     <SearchIcon size={14} />
                   </span>
 
@@ -358,13 +399,13 @@ const App: React.FC = () => {
                         setSearchResults([]);
                         setShowSearchDropdown(false);
                       }}
-                      style={{ background: 'transparent', border: 'none', color: '#9ea0a8', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 2, marginLeft: 4 }}
+                      style={{ background: 'transparent', border: 'none', color: 'var(--header-subtext)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 2, marginLeft: 4 }}
                     >
                       <CloseIcon size={12} />
                     </button>
                   )}
                   {isSearching && (
-                    <span style={{ fontSize: 11, color: '#d4af37', marginLeft: 4, flexShrink: 0 }}>…</span>
+                    <span style={{ fontSize: 11, color: 'var(--card-accent)', marginLeft: 4, flexShrink: 0 }}>…</span>
                   )}
                 </div>
 
@@ -385,18 +426,7 @@ const App: React.FC = () => {
                   </button>
                 )}
 
-                <button
-                  type="button"
-                  onClick={handleSeedDemo}
-                  disabled={seeding}
-                  title="Örnek aile ağaçlarını sıfırlayıp yeniden yükler"
-                  className="app-secondary-btn"
-                >
-                  <RefreshIcon size={13} className={seeding ? 'animate-spin' : ''} />
-                  <span>{seeding ? tl('tree.loading') : tl('toolbar.sampleData')}</span>
-                </button>
-
-                {!isReadOnly ? (
+                {!isReadOnly && (
                   <button
                     type="button"
                     onClick={() => setIsAddPersonOpen(true)}
@@ -405,25 +435,45 @@ const App: React.FC = () => {
                     <PlusIcon size={14} />
                     <span>{tl('toolbar.addPerson')}</span>
                   </button>
-                ) : (
-                  <div style={{
-                    padding: '5px 10px',
-                    borderRadius: 6,
-                    background: 'var(--header-newtree-bg)',
-                    border: '1px solid var(--header-newtree-border)',
-                    color: 'var(--header-newtree-text)',
-                    fontSize: 11.5,
-                    fontWeight: 500,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 5,
-                  }}>
-                    <ShieldIcon size={13} />
-                    <span>{tl('tree.readOnly')}</span>
-                  </div>
                 )}
 
                 <LanguageSwitcher compact />
+
+                <div ref={moreMenuRef} style={{ position: 'relative' }}>
+                  <button
+                    type="button"
+                    onClick={() => setIsMoreMenuOpen((v) => !v)}
+                    className="app-icon-btn"
+                    title={tl('tree.menu')}
+                    aria-label={tl('tree.menu')}
+                    aria-haspopup="menu"
+                    aria-expanded={isMoreMenuOpen}
+                  >
+                    <MoreIcon size={16} />
+                  </button>
+                  {isMoreMenuOpen && (
+                    <div className="app-more-menu" role="menu">
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => { setIsCreateTreeOpen(true); setIsMoreMenuOpen(false); }}
+                      >
+                        <PlusIcon size={14} />
+                        <span>{tl('tree.newTree')}</span>
+                      </button>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        disabled={seeding}
+                        title={tl('tree.sampleDataHint')}
+                        onClick={() => { setIsMoreMenuOpen(false); handleSeedDemo(); }}
+                      >
+                        <RefreshIcon size={14} className={seeding ? 'animate-spin' : ''} />
+                        <span>{seeding ? tl('tree.loading') : tl('toolbar.sampleData')}</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -435,7 +485,7 @@ const App: React.FC = () => {
             {/* Mobile Row 1: Brand + Tree Select + Actions */}
             <div className="ui-row" style={{ alignItems: 'center', padding: '8px 0', gap: 6 }}>
               <div className="app-brand-box" style={{ flexShrink: 0 }}>
-                <TreeIcon size={18} />
+                <GulIcon size={20} />
               </div>
 
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -447,7 +497,7 @@ const App: React.FC = () => {
                 >
                   {trees.map((t) => (
                     <option key={t.id} value={t.id}>
-                      {t.name} ({t.member_count} {tl('tree.members')})
+                      {t.name} · {tl('tree.memberCount', { count: t.member_count })}
                     </option>
                   ))}
                 </select>
@@ -461,9 +511,9 @@ const App: React.FC = () => {
                     className="app-primary-btn"
                     style={{ padding: '5px 9px', fontSize: 11.5 }}
                     title={tl('toolbar.addPerson')}
+                    aria-label={tl('toolbar.addPerson')}
                   >
                     <PlusIcon size={13} />
-                    <span>{tl('toolbar.addPerson')}</span>
                   </button>
                 )}
 
@@ -474,7 +524,8 @@ const App: React.FC = () => {
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   className="app-secondary-btn"
                   style={{ padding: '5px 8px' }}
-                  title="Menýu"
+                  title={tl('tree.menu')}
+                  aria-label={tl('tree.menu')}
                 >
                   <MenuIcon size={15} />
                 </button>
@@ -502,7 +553,7 @@ const App: React.FC = () => {
                 </div>
 
                 <div className="app-search-container" style={{ width: '100%' }}>
-                  <span style={{ color: '#8a867c', display: 'flex', alignItems: 'center', marginRight: 6, flexShrink: 0 }}>
+                  <span style={{ color: 'var(--header-subtext)', display: 'flex', alignItems: 'center', marginRight: 6, flexShrink: 0 }}>
                     <SearchIcon size={14} />
                   </span>
                   <input
@@ -521,13 +572,13 @@ const App: React.FC = () => {
                         setSearchResults([]);
                         setShowSearchDropdown(false);
                       }}
-                      style={{ background: 'transparent', border: 'none', color: '#9ea0a8', cursor: 'pointer', padding: 2 }}
+                      style={{ background: 'transparent', border: 'none', color: 'var(--header-subtext)', cursor: 'pointer', padding: 2 }}
                     >
                       <CloseIcon size={12} />
                     </button>
                   )}
                   {isSearching && (
-                    <span style={{ fontSize: 11, color: '#d4af37', marginLeft: 4 }}>…</span>
+                    <span style={{ fontSize: 11, color: 'var(--card-accent)', marginLeft: 4 }}>…</span>
                   )}
                 </div>
 
@@ -593,9 +644,9 @@ const App: React.FC = () => {
         <div className="app-readonly-bar">
           <div className="ui-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <EyeIcon size={14} className="text-[#a8c2de]" />
+              <EyeIcon size={14} style={{ color: 'var(--card-accent)' }} />
               <span>
-                Şu anda <strong>"{currentTree.name}"</strong> {tl('tree.readOnly')}.
+                {tl('tree.readOnlyBanner', { name: currentTree.name })}{' '}
                 ({tl('tree.owner')}: {currentTree.owner_name})
               </span>
             </div>
@@ -620,6 +671,8 @@ const App: React.FC = () => {
           treeId={currentTreeId}
           treeName={currentTree.name}
           highlightPersonId={highlightPersonId}
+          selectedPersonId={profilePersonId}
+          onGraphChange={handleGraphChange}
           onAddParent={handleAddParent}
           onAddSpouse={handleAddSpouse}
           onAddChild={handleAddChild}
@@ -629,6 +682,23 @@ const App: React.FC = () => {
           theme={theme}
           onThemeChange={setTheme}
         />
+
+        {profilePersonId && (
+          <PersonDetailModal
+            personId={profilePersonId}
+            treeId={currentTreeId}
+            isReadOnly={isReadOnly}
+            family={profileFamily}
+            onSelectPerson={setProfilePersonId}
+            onClose={() => setProfilePersonId(null)}
+            onUpdated={handleTreeUpdated}
+            onAddRelative={(type) => {
+              const pid = profilePersonId;
+              setProfilePersonId(null);
+              setRelModalState({ isOpen: true, sourcePersonId: pid, defaultType: type });
+            }}
+          />
+        )}
       </main>
 
       {/* ── Modals ─────────────────────────────────────────────────────────────── */}
@@ -658,21 +728,6 @@ const App: React.FC = () => {
         />
       )}
 
-      {profilePersonId && (
-        <PersonDetailModal
-          personId={profilePersonId}
-          treeId={currentTreeId}
-          isReadOnly={isReadOnly}
-          onClose={() => setProfilePersonId(null)}
-          onUpdated={handleTreeUpdated}
-          onAddRelative={(type) => {
-            const pid = profilePersonId;
-            setProfilePersonId(null);
-            setRelModalState({ isOpen: true, sourcePersonId: pid, defaultType: type });
-          }}
-        />
-      )}
-
       {isCreateTreeOpen && (
         <CreateTreeModal
           isOpen={isCreateTreeOpen}
@@ -680,6 +735,9 @@ const App: React.FC = () => {
           onSuccess={handleTreeCreated}
         />
       )}
+
+      {/* Rendered inside the themed root so toasts pick up the theme's colors */}
+      <Toaster position="bottom-center" toastOptions={{ className: 'app-toast', duration: 3500 }} />
     </div>
   );
 };

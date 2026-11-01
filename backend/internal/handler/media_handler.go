@@ -27,41 +27,41 @@ var AllowedImageExtensions = map[string]bool{
 func ValidateAndSaveImage(file *multipart.FileHeader, c *fiber.Ctx, uploadDir string) (string, error) {
 	// Limit: 10 MB
 	if file.Size > 10<<20 {
-		return "", errors.New("dosya boyutu 10MB'dan büyük olamaz")
+		return "", errors.New("faýlyň ölçegi 10 MB-dan uly bolup bilmez")
 	}
 
 	ext := strings.ToLower(filepath.Ext(file.Filename))
 	if !AllowedImageExtensions[ext] {
-		return "", errors.New("sadece resim dosyaları (.jpg, .jpeg, .png, .webp, .gif) yüklenebilir")
+		return "", errors.New("diňe surat faýllaryny (.jpg, .jpeg, .png, .webp, .gif) ýükläp bolýar")
 	}
 
 	// Verify magic bytes
 	f, err := file.Open()
 	if err != nil {
-		return "", fmt.Errorf("dosya açılamadı: %w", err)
+		return "", fmt.Errorf("faýly açyp bolmady: %w", err)
 	}
 	defer f.Close()
 
 	buffer := make([]byte, 512)
 	n, err := f.Read(buffer)
 	if err != nil && n == 0 {
-		return "", errors.New("dosya içeriği okunamadı")
+		return "", errors.New("faýlyň mazmunyny okap bolmady")
 	}
 
 	mimeType := http.DetectContentType(buffer[:n])
 	if !strings.HasPrefix(mimeType, "image/") {
-		return "", errors.New("geçersiz dosya türü, resim dosyası tespit edilemedi")
+		return "", errors.New("nädogry faýl görnüşi, surat faýly tanalmady")
 	}
 
 	if err := os.MkdirAll(uploadDir, 0755); err != nil {
-		return "", fmt.Errorf("yükleme dizini oluşturulamadı: %w", err)
+		return "", fmt.Errorf("ýükleme bukjasyny döredip bolmady: %w", err)
 	}
 
 	filename := fmt.Sprintf("%s%s", uuid.New().String(), ext)
 	savePath := filepath.Join(uploadDir, filename)
 
 	if err := c.SaveFile(file, savePath); err != nil {
-		return "", fmt.Errorf("dosya kaydedilemedi: %w", err)
+		return "", fmt.Errorf("faýly ýatda saklap bolmady: %w", err)
 	}
 
 	return "/uploads/" + filename, nil
@@ -86,7 +86,7 @@ func (h *MediaHandler) RegisterRoutes(r fiber.Router) {
 func (h *MediaHandler) Upload(c *fiber.Ctx) error {
 	file, err := c.FormFile("file")
 	if err != nil {
-		return fiber.NewError(http.StatusBadRequest, "resim dosyası bulunamadı")
+		return fiber.NewError(http.StatusBadRequest, "surat faýly tapylmady")
 	}
 
 	url, err := ValidateAndSaveImage(file, c, h.uploadDir)

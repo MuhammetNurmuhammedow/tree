@@ -50,7 +50,7 @@ func scanPerson(row pgx.Row) (*domain.Person, error) {
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, errors.New("kişi bulunamadı")
+			return nil, errors.New("adam tapylmady")
 		}
 		return nil, err
 	}
@@ -226,7 +226,7 @@ func (r *PersonRepo) Update(p *domain.Person) error {
 		return fmt.Errorf("update person: %w", err)
 	}
 	if tag.RowsAffected() == 0 {
-		return errors.New("kişi bulunamadı")
+		return errors.New("adam tapylmady")
 	}
 	return nil
 }
@@ -241,7 +241,7 @@ func (r *PersonRepo) Delete(id uuid.UUID) error {
 		return fmt.Errorf("delete person: %w", err)
 	}
 	if tag.RowsAffected() == 0 {
-		return errors.New("kişi bulunamadı")
+		return errors.New("adam tapylmady")
 	}
 	return nil
 }

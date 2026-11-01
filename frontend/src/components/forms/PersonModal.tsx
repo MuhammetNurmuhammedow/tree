@@ -36,7 +36,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
     if (!file) return;
 
     if (file.size > 10 * 1024 * 1024) {
-      setError('Surat ölçegi 10MB-dan uly bolmaly däl');
+      setError(t('photo.tooLarge'));
       return;
     }
 
@@ -62,8 +62,8 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
           const uploadRes = await personService.uploadPhoto(avatarFile);
           uploadedAvatarUrl = uploadRes.url;
         } catch (uploadErr) {
-          console.error('Surat ýüklemekde säwlik:', uploadErr);
-          setError('Surat ýüklenip bilinmedi: ' + (uploadErr instanceof Error ? uploadErr.message : String(uploadErr)));
+          console.error('Photo upload failed:', uploadErr);
+          setError(t('photo.uploadError'));
           setLoading(false);
           return;
         }
@@ -88,7 +88,8 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
       onSuccess();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('personModal.errorGeneral'));
+      console.error('Creating person failed:', err);
+      setError(t('personModal.errorGeneral'));
     } finally {
       setLoading(false);
     }
@@ -102,14 +103,14 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
       padding: 12, boxSizing: 'border-box',
     }}>
       <div style={{
-        background: '#161820',
-        border: '1px solid #2d303b',
+        background: 'var(--surface)',
+        border: '1px solid var(--line)',
         borderRadius: 12,
         padding: '24px 28px',
         width: '100%',
         maxWidth: 540,
         boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7)',
-        color: '#f5f2eb',
+        color: 'var(--text)',
         maxHeight: '90vh',
         overflowY: 'auto',
       }}>
@@ -117,10 +118,10 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div>
             <h2 style={{ fontSize: 18, fontWeight: 600, letterSpacing: '-0.01em', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ color: '#c59b27', display: 'flex' }}><UserIcon size={20} /></span>
+              <span style={{ color: 'var(--card-accent)', display: 'flex' }}><UserIcon size={20} /></span>
               {t('personModal.title')}
             </h2>
-            <p style={{ margin: '4px 0 0', fontSize: 12, color: '#a8a296' }}>
+            <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--text-muted)' }}>
               {t('personModal.subtitle')}
             </p>
           </div>
@@ -145,8 +146,8 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
                 width: 72,
                 height: 72,
                 borderRadius: '50%',
-                border: avatarPreview ? '2px solid #c59b27' : '2px dashed #4b5563',
-                background: avatarPreview ? 'transparent' : '#14161d',
+                border: avatarPreview ? '2px solid var(--card-accent)' : '2px dashed var(--line)',
+                background: avatarPreview ? 'transparent' : 'var(--surface-input)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -155,14 +156,14 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
                 transition: 'all 0.15s ease',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
               }}
-              title="Surat ýüklemek üçin basyň"
+              title={t('photo.clickToUpload')}
             >
               {avatarPreview ? (
-                <img src={avatarPreview} alt="Avatar preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={avatarPreview} alt={t('photo.label')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, color: '#9ca3af' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, color: 'var(--text-muted)' }}>
                   <CameraIcon size={22} />
-                  <span style={{ fontSize: 9, fontWeight: 500 }}>Surat</span>
+                  <span style={{ fontSize: 9, fontWeight: 500 }}>{t('photo.label')}</span>
                 </div>
               )}
             </div>
@@ -182,14 +183,14 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: '#d4af37',
+                  color: 'var(--card-accent)',
                   fontSize: 11.5,
                   fontWeight: 500,
                   cursor: 'pointer',
                   textDecoration: 'underline',
                 }}
               >
-                {avatarPreview ? 'Suraty çalşyryň' : '+ Surat goşuň'}
+                {avatarPreview ? t('photo.change') : t('photo.add')}
               </button>
 
               {avatarPreview && (
@@ -199,12 +200,12 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
                   style={{
                     background: 'transparent',
                     border: 'none',
-                    color: '#ef4444',
+                    color: 'var(--card-accent)',
                     fontSize: 11.5,
                     cursor: 'pointer',
                   }}
                 >
-                  Aýyryň
+                  {t('photo.remove')}
                 </button>
               )}
             </div>
@@ -223,7 +224,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
             </div>
           </div>
 
-          {/* Kızlık Soyadı & Cinsiyet */}
+          {/* Maiden name & gender */}
           <div style={{ display: 'flex', gap: 14 }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>{t('personModal.maidenName')}</label>
@@ -235,13 +236,11 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
               <select value={gender} onChange={(e) => setGender(e.target.value as Gender)} style={inputStyle}>
                 <option value="male">{t('personModal.genderMale')}</option>
                 <option value="female">{t('personModal.genderFemale')}</option>
-                <option value="other">{t('personModal.genderOther')}</option>
-                <option value="unknown">{t('personModal.genderUnknown')}</option>
               </select>
             </div>
           </div>
 
-          {/* Doğum */}
+          {/* Birth */}
           <div style={{ display: 'flex', gap: 14 }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>{t('personModal.birthDate')}</label>
@@ -254,12 +253,12 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
             </div>
           </div>
 
-          {/* Hayatta mı */}
+          {/* Living status */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px',
-            background: '#191b22', borderRadius: 8, border: '1px solid #2d303b' }}>
+            background: 'var(--surface-2)', borderRadius: 8, border: '1px solid var(--line)' }}>
             <input type="checkbox" id="isLivingModal" checked={isLiving} onChange={(e) => setIsLiving(e.target.checked)}
-              style={{ width: 18, height: 18, cursor: 'pointer', accentColor: '#346850' }} />
-            <label htmlFor="isLivingModal" style={{ fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#f5f2eb' }}>
+              style={{ width: 18, height: 18, cursor: 'pointer', accentColor: 'var(--card-accent)' }} />
+            <label htmlFor="isLivingModal" style={{ fontSize: 13, fontWeight: 500, cursor: 'pointer', color: 'var(--text)' }}>
               {t('personModal.isLiving')}
             </label>
           </div>
@@ -289,7 +288,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
           {/* Buttons */}
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 12 }}>
             <button type="button" onClick={onClose} style={cancelButtonStyle}>{t('personModal.cancel')}</button>
-            <button type="submit" disabled={loading} style={submitButtonStyle('#254a37', '0 1px 4px rgba(0,0,0,0.3)')}>
+            <button type="submit" disabled={loading} style={submitButtonStyle('var(--header-primary-bg)', '0 1px 4px rgba(0,0,0,0.3)')}>
               {loading ? t('personModal.submitting') : t('personModal.submit')}
             </button>
           </div>
@@ -302,37 +301,37 @@ export const PersonModal: React.FC<PersonModalProps> = ({ isOpen, onClose, onSuc
 // ── Shared styles ─────────────────────────────────────────────────────────────
 
 const labelStyle: React.CSSProperties = {
-  display: 'block', fontSize: 12, fontWeight: 500, color: '#a8a296', marginBottom: 6,
+  display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--text-muted)', marginBottom: 6,
 };
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '9px 12px', borderRadius: 8,
-  border: '1px solid #2d303b',
-  backgroundColor: '#121318',
-  color: '#f5f2eb', fontSize: 13, outline: 'none', colorScheme: 'dark',
+  border: '1px solid var(--line)',
+  backgroundColor: 'var(--surface-input)',
+  color: 'var(--text)', fontSize: 13, outline: 'none', colorScheme: 'dark',
 };
 
 const closeButtonStyle: React.CSSProperties = {
-  background: 'transparent', border: '1px solid #2d303b',
-  borderRadius: 6, width: 28, height: 28, color: '#a8a296',
+  background: 'transparent', border: '1px solid var(--line)',
+  borderRadius: 6, width: 28, height: 28, color: 'var(--text-muted)',
   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
 };
 
 const errorBoxStyle: React.CSSProperties = {
   background: 'rgba(160, 60, 70, 0.15)', border: '1px solid rgba(160, 60, 70, 0.35)',
-  color: '#e0b0b8', padding: '10px 14px', borderRadius: 8, marginBottom: 18,
+  color: 'var(--card-accent)', padding: '10px 14px', borderRadius: 8, marginBottom: 18,
   fontSize: 13, display: 'flex', alignItems: 'center', gap: 8,
 };
 
 const cancelButtonStyle: React.CSSProperties = {
   padding: '8px 16px', borderRadius: 6,
-  border: '1px solid #2d303b',
-  background: 'transparent', color: '#a8a296',
+  border: '1px solid var(--line)',
+  background: 'transparent', color: 'var(--text-muted)',
   cursor: 'pointer', fontSize: 13, fontWeight: 500,
 };
 
 const submitButtonStyle = (bg: string, shadow: string): React.CSSProperties => ({
-  padding: '8px 20px', borderRadius: 6, border: '1px solid #3a6850',
-  background: bg, color: '#f5f2eb', fontWeight: 600,
+  padding: '8px 20px', borderRadius: 6, border: '1px solid var(--header-primary-border)',
+  background: bg, color: 'var(--header-primary-text)', fontWeight: 600,
   cursor: 'pointer', fontSize: 13, boxShadow: shadow,
 });

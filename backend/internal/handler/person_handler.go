@@ -75,11 +75,11 @@ func (h *PersonHandler) Search(c *fiber.Ctx) error {
 func (h *PersonHandler) GetByID(c *fiber.Ctx) error {
 	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
-		return fiber.NewError(http.StatusBadRequest, "geçersiz UUID")
+		return fiber.NewError(http.StatusBadRequest, "nädogry UUID")
 	}
 	p, err := h.svc.GetByID(id)
 	if err != nil {
-		return fiber.NewError(http.StatusNotFound, "kişi bulunamadı")
+		return fiber.NewError(http.StatusNotFound, "adam tapylmady")
 	}
 	return c.JSON(p)
 }
@@ -95,7 +95,7 @@ func (h *PersonHandler) GetByID(c *fiber.Ctx) error {
 func (h *PersonHandler) Create(c *fiber.Ctx) error {
 	var p domain.Person
 	if err := c.BodyParser(&p); err != nil {
-		return fiber.NewError(http.StatusBadRequest, "geçersiz JSON gövdesi")
+		return fiber.NewError(http.StatusBadRequest, "nädogry JSON mazmuny")
 	}
 	if err := h.svc.Create(&p); err != nil {
 		return fiber.NewError(http.StatusBadRequest, err.Error())
@@ -115,19 +115,19 @@ func (h *PersonHandler) Create(c *fiber.Ctx) error {
 func (h *PersonHandler) Update(c *fiber.Ctx) error {
 	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
-		return fiber.NewError(http.StatusBadRequest, "geçersiz UUID")
+		return fiber.NewError(http.StatusBadRequest, "nädogry UUID")
 	}
 
 	// Load existing record to preserve immutable fields (tree_id, created_at, etc.)
 	existing, err := h.svc.GetByID(id)
 	if err != nil {
-		return fiber.NewError(http.StatusNotFound, "kişi bulunamadı")
+		return fiber.NewError(http.StatusNotFound, "adam tapylmady")
 	}
 
 	// Parse incoming partial payload into the existing record
 	// This way any field not sent by the client stays at its previous value
 	if err := c.BodyParser(existing); err != nil {
-		return fiber.NewError(http.StatusBadRequest, "geçersiz JSON gövdesi")
+		return fiber.NewError(http.StatusBadRequest, "nädogry JSON mazmuny")
 	}
 
 	// Always enforce the correct ID and tree_id (never let client overwrite these)
@@ -148,7 +148,7 @@ func (h *PersonHandler) Update(c *fiber.Ctx) error {
 func (h *PersonHandler) Delete(c *fiber.Ctx) error {
 	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
-		return fiber.NewError(http.StatusBadRequest, "geçersiz UUID")
+		return fiber.NewError(http.StatusBadRequest, "nädogry UUID")
 	}
 	if err := h.svc.Delete(id); err != nil {
 		return fiber.NewError(http.StatusInternalServerError, err.Error())
@@ -168,17 +168,17 @@ func (h *PersonHandler) Delete(c *fiber.Ctx) error {
 func (h *PersonHandler) UploadAvatar(c *fiber.Ctx) error {
 	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
-		return fiber.NewError(http.StatusBadRequest, "geçersiz UUID")
+		return fiber.NewError(http.StatusBadRequest, "nädogry UUID")
 	}
 
 	existing, err := h.svc.GetByID(id)
 	if err != nil {
-		return fiber.NewError(http.StatusNotFound, "kişi bulunamadı")
+		return fiber.NewError(http.StatusNotFound, "adam tapylmady")
 	}
 
 	file, err := c.FormFile("file")
 	if err != nil {
-		return fiber.NewError(http.StatusBadRequest, "resim dosyası bulunamadı")
+		return fiber.NewError(http.StatusBadRequest, "surat faýly tapylmady")
 	}
 
 	url, err := ValidateAndSaveImage(file, c, h.uploadDir)
@@ -194,7 +194,7 @@ func (h *PersonHandler) UploadAvatar(c *fiber.Ctx) error {
 
 	existing.AvatarURL = &url
 	if err := h.svc.Update(existing); err != nil {
-		return fiber.NewError(http.StatusInternalServerError, "profil fotoğrafı güncellenemedi: "+err.Error())
+		return fiber.NewError(http.StatusInternalServerError, "profil suratyny täzeläp bolmady: "+err.Error())
 	}
 
 	return c.JSON(existing)

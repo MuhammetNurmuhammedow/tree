@@ -6,15 +6,18 @@ import (
 	"github.com/google/uuid"
 )
 
-// GenderType represents a person's gender.
+// GenderType represents a person's gender. Only male and female are supported.
 type GenderType string
 
 const (
-	GenderMale    GenderType = "male"
-	GenderFemale  GenderType = "female"
-	GenderOther   GenderType = "other"
-	GenderUnknown GenderType = "unknown"
+	GenderMale   GenderType = "male"
+	GenderFemale GenderType = "female"
 )
+
+// Valid reports whether g is one of the supported genders.
+func (g GenderType) Valid() bool {
+	return g == GenderMale || g == GenderFemale
+}
 
 // Person is the core domain model representing an individual in the family tree.
 type Person struct {
