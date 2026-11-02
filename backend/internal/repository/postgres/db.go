@@ -15,7 +15,7 @@ import (
 	"familytree/config"
 )
 
-// NewPool initializes and returns a pgx connection pool.
+// NewPool initializes and returns a pgx connection pool with auto-retry.
 func NewPool(cfg *config.Config) (*pgxpool.Pool, error) {
 	dsn := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=%s",
@@ -37,19 +37,32 @@ func NewPool(cfg *config.Config) (*pgxpool.Pool, error) {
 	poolConfig.MaxConnLifetime = 30 * time.Minute
 	poolConfig.MaxConnIdleTime = 5 * time.Minute
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	maxAttempts := 15
+	var lastErr error
+	for attempt := 1; attempt <= maxAttempts; attempt++ {
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		pool, err := pgxpool.NewWithConfig(ctx, poolConfig)
+		if err == nil {
+			pingErr := pool.Ping(ctx)
+			if pingErr == nil {
+				cancel()
+				log.Printf("🐘 PostgreSQL baglanyşygy üstünlikli guruldy (synanyşyk %d/%d).", attempt, maxAttempts)
+				return pool, nil
+			}
+			pool.Close()
+			lastErr = pingErr
+		} else {
+			lastErr = err
+		}
+		cancel()
 
-	pool, err := pgxpool.NewWithConfig(ctx, poolConfig)
-	if err != nil {
-		return nil, fmt.Errorf("postgres connect: %w", err)
+		if attempt < maxAttempts {
+			log.Printf("⏳ PostgreSQL garaşylýar (%s:%s, synanyşyk %d/%d): %v", cfg.DBHost, cfg.DBPort, attempt, maxAttempts, lastErr)
+			time.Sleep(2 * time.Second)
+		}
 	}
 
-	if err := pool.Ping(ctx); err != nil {
-		return nil, fmt.Errorf("postgres ping: %w", err)
-	}
-
-	return pool, nil
+	return nil, fmt.Errorf("postgres connect failed after %d attempts: %w", maxAttempts, lastErr)
 }
 
 // RunMigrations runs all *.up.sql migration files found in migrationsDir.

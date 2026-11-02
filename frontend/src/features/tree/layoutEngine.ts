@@ -78,9 +78,26 @@ export async function applyELKLayout(
   const validNodeIds = new Set(safeNodes.map((n) => n.id));
   const safeEdges = allEdges.filter((e) => validNodeIds.has(e.source) && validNodeIds.has(e.target));
   const spouseEdges = safeEdges.filter((e) => e.type === 'spouseEdge');
-  const bloodEdges = safeEdges.filter((e) => e.type !== 'spouseEdge');
+  const rawBloodEdges = safeEdges.filter((e) => e.type !== 'spouseEdge');
 
   const nodeById = new Map(safeNodes.map((n) => [n.id, n]));
+
+  // Auto-correct any inverted blood edges (where a child was mistakenly recorded as parent of an elder)
+  const bloodEdges = rawBloodEdges.map((e) => {
+    const sBirth = nodeById.get(e.source)?.data.person.birth_date;
+    const tBirth = nodeById.get(e.target)?.data.person.birth_date;
+    if (sBirth && tBirth) {
+      const sYear = parseInt(sBirth.slice(0, 4), 10);
+      const tYear = parseInt(tBirth.slice(0, 4), 10);
+      // If target was born significantly earlier than source (e.g. parent born 1948, child born 1974),
+      // target is clearly the parent and source is the child!
+      if (!isNaN(sYear) && !isNaN(tYear) && sYear - tYear >= 12) {
+        return { ...e, source: e.target, target: e.source };
+      }
+    }
+    return e;
+  });
+
   const blocks = buildFamilyBlocks(safeNodes, spouseEdges);
   const blockOf = new Map<string, number>();
   blocks.forEach((members, i) => members.forEach((id) => blockOf.set(id, i)));

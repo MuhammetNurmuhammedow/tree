@@ -24,11 +24,14 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [persons, setPersons] = useState<Person[]>([]);
+  const [sourcePerson, setSourcePerson] = useState<Person | null>(null);
   const [selectedTargetId, setSelectedTargetId] = useState('');
   const [baseCategory, setBaseCategory] = useState<'spouse' | 'parent' | 'child'>(defaultType);
   const [relType, setRelType] = useState<CreateRelationshipPayload['relationship_type']>(defaultType);
   const [customLabel, setCustomLabel] = useState('');
   const [marriageDate, setMarriageDate] = useState('');
+  const [detectedSpouse, setDetectedSpouse] = useState<{ id: string; name: string } | null>(null);
+  const [linkSpouseAsWell, setLinkSpouseAsWell] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,6 +39,9 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       personService.getAll().then((data) => {
+        const currentSrc = data.find((p) => p.id === sourcePersonId) || null;
+        setSourcePerson(currentSrc);
+
         const filtered = data.filter((p) => p.id !== sourcePersonId &&
           ((p as unknown as { tree_id?: string }).tree_id === treeId || !(p as unknown as { tree_id?: string }).tree_id));
         setPersons(filtered);
@@ -51,6 +57,33 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
       }
     }
   }, [isOpen, sourcePersonId, defaultType, treeId, t]);
+
+  // Check for spouse of the parent when linking parent/child
+  useEffect(() => {
+    if (!isOpen || persons.length === 0) return;
+
+    const personToCheckSpouse = baseCategory === 'parent' ? selectedTargetId : (baseCategory === 'child' ? sourcePersonId : null);
+    if (!personToCheckSpouse) {
+      setDetectedSpouse(null);
+      return;
+    }
+
+    relationshipService.getByPersonId(personToCheckSpouse).then((rels: Array<{ person_id: string; related_person_id: string; relationship_type: string }>) => {
+      const spouseRel = rels.find((r) => r.relationship_type === 'spouse');
+      if (spouseRel) {
+        const spouseId = spouseRel.person_id === personToCheckSpouse ? spouseRel.related_person_id : spouseRel.person_id;
+        const spouseObj = persons.find((p) => p.id === spouseId) || (sourcePerson?.id === spouseId ? sourcePerson : null);
+        if (spouseObj && spouseObj.id !== sourcePersonId && spouseObj.id !== selectedTargetId) {
+          setDetectedSpouse({ id: spouseObj.id, name: `${spouseObj.first_name} ${spouseObj.last_name}` });
+          setLinkSpouseAsWell(true);
+          return;
+        }
+      }
+      setDetectedSpouse(null);
+    }).catch(() => {
+      setDetectedSpouse(null);
+    });
+  }, [isOpen, baseCategory, selectedTargetId, sourcePersonId, persons, sourcePerson]);
 
   // When base category changes, set default underlying type and suggested label
   const handleCategoryChange = (cat: 'spouse' | 'parent' | 'child') => {
@@ -84,15 +117,65 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
     try {
       setLoading(true);
       setError(null);
-      await relationshipService.create({
-        person_id: sourcePersonId,
-        related_person_id: selectedTargetId,
-        relationship_type: relType,
-        marriage_date: (relType === 'spouse' || relType === 'former_spouse') && marriageDate
-          ? new Date(marriageDate).toISOString()
-          : undefined,
-        notes: customLabel.trim() || undefined,
-      });
+
+      if (baseCategory === 'parent') {
+        // Source is CHILD, Target is PARENT.
+        // Database rule: person_id is Parent, related_person_id is Child.
+        await relationshipService.create({
+          person_id: selectedTargetId,
+          related_person_id: sourcePersonId,
+          relationship_type: 'parent',
+          notes: customLabel.trim() || undefined,
+        });
+
+        // If primary parent has a married spouse and user kept the option checked:
+        if (linkSpouseAsWell && detectedSpouse) {
+          try {
+            await relationshipService.create({
+              person_id: detectedSpouse.id,
+              related_person_id: sourcePersonId,
+              relationship_type: 'parent',
+              notes: 'Ene-ata',
+            });
+          } catch (spouseErr) {
+            console.warn('Spouse parent link note:', spouseErr);
+          }
+        }
+      } else if (baseCategory === 'child') {
+        // Source is PARENT, Target is CHILD.
+        // Database rule: person_id is Parent, related_person_id is Child.
+        await relationshipService.create({
+          person_id: sourcePersonId,
+          related_person_id: selectedTargetId,
+          relationship_type: 'parent',
+          notes: customLabel.trim() || undefined,
+        });
+
+        // If source parent has a married spouse and user kept the option checked:
+        if (linkSpouseAsWell && detectedSpouse) {
+          try {
+            await relationshipService.create({
+              person_id: detectedSpouse.id,
+              related_person_id: selectedTargetId,
+              relationship_type: 'parent',
+              notes: 'Ene-ata',
+            });
+          } catch (spouseErr) {
+            console.warn('Spouse parent link note:', spouseErr);
+          }
+        }
+      } else {
+        // Spouse relationship
+        await relationshipService.create({
+          person_id: sourcePersonId,
+          related_person_id: selectedTargetId,
+          relationship_type: relType,
+          marriage_date: (relType === 'spouse' || relType === 'former_spouse') && marriageDate
+            ? new Date(marriageDate).toISOString()
+            : undefined,
+          notes: customLabel.trim() || undefined,
+        });
+      }
 
       onSuccess();
       onClose();
@@ -124,14 +207,18 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
         color: 'var(--text)',
       }}>
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div>
             <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ color: 'var(--card-accent)', display: 'flex' }}><RingIcon size={20} /></span>
               {t('relationModal.title')}
             </h2>
             <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--text-muted)' }}>
-              {t('relationModal.subtitle')}
+              {sourcePerson ? (
+                <span>
+                  Esasy şahs: <strong style={{ color: 'var(--text)' }}>{sourcePerson.first_name} {sourcePerson.last_name}</strong>
+                </span>
+              ) : t('relationModal.subtitle')}
             </p>
           </div>
           <button type="button" onClick={onClose} style={closeButtonStyle}>
@@ -227,12 +314,6 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
                   <button type="button" onClick={() => handlePresetSelect('spouse', t('relationModal.inLawMother'))} style={presetChipStyle(customLabel === t('relationModal.inLawMother'))}>
                     {t('relationModal.inLawMother')}
                   </button>
-                  <button type="button" onClick={() => handlePresetSelect('spouse', t('relationModal.inLawSon'))} style={presetChipStyle(customLabel === t('relationModal.inLawSon'))}>
-                    {t('relationModal.inLawSon')}
-                  </button>
-                  <button type="button" onClick={() => handlePresetSelect('spouse', t('relationModal.inLawDaughter'))} style={presetChipStyle(customLabel === t('relationModal.inLawDaughter'))}>
-                    {t('relationModal.inLawDaughter')}
-                  </button>
                 </>
               )}
 
@@ -289,7 +370,13 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
 
           {/* Target Person Selector */}
           <div>
-            <label style={labelStyle}>{t('relationModal.targetPerson')}</label>
+            <label style={labelStyle}>
+              {baseCategory === 'parent'
+                ? 'Ene-atasy boljak şahs'
+                : baseCategory === 'child'
+                ? 'Çagasy boljak şahs'
+                : t('relationModal.targetPerson')}
+            </label>
             {persons.length === 0 ? (
               <div style={{
                 padding: '12px',
@@ -316,6 +403,33 @@ export const RelationshipModal: React.FC<RelationshipModalProps> = ({
               </select>
             )}
           </div>
+
+          {/* Spouse Dual-Link Detection Card */}
+          {detectedSpouse && (baseCategory === 'parent' || baseCategory === 'child') && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 10,
+              padding: '11px 14px',
+              borderRadius: 8,
+              background: 'rgba(212, 175, 55, 0.08)',
+              border: '1px solid rgba(212, 175, 55, 0.35)',
+            }}>
+              <input
+                type="checkbox"
+                id="linkSpouseCheck"
+                checked={linkSpouseAsWell}
+                onChange={(e) => setLinkSpouseAsWell(e.target.checked)}
+                style={{ marginTop: 2, cursor: 'pointer', accentColor: 'var(--card-accent)' }}
+              />
+              <label htmlFor="linkSpouseCheck" style={{ fontSize: 12.5, color: 'var(--text)', cursor: 'pointer', margin: 0, lineHeight: 1.4 }}>
+                Ýanýoldaşy <strong style={{ color: 'var(--card-accent)' }}>{detectedSpouse.name}</strong> hem çaganyň ata-enesi hökmünde goşulsyn.
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
+                  (Şeýlelikde agaçda şaha gös-göni ene-atanyň nika halkasyndan çaga tarap gaçyrlar)
+                </div>
+              </label>
+            </div>
+          )}
 
           {/* Marriage Date (Only if spouse/marriage) */}
           {baseCategory === 'spouse' && (

@@ -114,26 +114,40 @@ func (s *TreeService) BuildFullTree() (*TreeGraph, error) {
 
 // BuildSubTree returns the graph rooted at a specific person (ancestors + descendants).
 func (s *TreeService) BuildSubTree(rootID uuid.UUID) (*TreeGraph, error) {
-	// For now, build the full tree and let the frontend filter by focus node.
-	// Future: only fetch the connected component of rootID.
 	return s.BuildFullTree()
 }
 
 func buildEdge(rel *domain.Relationship) *TreeEdge {
 	var edgeType string
+	sourceID := rel.PersonID.String()
+	targetID := rel.RelatedPersonID.String()
+
 	switch rel.RelationshipType {
 	case domain.RelParent, domain.RelAdoptiveParent:
 		edgeType = "bloodEdge"
+		// PersonID is parent (source), RelatedPersonID is child (target)
+		sourceID = rel.PersonID.String()
+		targetID = rel.RelatedPersonID.String()
+
+	case domain.RelChild, domain.RelAdoptiveChild:
+		edgeType = "bloodEdge"
+		// If stored as child, PersonID is child (target), RelatedPersonID is parent (source)
+		sourceID = rel.RelatedPersonID.String()
+		targetID = rel.PersonID.String()
+
 	case domain.RelSpouse, domain.RelFormerSpouse:
 		edgeType = "spouseEdge"
+		sourceID = rel.PersonID.String()
+		targetID = rel.RelatedPersonID.String()
+
 	default:
 		return nil
 	}
 
 	edge := &TreeEdge{
 		ID:               "e-" + rel.ID.String(),
-		Source:           rel.PersonID.String(),
-		Target:           rel.RelatedPersonID.String(),
+		Source:           sourceID,
+		Target:           targetID,
 		Type:             edgeType,
 		RelationshipType: string(rel.RelationshipType),
 	}
@@ -154,4 +168,3 @@ func deduplicateEdges(edges []*TreeEdge) []*TreeEdge {
 	}
 	return result
 }
-
